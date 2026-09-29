@@ -75,6 +75,16 @@ val verifyU8Rewritten = tasks.register("verifyU8Rewritten") {
     dependsOn(kotlin.targets.filter { it.platformType != KotlinPlatformType.common }.map { it.compilations.getByName("test").compileTaskProvider })
 
     doLast {
+        // A local function: a top-level one belongs to the script object, which the configuration cache cannot store.
+        fun containsU8LiteralCall(file: File): Boolean {
+            val contents = if (file.extension == "klib") {
+                ZipFile(file).use { zip -> zip.entries().asSequence().map { zip.getInputStream(it).readBytes() }.toList() }
+            } else {
+                listOf(file.readBytes())
+            }
+            return contents.any { String(it, Charsets.ISO_8859_1).contains("u8Literal") }
+        }
+
         val (compiled, notCompiled) = testOutputs.partition { (_, dirs) -> !dirs.asFileTree.isEmpty }
         if (notCompiled.isNotEmpty()) logger.lifecycle("Not compiled on this host: ${notCompiled.map { it.first }}")
         val notRewritten = compiled.filter { (_, dirs) -> dirs.asFileTree.none(::containsU8LiteralCall) }.map { it.first }
@@ -84,13 +94,4 @@ val verifyU8Rewritten = tasks.register("verifyU8Rewritten") {
 
 tasks.named("check") {
     dependsOn(verifyU8Rewritten)
-}
-
-fun containsU8LiteralCall(file: File): Boolean {
-    val contents = if (file.extension == "klib") {
-        ZipFile(file).use { zip -> zip.entries().asSequence().map { zip.getInputStream(it).readBytes() }.toList() }
-    } else {
-        listOf(file.readBytes())
-    }
-    return contents.any { String(it, Charsets.ISO_8859_1).contains("u8Literal") }
 }
