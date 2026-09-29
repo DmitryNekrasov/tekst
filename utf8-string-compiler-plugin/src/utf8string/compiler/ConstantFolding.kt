@@ -6,6 +6,9 @@
 package utf8string.compiler
 
 import org.jetbrains.kotlin.ir.IrStatement
+import org.jetbrains.kotlin.ir.declarations.IrClass
+import org.jetbrains.kotlin.ir.declarations.IrFunction
+import org.jetbrains.kotlin.ir.declarations.IrPackageFragment
 import org.jetbrains.kotlin.ir.expressions.IrCall
 import org.jetbrains.kotlin.ir.expressions.IrComposite
 import org.jetbrains.kotlin.ir.expressions.IrConst
@@ -20,7 +23,7 @@ import org.jetbrains.kotlin.ir.types.isLong
 import org.jetbrains.kotlin.ir.types.isNullableString
 import org.jetbrains.kotlin.ir.types.isShort
 import org.jetbrains.kotlin.ir.types.isString
-import org.jetbrains.kotlin.ir.util.callableId
+import org.jetbrains.kotlin.ir.util.classId
 import org.jetbrains.kotlin.name.CallableId
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
@@ -76,7 +79,7 @@ private fun constantText(constant: IrConst): String? {
 private fun foldCall(call: IrCall, sideEffects: MutableList<IrStatement>): String? {
     val function = call.symbol.owner
     if (function.name !in FOLDABLE_CALL_NAMES) return null
-    return when (function.callableId) {
+    return when (function.callableIdOrNull) {
         STRING_PLUS, NULLABLE_STRING_PLUS, CHAR_PLUS_STRING -> {
             val left = call.arguments[0]?.let { fold(it, sideEffects) } ?: return null
             val right = call.arguments[1]?.let { fold(it, sideEffects) } ?: return null
@@ -92,3 +95,11 @@ private fun foldCall(call: IrCall, sideEffects: MutableList<IrStatement>): Strin
         else -> null
     }
 }
+
+// IrFunction.callableId throws for a local function and for a member of a local class or an anonymous object.
+private val IrFunction.callableIdOrNull: CallableId?
+    get() = when (val parent = parent) {
+        is IrPackageFragment -> CallableId(parent.packageFqName, name)
+        is IrClass -> parent.classId?.let { CallableId(it, name) }
+        else -> null
+    }
