@@ -20,5 +20,9 @@ fun box(): String {
     check("a\nb\t\u0000\\\"".u8, "a\nb\t\u0000\\\"")?.let { return it }
     check("""raw $ "x" \n""".u8, "raw \$ \"x\" \\n")?.let { return it }
     check("${'$'}{not a template}".u8, "\${not a template}")?.let { return it }
+    // An unpaired surrogate is folded too: it becomes U+FFFD and counts as one code point.
+    val unpaired = "a\uD800".u8
+    if (unpaired.buffer.toList() != listOf<Byte>(0x61, -17, -65, -67)) return "unpaired: ${unpaired.buffer.toList()}"
+    if (unpaired.codePointCount != 2) return "unpaired code points: ${unpaired.codePointCount}"
     return "OK"
 }
