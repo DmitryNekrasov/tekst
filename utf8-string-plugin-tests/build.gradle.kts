@@ -75,7 +75,9 @@ val verifyU8Rewritten = tasks.register("verifyU8Rewritten") {
     dependsOn(kotlin.targets.filter { it.platformType != KotlinPlatformType.common }.map { it.compilations.getByName("test").compileTaskProvider })
 
     doLast {
-        val notRewritten = testOutputs.filter { (_, dirs) -> dirs.asFileTree.none(::containsU8LiteralCall) }.map { it.first }
+        val (compiled, notCompiled) = testOutputs.partition { (_, dirs) -> !dirs.asFileTree.isEmpty }
+        if (notCompiled.isNotEmpty()) logger.lifecycle("Not compiled on this host: ${notCompiled.map { it.first }}")
+        val notRewritten = compiled.filter { (_, dirs) -> dirs.asFileTree.none(::containsU8LiteralCall) }.map { it.first }
         check(notRewritten.isEmpty()) { "The compiled test code has no u8Literal call on: $notRewritten" }
     }
 }
