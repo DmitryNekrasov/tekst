@@ -12,7 +12,8 @@ public class Utf8String(public val buffer: ByteArray, public val codePointCount:
             val length = source.length
             var i = 0
             while (i < length && source[i] < '\u0080') i++
-            if (i == length) return Utf8String(encodeAscii(source), length)
+            // An ASCII string is also Latin-1, with the same bytes.
+            if (i == length) return Utf8String(latin1Bytes(source), length)
 
             val asciiPrefix = i
             var byteCount = length
@@ -66,6 +67,3 @@ public class Utf8String(public val buffer: ByteArray, public val codePointCount:
         }
     }
 }
-
-// The source must be pure ASCII.
-internal expect fun encodeAscii(source: String): ByteArray
