@@ -18,4 +18,34 @@ Targets: JVM, JS, Wasm (JS and WASI), and Kotlin/Native for Linux, macOS, Window
 
 The library uses experimental companion blocks, so Kotlin marks its binaries as pre-release, and a project that uses the library needs the `-Xskip-prerelease-check` compiler flag. `Utf8String.fromString` is a companion block member, so calling it also needs `-Xcompanion-blocks-and-extensions`.
 
+## Compile-time literals
+
+With the utf8-string compiler plugin, `"...".u8` on a constant string is encoded during compilation, like `"..."u8` in C#. The generated code only copies the bytes into a new array for each evaluation. A constant string is a literal, a `const val`, a template or a `+` of them, and `trimIndent()` or `trimMargin()` on such a string.
+
+```kotlin
+plugins {
+    kotlin("multiplatform") version "2.4.20"
+    id("io.github.dmitrynekrasov.utf8-string") version "0.1.0-SNAPSHOT"
+}
+
+kotlin {
+    compilerOptions {
+        freeCompilerArgs.add("-Xskip-prerelease-check")
+    }
+    sourceSets {
+        commonMain.dependencies {
+            implementation("io.github.dmitrynekrasov:utf8-string:0.1.0-SNAPSHOT")
+        }
+    }
+}
+```
+
+The library and the plugin are not published yet. The compiler plugin API changes in every Kotlin release, so the plugin works only with Kotlin 2.4.20 and fails the build on other versions.
+
+A receiver that is not a constant, for example `name.u8` or a template with a `Float`, `Double`, or unsigned value, is encoded at run time, and the plugin reports the `U8_NOT_CONSTANT` warning. An unpaired surrogate in a literal gives the `U8_UNPAIRED_SURROGATE` warning. With `-Werror`, use `@Suppress("U8_NOT_CONSTANT")` or `-Xwarning-level=U8_NOT_CONSTANT:warning`. The plugin reports from each platform compilation, so a warning in common code is repeated for every target. The IDE editor does not highlight these warnings, because they come from the compiler backend.
+
+Without the plugin, `"...".u8` gives the same result at run time.
+
+## License
+
 Licensed under the [Apache License 2.0](LICENSE).
