@@ -10,6 +10,7 @@ import utf8string.u8
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertNotSame
 
 const val GREETING = "\u041F\u0440\u0438\u0432\u0435\u0442"
@@ -17,6 +18,15 @@ const val COUNT = 3
 const val PART = "Hello, \u043C\u0438\u0440 \u65E5\u672C \uD83D\uDE00! "
 const val K1 = PART + PART + PART + PART + PART + PART + PART + PART + PART + PART + PART + PART + PART + PART + PART + PART +
     PART + PART + PART + PART + PART + PART + PART + PART + PART + PART + PART + PART + PART + PART + PART + PART
+
+object Holder {
+    const val NAME = "holder"
+    const val PREFIX = "#"
+    const val TEXT = """
+        #a
+        #b
+    """
+}
 
 class U8LiteralsTest {
     @Test
@@ -53,6 +63,18 @@ class U8LiteralsTest {
     @Test
     fun nonConstant() {
         assertEncodes("x \u043C\u0438\u0440", runtime("x \u043C\u0438\u0440"))
+    }
+
+    @Test
+    fun sideEffectsOfReceivers() {
+        val log = StringBuilder()
+        fun holder(tag: String): Holder = Holder.also { log.append(tag) }
+        fun thrower(): Holder = throw IllegalStateException()
+
+        assertEncodes("holder-holder", "${holder("1").NAME}-${holder("2").NAME}".u8)
+        assertEncodes("a\nb", holder("3").TEXT.trimMargin(holder("4").PREFIX).u8)
+        assertFailsWith<IllegalStateException> { (holder("5").NAME + thrower().NAME + holder("6").NAME).u8 }
+        assertEquals("12345", log.toString())
     }
 
     @Test
