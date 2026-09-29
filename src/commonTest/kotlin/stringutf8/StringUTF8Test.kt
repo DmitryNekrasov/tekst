@@ -1,0 +1,83 @@
+/*
+ * Copyright 2026 Dmitry Nekrasov and string-utf8 library contributors.
+ * Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
+ */
+
+package stringutf8
+
+import kotlin.random.Random
+import kotlin.test.Test
+import kotlin.test.assertContentEquals
+import kotlin.test.assertEquals
+
+class StringUTF8Test {
+    @Test
+    fun encodesEachSequenceLength() {
+        assertEncodes("", "", 0)
+        assertEncodes("\u0000", "00", 1)
+        assertEncodes("\u007F", "7F", 1)
+        assertEncodes("\u0080", "C2 80", 1)
+        assertEncodes("\u07FF", "DF BF", 1)
+        assertEncodes("\u0800", "E0 A0 80", 1)
+        assertEncodes("\uFFFF", "EF BF BF", 1)
+        assertEncodes("\uD800\uDC00", "F0 90 80 80", 1)
+        assertEncodes("\uDBFF\uDFFF", "F4 8F BF BF", 1)
+        assertEncodes("a\u20AC\uD83D\uDE00", "61 E2 82 AC F0 9F 98 80", 3)
+    }
+
+    @Test
+    fun replacesUnpairedSurrogates() {
+        assertEncodes("\uD800", "EF BF BD", 1)
+        assertEncodes("\uDC00", "EF BF BD", 1)
+        assertEncodes("a\uD800", "61 EF BF BD", 2)
+        assertEncodes("\uDC00\uD800", "EF BF BD EF BF BD", 2)
+        assertEncodes("\uD800\uD800\uDC00", "EF BF BD F0 90 80 80", 2)
+        assertEncodes("\uD800\uDC00\uDC00", "F0 90 80 80 EF BF BD", 2)
+    }
+
+    @Test
+    fun encodesLongMixedString() {
+        val source = "ascii ".repeat(100) + "\u043F\u0440\u0438\u0432\u0435\u0442 " +
+            "\u65E5".repeat(50) + "\uD83D\uDE00".repeat(20)
+        assertMatchesStdlib(source)
+    }
+
+    @Test
+    fun matchesStdlibOnRandomWellFormedStrings() {
+        val random = Random(42)
+        repeat(10_000) {
+            val source = buildString {
+                if (random.nextBoolean()) repeat(random.nextInt(20)) { append(Char(random.nextInt(0x80))) }
+                repeat(random.nextInt(12)) {
+                    when (random.nextInt(4)) {
+                        0 -> append(Char(random.nextInt(0x80)))
+                        1 -> append(Char(random.nextInt(0x80, 0x800)))
+                        2 -> append(Char(random.nextInt(0x800, 0xF800).let { if (it < 0xD800) it else it + 0x800 }))
+                        else -> appendSurrogatePair(random.nextInt(0x10000, 0x110000))
+                    }
+                }
+            }
+            assertMatchesStdlib(source)
+        }
+    }
+
+    private fun assertEncodes(source: String, expectedHex: String, expectedCodePoints: Int) {
+        val utf8 = StringUTF8.fromString(source)
+        val hex = utf8.buffer.joinToString(" ") { it.toUByte().toString(16).uppercase().padStart(2, '0') }
+        assertEquals(expectedHex, hex)
+        assertEquals(expectedCodePoints, utf8.codePointNumber)
+    }
+
+    // Well-formed strings only: the stdlib replaces unpaired surrogates differently on the JVM.
+    private fun assertMatchesStdlib(source: String) {
+        val utf8 = StringUTF8.fromString(source)
+        assertContentEquals(source.encodeToByteArray(), utf8.buffer)
+        // Each code point has exactly one byte that is not a continuation byte (10xxxxxx).
+        assertEquals(utf8.buffer.count { it.toInt() and 0xC0 != 0x80 }, utf8.codePointNumber)
+    }
+
+    private fun StringBuilder.appendSurrogatePair(codePoint: Int) {
+        append(Char(0xD800 + ((codePoint - 0x10000) shr 10)))
+        append(Char(0xDC00 + ((codePoint - 0x10000) and 0x3FF)))
+    }
+}
