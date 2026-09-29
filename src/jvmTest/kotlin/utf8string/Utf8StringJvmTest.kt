@@ -1,9 +1,9 @@
 /*
- * Copyright 2026 Dmitry Nekrasov and string-utf8 library contributors.
+ * Copyright 2026 Dmitry Nekrasov and utf8-string library contributors.
  * Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
-package stringutf8
+package utf8string
 
 import java.nio.CharBuffer
 import java.nio.charset.CodingErrorAction
@@ -12,7 +12,7 @@ import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 
-class StringUTF8JvmTest {
+class Utf8StringJvmTest {
     // The JDK encoder with U+FFFD as the replacement is an independent reference for unpaired surrogates.
     private val encoder = Charsets.UTF_8.newEncoder()
         .onMalformedInput(CodingErrorAction.REPLACE)
@@ -28,9 +28,9 @@ class StringUTF8JvmTest {
             val encoded = encoder.encode(CharBuffer.wrap(source))
             val expected = ByteArray(encoded.remaining()).also { encoded.get(it) }
 
-            val utf8 = StringUTF8.fromString(source)
+            val utf8 = Utf8String.fromString(source)
             assertContentEquals(expected, utf8.buffer)
-            assertEquals(source.codePointCount(0, source.length), utf8.codePointNumber)
+            assertEquals(source.codePointCount(0, source.length), utf8.codePointCount)
         }
     }
 }

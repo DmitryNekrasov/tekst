@@ -1,16 +1,16 @@
 /*
- * Copyright 2026 Dmitry Nekrasov and string-utf8 library contributors.
+ * Copyright 2026 Dmitry Nekrasov and utf8-string library contributors.
  * Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
-package stringutf8
+package utf8string
 
 import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 
-class StringUTF8Test {
+class Utf8StringTest {
     @Test
     fun encodesEachSequenceLength() {
         assertEncodes("", "", 0)
@@ -62,18 +62,18 @@ class StringUTF8Test {
     }
 
     private fun assertEncodes(source: String, expectedHex: String, expectedCodePoints: Int) {
-        val utf8 = StringUTF8.fromString(source)
+        val utf8 = Utf8String.fromString(source)
         val hex = utf8.buffer.joinToString(" ") { it.toUByte().toString(16).uppercase().padStart(2, '0') }
         assertEquals(expectedHex, hex)
-        assertEquals(expectedCodePoints, utf8.codePointNumber)
+        assertEquals(expectedCodePoints, utf8.codePointCount)
     }
 
     // Well-formed strings only: the stdlib replaces unpaired surrogates differently on the JVM.
     private fun assertMatchesStdlib(source: String) {
-        val utf8 = StringUTF8.fromString(source)
+        val utf8 = Utf8String.fromString(source)
         assertContentEquals(source.encodeToByteArray(), utf8.buffer)
         // Each code point has exactly one byte that is not a continuation byte (10xxxxxx).
-        assertEquals(utf8.buffer.count { it.toInt() and 0xC0 != 0x80 }, utf8.codePointNumber)
+        assertEquals(utf8.buffer.count { it.toInt() and 0xC0 != 0x80 }, utf8.codePointCount)
     }
 
     private fun StringBuilder.appendSurrogatePair(codePoint: Int) {

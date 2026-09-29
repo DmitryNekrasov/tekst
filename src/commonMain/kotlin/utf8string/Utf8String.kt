@@ -1,22 +1,22 @@
 /*
- * Copyright 2026 Dmitry Nekrasov and string-utf8 library contributors.
+ * Copyright 2026 Dmitry Nekrasov and utf8-string library contributors.
  * Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
-package stringutf8
+package utf8string
 
-public class StringUTF8(public val buffer: ByteArray, public val codePointNumber: Int) {
+public class Utf8String(public val buffer: ByteArray, public val codePointCount: Int) {
 
     public companion object {
-        public fun fromString(source: String): StringUTF8 {
+        public fun fromString(source: String): Utf8String {
             val length = source.length
             var i = 0
             while (i < length && source[i] < '\u0080') i++
-            if (i == length) return StringUTF8(encodeAscii(source), length)
+            if (i == length) return Utf8String(encodeAscii(source), length)
 
             val asciiPrefix = i
             var byteCount = length
-            var codePointNumber = length
+            var codePointCount = length
             while (i < length) {
                 val char = source[i++]
                 // Branch-free: +1 byte from U+0080, +1 more from U+0800.
@@ -24,7 +24,7 @@ public class StringUTF8(public val buffer: ByteArray, public val codePointNumber
                 // A surrogate pair takes 4 bytes; an unpaired surrogate becomes 3-byte U+FFFD.
                 if (char.isHighSurrogate() && i < length && source[i].isLowSurrogate()) {
                     i++
-                    codePointNumber--
+                    codePointCount--
                 }
             }
             // Int overflow leaves byteCount below length.
@@ -62,7 +62,7 @@ public class StringUTF8(public val buffer: ByteArray, public val codePointNumber
                     }
                 }
             }
-            return StringUTF8(buffer, codePointNumber)
+            return Utf8String(buffer, codePointCount)
         }
     }
 }

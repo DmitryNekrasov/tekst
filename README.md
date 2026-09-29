@@ -1,15 +1,15 @@
-# string-utf8
+# utf8-string
 
 A Kotlin Multiplatform string stored as UTF-8 bytes.
 
-`StringUTF8.fromString` counts the UTF-8 length of a `String` first, so it allocates only the result array:
+`Utf8String.fromString` counts the UTF-8 length of a `String` first, so it allocates only the result array:
 
 ```kotlin
-import stringutf8.StringUTF8
+import utf8string.Utf8String
 
-val utf8 = StringUTF8.fromString("Привет, 😀")
-utf8.buffer.size     // 18
-utf8.codePointNumber // 9
+val utf8 = Utf8String.fromString("Привет, 😀")
+utf8.buffer.size    // 18
+utf8.codePointCount // 9
 ```
 
 An unpaired surrogate has no UTF-8 encoding, so it becomes U+FFFD (`EF BF BD`) on every platform and counts as one code point. On the JVM, `String.encodeToByteArray()` writes `?` instead.
