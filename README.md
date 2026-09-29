@@ -2,12 +2,12 @@
 
 A Kotlin Multiplatform string stored as UTF-8 bytes.
 
-`Utf8String.fromString` counts the UTF-8 length of a `String` first, so it allocates only the result array:
+`.u8` encodes a `String`. It counts the UTF-8 length first, so it allocates only the result array:
 
 ```kotlin
-import utf8string.Utf8String
+import utf8string.u8
 
-val utf8 = Utf8String.fromString("Привет, 😀")
+val utf8 = "Привет, 😀".u8
 utf8.buffer.size    // 18
 utf8.codePointCount // 9
 ```
@@ -16,6 +16,6 @@ An unpaired surrogate has no UTF-8 encoding, so it becomes U+FFFD (`EF BF BD`) o
 
 Targets: JVM, JS, Wasm (JS and WASI), and Kotlin/Native for Linux, macOS, Windows, iOS, watchOS, and tvOS.
 
-The library uses experimental companion blocks, so Kotlin marks its binaries as pre-release. A project that uses it needs the `-Xcompanion-blocks-and-extensions` or `-Xskip-prerelease-check` compiler flag.
+The library uses experimental companion blocks, so Kotlin marks its binaries as pre-release, and a project that uses the library needs the `-Xskip-prerelease-check` compiler flag. `Utf8String.fromString` is a companion block member, so calling it also needs `-Xcompanion-blocks-and-extensions`.
 
 Licensed under the [Apache License 2.0](LICENSE).
