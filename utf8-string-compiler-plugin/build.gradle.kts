@@ -40,6 +40,11 @@ idea {
 
 val testArtifacts: Configuration = configurations.create("testArtifact")
 
+// Gradle runs the plugin in these shaded compilers, not in the kotlin-compiler it is compiled against.
+val embeddableCompilers: Configuration = configurations.create("embeddableCompilers") {
+    isTransitive = false
+}
+
 // The utf8-string library, which the generated code calls: its JVM jar and its JS klib.
 val utf8StringRuntimeClasspath = configurations.dependencyScope("utf8StringRuntimeClasspath") {
     isTransitive = false
@@ -64,6 +69,9 @@ dependencies {
     testFixturesRuntimeOnly(libs.junit)
 
     utf8StringRuntimeClasspath(project(":utf8-string"))
+
+    embeddableCompilers(libs.kotlin.compiler.embeddable)
+    embeddableCompilers(libs.kotlin.native.compiler.embeddable)
 
     // Dependencies required to run the internal test framework.
     testArtifacts(libs.kotlin.stdlib)
@@ -112,6 +120,10 @@ tasks.test {
 
     systemProperty("utf8StringRuntime.jvm.classpath", utf8StringJvmRuntimeClasspath.get().asPath)
     systemProperty("utf8StringRuntime.js.classpath", utf8StringJsRuntimeClasspath.get().asPath)
+
+    dependsOn(embeddableCompilers)
+    systemProperty("embeddableCompilers", embeddableCompilers.asPath)
+    systemProperty("pluginClassesDirs", sourceSets.main.get().output.classesDirs.asPath)
 
     // Properties required to run the internal test framework.
     setLibraryProperty("org.jetbrains.kotlin.test.kotlin-stdlib", "kotlin-stdlib")
