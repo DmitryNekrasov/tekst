@@ -20,3 +20,4 @@ rootProject.name = "utf8-string"
 include("utf8-string")
 include("utf8-string-compiler-plugin")
 include("utf8-string-plugin-tests")
+include("utf8-string-gradle-plugin")
