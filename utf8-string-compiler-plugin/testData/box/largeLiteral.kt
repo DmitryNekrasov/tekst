@@ -1,7 +1,8 @@
 import utf8string.u8
 
-// 8 KiB of mixed text, folded from constants. Three copies make a non-ASCII Latin-1 payload well above the 65535-byte
-// limit of a JVM string constant, and above the 1 KiB byteArrayOf limit on klib targets.
+// Mixed text folded from constants. K8 is 6912 bytes of UTF-8 and takes 11008 bytes in a Latin-1 string constant, where
+// a non-ASCII byte takes 2. A JVM string constant holds 65535 bytes, so twelve copies make the compiler split it. They
+// are also above the 1 KiB byteArrayOf limit on klib targets.
 const val PART = "Hello, \u043C\u0438\u0440 \u65E5\u672C \uD83D\uDE00! "
 const val K1 = PART + PART + PART + PART + PART + PART + PART + PART + PART + PART + PART + PART + PART + PART + PART + PART +
     PART + PART + PART + PART + PART + PART + PART + PART + PART + PART + PART + PART + PART + PART + PART + PART
