@@ -127,12 +127,20 @@ publishing {
 
 tasks.test {
     dependsOn(testArtifacts)
-    dependsOn(utf8StringJvmRuntimeClasspath)
-    dependsOn(utf8StringJsRuntimeClasspath)
 
     useJUnitPlatform()
     workingDir = rootDir
+    // The test framework runs up to 16 tests at once, and each JS box test compiles a whole program with the stdlib,
+    // so the default 512 MB heap runs out on a machine with many cores.
+    maxHeapSize = "2g"
 
+    // The tests compile against the library and run it, so it is an input, not only a dependency.
+    inputs.files(utf8StringJvmRuntimeClasspath)
+        .withPropertyName("utf8StringJvmRuntimeClasspath")
+        .withNormalizer(ClasspathNormalizer::class)
+    inputs.files(utf8StringJsRuntimeClasspath)
+        .withPropertyName("utf8StringJsRuntimeClasspath")
+        .withNormalizer(ClasspathNormalizer::class)
     systemProperty("utf8StringRuntime.jvm.classpath", utf8StringJvmRuntimeClasspath.get().asPath)
     systemProperty("utf8StringRuntime.js.classpath", utf8StringJsRuntimeClasspath.get().asPath)
 
@@ -159,7 +167,9 @@ tasks.test {
     setLibraryProperty("org.jetbrains.kotlin.test.kotlin-test-js", "kotlin-test-js")
 
     systemProperty("javascript.engine.path.V8", d8EnvSpec.executable.get())
-    systemProperty("javascript.engine.path.repl", "${layout.projectDirectory.file("repl.js").asFile}")
+    val repl = layout.projectDirectory.file("repl.js")
+    inputs.file(repl).withPropertyName("repl").withPathSensitivity(PathSensitivity.NONE)
+    systemProperty("javascript.engine.path.repl", "${repl.asFile}")
     systemProperty("kotlin.js.test.root.out.dir", "${layout.buildDirectory.get().asFile}/js-test-output")
 }
 
