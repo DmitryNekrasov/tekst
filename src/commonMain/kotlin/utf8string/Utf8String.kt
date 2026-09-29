@@ -31,7 +31,7 @@ public class Utf8String(public val buffer: ByteArray, public val codePointCount:
             require(byteCount >= length) { "The string is too long to be encoded in UTF-8" }
 
             val buffer = ByteArray(byteCount)
-            for (k in 0 until asciiPrefix) buffer[k] = source[k].code.toByte()
+            for (k in 0..<asciiPrefix) buffer[k] = source[k].code.toByte()
             var pos = asciiPrefix
             i = asciiPrefix
             while (i < length) {
