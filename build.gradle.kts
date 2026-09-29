@@ -18,6 +18,8 @@ kotlin {
 
     compilerOptions {
         allWarningsAsErrors.set(true)
+        // Experimental, the binaries are marked as pre-release.
+        freeCompilerArgs.add("-Xcompanion-blocks-and-extensions")
     }
 
     jvmToolchain(25)

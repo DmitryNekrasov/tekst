@@ -16,4 +16,6 @@ An unpaired surrogate has no UTF-8 encoding, so it becomes U+FFFD (`EF BF BD`) o
 
 Targets: JVM, JS, Wasm (JS and WASI), and Kotlin/Native for Linux, macOS, Windows, iOS, watchOS, and tvOS.
 
+The library uses experimental companion blocks, so Kotlin marks its binaries as pre-release. A project that uses it needs the `-Xcompanion-blocks-and-extensions` or `-Xskip-prerelease-check` compiler flag.
+
 Licensed under the [Apache License 2.0](LICENSE).

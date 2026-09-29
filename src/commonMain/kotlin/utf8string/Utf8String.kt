@@ -7,7 +7,7 @@ package utf8string
 
 public class Utf8String(public val buffer: ByteArray, public val codePointCount: Int) {
 
-    public companion object {
+    companion {
         public fun fromString(source: String): Utf8String {
             val length = source.length
             var i = 0
