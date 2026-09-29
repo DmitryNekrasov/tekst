@@ -7,16 +7,26 @@ package utf8string.compiler
 
 import org.jetbrains.kotlin.generators.dsl.junit5.generateTestGroupSuiteWithJUnit5
 import utf8string.compiler.runners.AbstractJsBoxTest
+import utf8string.compiler.runners.AbstractJsOnlyBoxTest
 import utf8string.compiler.runners.AbstractJvmBoxTest
+import utf8string.compiler.runners.AbstractJvmDiagnosticTest
 
+// box/ runs on both JVM and JS; jvm/ and js/ hold platform-specific tests such as IR dumps.
 fun main(args: Array<String>) {
     generateTestGroupSuiteWithJUnit5 {
         testGroup(testsRoot = args[0], testDataRoot = args[1]) {
+            testClass<AbstractJvmDiagnosticTest> {
+                model("diagnostics")
+            }
             testClass<AbstractJvmBoxTest> {
                 model("box")
+                model("jvm")
             }
             testClass<AbstractJsBoxTest> {
                 model("box")
+            }
+            testClass<AbstractJsOnlyBoxTest> {
+                model("js")
             }
         }
     }
