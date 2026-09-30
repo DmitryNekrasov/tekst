@@ -9,6 +9,9 @@
   constant string with precomputed bytes.
 - A Gradle plugin, `utf8-string-gradle-plugin/`, that applies it, and `utf8-string-plugin-tests/`, which compiles tests
   with the plugin on every target.
+- Iteration by extended grapheme clusters (`for (c in string)`, `Grapheme`, `length`) after UAX #29 for Unicode 18.0.
+  `utf8-string-generator/` generates its tables and test data from the Unicode files in `unicode/`, and
+  `utf8-string-benchmarks/` measures it (kotlinx-benchmark, run on request only).
 - One maintainer. Nothing is published yet. The library binaries are pre-release because of experimental companion
   blocks.
 
@@ -24,6 +27,9 @@
 - A change to `u8Literal` or `u8LiteralLatin1` (signature, file, the JVM class `U8Kt`) that breaks code already
   compiled with the plugin.
 - A statement in the README or a comment that is false.
+- A grapheme boundary that differs from UAX #29 for Unicode 18.0, an exception, a read out of bounds or a loop that does
+  not end on any bytes (malformed ones included), or time that grows faster than the length of the string.
+- A generated file that differs from what `./gradlew generateUnicodeData` writes from `unicode/`.
 
 ## Blast radius
 
@@ -58,6 +64,13 @@
 - The Kotlin/JS IR incremental cache is off (a regression of KT-31614). The configuration cache is on, with a 4 GB
   Gradle daemon heap.
 - Kotlin sources are pure ASCII: non-ASCII text is written as `\uXXXX` escapes.
+- `GraphemeData.kt` and the `*TestData.kt` files are generated and never edited by hand; `checkUnicodeData` in `check`
+  fails when they are stale.
+- A `Grapheme` is a view of its string's bytes and keeps them alive; ASCII graphemes and CR LF are shared objects, so
+  identity means nothing and `equals` has no identity shortcut (it would keep C2 from removing the allocation).
+- Only the internal constructor can make malformed UTF-8. Its graphemes are unspecified; iteration must only stay in
+  bounds, end, and put every byte into one grapheme.
+- `length` is cached in a volatile field like the hash code, at the cost of 8 more bytes per `Utf8String` on the JVM.
 - Comments are short and keep only essentials. Commit messages are subject-only.
 
 ## Languages

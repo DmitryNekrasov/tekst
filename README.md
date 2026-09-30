@@ -18,6 +18,27 @@ Targets: JVM, JS, Wasm (JS and WASI), and Kotlin/Native for Linux, macOS, Window
 
 The library uses experimental companion blocks, so Kotlin marks its binaries as pre-release, and a project that uses the library needs the `-Xskip-prerelease-check` compiler flag. `Utf8String.fromString` is a companion block member, so a project that calls it needs `-Xcompanion-blocks-and-extensions` instead. That flag also accepts pre-release binaries, but it marks the project's own binaries as pre-release too.
 
+## Graphemes
+
+`for` iterates over the extended grapheme clusters of a `Utf8String` ([UAX #29](https://www.unicode.org/reports/tr29/)): what a user sees as one character, such as a letter with its accents, a flag, or an emoji with a skin tone.
+
+```kotlin
+val text = "Hi 👋🏽 🇪🇸".u8
+for (grapheme in text) {
+    print("[$grapheme]") // [H][i][ ][👋🏽][ ][🇪🇸]
+}
+text.length         // 6
+text.codePointCount // 8
+```
+
+`length` counts graphemes, unlike `String.length`, which counts UTF-16 chars. It is computed on the first access and then kept.
+
+A `Grapheme` equals another one with the same UTF-8 bytes. It reads the bytes of its string instead of copying them, so it keeps them in memory; `toUtf8String()` copies it. Iteration allocates nothing for an ASCII char or CR LF, which are shared objects, and one small object for any other grapheme.
+
+The rules are those of Unicode 18.0 (UAX #29 revision 49, extended grapheme clusters), and the tests run the Unicode conformance file `GraphemeBreakTest.txt` on every target. The tables are generated from the Unicode data files in `unicode/`: after replacing them, `./gradlew generateUnicodeData` regenerates the tables and the test data, and `./gradlew build` fails while they are stale.
+
+`./gradlew :utf8-string-benchmarks:benchmark` runs the benchmarks on every target that the host supports, and `:utf8-string-benchmarks:jvmBenchmarkAllocations` reports the bytes allocated per operation on the JVM.
+
 ## Compile-time literals
 
 With the utf8-string compiler plugin, `"...".u8` on a constant string is encoded during compilation, like `"..."u8` in C#. A constant string is a literal, a `const val`, a template or a `+` of them, and `trimIndent()` or `trimMargin()` on such a string.
@@ -51,3 +72,5 @@ Without the plugin, `"...".u8` gives an equal `Utf8String`, created on each eval
 ## License
 
 Licensed under the [Apache License 2.0](LICENSE).
+
+The grapheme tables and test data are derived from Unicode data files, Copyright © 1991-2026 Unicode, Inc., under the [Unicode License V3](unicode/license.txt).
