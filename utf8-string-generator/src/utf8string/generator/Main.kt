@@ -24,7 +24,10 @@ fun main(args: Array<String>) {
         println("Wrote ${files.keys.joinToString()} in $sourceDir")
         return
     }
-    val stale = files.filter { (path, content) -> sourceDir.resolve(path).let { !it.exists() || it.readText() != content } }
+    // A checkout with CRLF line endings, as core.autocrlf makes on Windows, holds the same files.
+    val stale = files.filter { (path, content) ->
+        sourceDir.resolve(path).let { !it.exists() || it.readText().replace("\r\n", "\n") != content }
+    }
     if (stale.isNotEmpty()) {
         System.err.println("Stale generated files in $sourceDir: ${stale.keys.joinToString()}. Run ./gradlew generateUnicodeData.")
         exitProcess(1)
@@ -165,7 +168,8 @@ private fun classTestData(classes: IntArray): String {
     val runs = StringBuilder()
     for (codePoint in 0..<CODE_POINT_LIMIT) {
         if (codePoint == 0 || classes[codePoint] != classes[codePoint - 1]) {
-            runs.append("%X %d\n".format(codePoint, classes[codePoint]))
+            // Not %d, which writes the digits of the default locale.
+            runs.append(codePoint.toString(16).uppercase()).append(' ').append(classes[codePoint]).append('\n')
         }
     }
     file.stringConstant(

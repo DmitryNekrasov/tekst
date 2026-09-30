@@ -38,7 +38,7 @@ public class GraphemeIterator internal constructor(private val bytes: ByteArray)
     }
 
     // Moves past the next grapheme and returns its end.
-    internal fun advance(): Int {
+    private fun advance(): Int {
         val start = position
         val carriedLength = carriedLength
         if (carriedLength != 0) return search(start + carriedLength, carriedRow)

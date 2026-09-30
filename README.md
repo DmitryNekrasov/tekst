@@ -35,9 +35,9 @@ text.codePointCount // 8
 
 A `Grapheme` equals another one with the same UTF-8 bytes. It reads the bytes of its string instead of copying them, so it keeps them in memory; `toUtf8String()` copies it. Iteration allocates nothing for an ASCII char or CR LF, which are shared objects, and one small object for any other grapheme.
 
-The rules are those of Unicode 18.0 (UAX #29 revision 49, extended grapheme clusters), and the tests run the Unicode conformance file `GraphemeBreakTest.txt` on every target. The tables are generated from the Unicode data files in `unicode/`: after replacing them, `./gradlew generateUnicodeData` regenerates the tables and the test data, and `./gradlew build` fails while they are stale.
+The rules are those of Unicode 18.0 (UAX #29 revision 49, extended grapheme clusters), and the tests run the Unicode conformance file `GraphemeBreakTest.txt` on every target that runs tests; the Kotlin/Native device targets run none. `./gradlew generateUnicodeData` generates the tables and the test data from the Unicode 18.0 files in `unicode/`, and `./gradlew build` fails when the committed files differ from what it writes. A new Unicode version also needs the version constants in `utf8-string-generator/src/utf8string/generator/Main.kt` changed and the rules reviewed.
 
-`./gradlew :utf8-string-benchmarks:benchmark` runs the benchmarks on every target that the host supports, and `:utf8-string-benchmarks:jvmBenchmarkAllocations` reports the bytes allocated per operation on the JVM.
+`./gradlew :utf8-string-benchmarks:benchmark` runs the benchmarks on the JVM, JS and Wasm JS, and on Kotlin/Native for macOS arm64 or Linux x64 when the host is one of them; `:utf8-string-benchmarks:jvmBenchmarkAllocations` reports the bytes allocated per operation on the JVM.
 
 ## Compile-time literals
 

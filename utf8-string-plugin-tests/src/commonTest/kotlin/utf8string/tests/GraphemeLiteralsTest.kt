@@ -22,8 +22,12 @@ class GraphemeLiteralsTest {
             "\uD83D\uDC68\u200D\uD83D\uDC69\u200D\uD83D\uDC67 \uD83C\uDDF3\uD83C\uDDF4".u8,
         )
         // Above 1 KiB, so every target gets the bytes from a Latin-1 string constant.
-        assertGraphemes(K1, K1.u8)
-        assertGraphemes(LATIN1, LATIN1.u8)
+        val large = (K1 + K1).u8
+        val controls = (LATIN1 + LATIN1 + LATIN1).u8
+        assertEquals(1728, large.byteCount)
+        assertEquals(1185, controls.byteCount)
+        assertGraphemes(K1 + K1, large)
+        assertGraphemes(LATIN1 + LATIN1 + LATIN1, controls)
     }
 
     @Test
