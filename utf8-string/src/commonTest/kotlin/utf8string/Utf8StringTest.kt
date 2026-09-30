@@ -9,6 +9,7 @@ import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 
 class Utf8StringTest {
     @Test
@@ -59,6 +60,17 @@ class Utf8StringTest {
             }
             assertMatchesStdlib(source)
         }
+    }
+
+    @Test
+    fun equalsComparesBytesAndCodePointCount() {
+        val ab = Utf8String(byteArrayOf(0x61, 0x62), 2)
+        assertEquals(ab, Utf8String(byteArrayOf(0x61, 0x62), 2))
+        assertEquals(ab.hashCode(), Utf8String(byteArrayOf(0x61, 0x62), 2).hashCode())
+        assertNotEquals(ab, Utf8String(byteArrayOf(0x61, 0x63), 2))
+        assertNotEquals(ab, Utf8String(byteArrayOf(0x61), 1))
+        assertNotEquals(ab, Utf8String(byteArrayOf(0x61, 0x62), 1))
+        assertNotEquals<Any>(ab, "ab")
     }
 
     private fun assertEncodes(source: String, expectedHex: String, expectedCodePoints: Int) {
