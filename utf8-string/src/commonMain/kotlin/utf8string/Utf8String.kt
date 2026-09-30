@@ -5,7 +5,14 @@
 
 package utf8string
 
+import kotlin.concurrent.Volatile
+
 public class Utf8String internal constructor(private val buffer: ByteArray, public val codePointCount: Int) {
+    // Computed once, since the bytes never change; 0 means not computed yet. Volatile, because two threads may compute
+    // it at once, and on Kotlin/Native a plain read that races with a write is undefined.
+    @Volatile
+    private var hash: Int = 0
+
     public val byteCount: Int
         get() = buffer.size
 
@@ -14,7 +21,16 @@ public class Utf8String internal constructor(private val buffer: ByteArray, publ
                 other is Utf8String && codePointCount == other.codePointCount && buffer.contentEquals(other.buffer)
     }
 
-    override fun hashCode(): Int = buffer.contentHashCode()
+    override fun hashCode(): Int {
+        var h = hash
+        if (h == 0) {
+            h = buffer.contentHashCode()
+            // A content hash of 0 is stored as 1, so that it is not computed again.
+            if (h == 0) h = 1
+            hash = h
+        }
+        return h
+    }
 
     companion {
         public fun fromString(source: String): Utf8String {

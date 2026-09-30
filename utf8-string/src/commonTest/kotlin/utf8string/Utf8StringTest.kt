@@ -73,6 +73,16 @@ class Utf8StringTest {
         assertNotEquals<Any>(ab, "ab")
     }
 
+    @Test
+    fun zeroContentHashIsStoredAsNonZero() {
+        // The content hash of these bytes is 0, which the cache reserves for a hash that is not computed yet.
+        assertEquals(0, byteArrayOf(-31).contentHashCode())
+        val zero = Utf8String(byteArrayOf(-31), 1)
+        assertNotEquals(0, zero.hashCode())
+        assertEquals(zero.hashCode(), zero.hashCode())
+        assertEquals(zero.hashCode(), Utf8String(byteArrayOf(-31), 1).hashCode())
+    }
+
     private fun assertEncodes(source: String, expectedHex: String, expectedCodePoints: Int) {
         val expected = expectedHex.split(' ').filter { it.isNotEmpty() }.map { it.toInt(16).toByte() }.toByteArray()
         val utf8 = Utf8String.fromString(source)
