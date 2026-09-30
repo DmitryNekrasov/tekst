@@ -16,5 +16,11 @@ fun box(): String {
     val unpaired = parameter("a\uD800")
     if (unpaired.buffer.toList() != listOf<Byte>(0x61, -17, -65, -67)) return "Fail: unpaired ${unpaired.buffer.toList()}"
     if (unpaired.codePointCount != 2) return "Fail: unpaired code points"
+    // trimMargin throws for a blank prefix, so the plugin leaves the call to run time.
+    try {
+        "|a".trimMargin(" ").u8
+        return "Fail: blank margin"
+    } catch (e: IllegalArgumentException) {
+    }
     return "OK"
 }
