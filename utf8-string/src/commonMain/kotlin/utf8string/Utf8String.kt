@@ -13,8 +13,26 @@ public class Utf8String internal constructor(private val buffer: ByteArray, publ
     @Volatile
     private var hash: Int = 0
 
+    // The same for the number of graphemes; 0 means not computed yet, or an empty string.
+    @Volatile
+    private var graphemeCount: Int = 0
+
     public val byteCount: Int
         get() = buffer.size
+
+    /** The number of extended grapheme clusters, computed on the first access. [String.length] counts UTF-16 chars. */
+    public val length: Int
+        get() {
+            var count = graphemeCount
+            if (count == 0 && buffer.isNotEmpty()) {
+                count = countGraphemes(buffer, isAscii = codePointCount == buffer.size)
+                graphemeCount = count
+            }
+            return count
+        }
+
+    /** Iterates over the extended grapheme clusters: `for (grapheme in string)`. */
+    public operator fun iterator(): GraphemeIterator = GraphemeIterator(buffer)
 
     override fun equals(other: Any?): Boolean {
         return this === other ||

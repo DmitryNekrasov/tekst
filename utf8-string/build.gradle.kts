@@ -85,3 +85,10 @@ kotlin {
         }
     }
 }
+
+// The JVM tests check the generated grapheme tables against the Unicode files themselves.
+tasks.named<Test>("jvmTest") {
+    val unicodeDir = rootProject.layout.projectDirectory.dir("unicode")
+    inputs.dir(unicodeDir).withPropertyName("unicode").withPathSensitivity(PathSensitivity.RELATIVE)
+    systemProperty("utf8string.unicodeDir", unicodeDir.asFile.absolutePath)
+}
