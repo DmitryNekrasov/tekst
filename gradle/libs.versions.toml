@@ -2,6 +2,7 @@
 kotlin = "2.4.20"
 junit = "4.13.2"
 buildconfig = "5.6.5"
+icu4j = "78.3"
 
 [libraries]
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
@@ -19,6 +20,7 @@ kotlin-native-compiler-embeddable = { group = "org.jetbrains.kotlin", name = "ko
 kotlin-test-framework = { group = "org.jetbrains.kotlin", name = "kotlin-compiler-internal-test-framework", version.ref = "kotlin" }
 kotlin-gradle-plugin-api = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin-api", version.ref = "kotlin" }
 junit = { module = "junit:junit", version.ref = "junit" }
+icu4j = { module = "com.ibm.icu:icu4j", version.ref = "icu4j" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
