@@ -11,6 +11,6 @@ fun largeLiteral() = (K1 + "!").u8
 
 fun box(): String {
     if (literal().codePointCount != 3) return "Fail: literal"
-    if (largeLiteral().buffer.size != 1025) return "Fail: large literal ${largeLiteral().buffer.size}"
+    if (largeLiteral().byteCount != 1025) return "Fail: large literal ${largeLiteral().byteCount}"
     return "OK"
 }

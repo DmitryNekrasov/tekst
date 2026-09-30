@@ -8,7 +8,7 @@ A Kotlin Multiplatform string stored as UTF-8 bytes.
 import utf8string.u8
 
 val utf8 = "Привет, 😀".u8
-utf8.buffer.size    // 18
+utf8.byteCount      // 18
 utf8.codePointCount // 9
 ```
 

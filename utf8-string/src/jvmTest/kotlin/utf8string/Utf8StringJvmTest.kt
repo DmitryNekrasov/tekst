@@ -9,7 +9,6 @@ import java.nio.CharBuffer
 import java.nio.charset.CodingErrorAction
 import kotlin.random.Random
 import kotlin.test.Test
-import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 
 class Utf8StringJvmTest {
@@ -28,9 +27,7 @@ class Utf8StringJvmTest {
             val encoded = encoder.encode(CharBuffer.wrap(source))
             val expected = ByteArray(encoded.remaining()).also { encoded.get(it) }
 
-            val utf8 = Utf8String.fromString(source)
-            assertContentEquals(expected, utf8.buffer)
-            assertEquals(source.codePointCount(0, source.length), utf8.codePointCount)
+            assertEquals(Utf8String(expected, source.codePointCount(0, source.length)), Utf8String.fromString(source))
         }
     }
 }

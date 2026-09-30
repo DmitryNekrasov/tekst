@@ -1,12 +1,16 @@
 import utf8string.Utf8String
 import utf8string.u8
 
-// A well-formed string's UTF-8 bytes are the stdlib's; each code point has one lead (non-continuation) byte.
+// The run-time encoding, which a folded literal must equal.
+fun runtime(value: String): Utf8String = value.u8
+
+// A well-formed string's UTF-8 size is the stdlib's; each code point has one lead (non-continuation) byte.
 fun check(actual: Utf8String, expected: String): String? {
     val bytes = expected.encodeToByteArray()
-    if (!actual.buffer.contentEquals(bytes)) return "bytes of '$expected': ${actual.buffer.toList()}"
+    if (actual.byteCount != bytes.size) return "byte count of '$expected': ${actual.byteCount}"
     val codePoints = bytes.count { (it.toInt() and 0xC0) != 0x80 }
     if (actual.codePointCount != codePoints) return "code points of '$expected': ${actual.codePointCount}"
+    if (actual != runtime(expected)) return "bytes of '$expected' differ from the run-time encoding"
     return null
 }
 
@@ -22,7 +26,8 @@ fun box(): String {
     check("${'$'}{not a template}".u8, "\${not a template}")?.let { return it }
     // An unpaired surrogate is folded too: it becomes U+FFFD and counts as one code point.
     val unpaired = "a\uD800".u8
-    if (unpaired.buffer.toList() != listOf<Byte>(0x61, -17, -65, -67)) return "unpaired: ${unpaired.buffer.toList()}"
+    if (unpaired != runtime("a\uD800")) return "unpaired: differs from the run-time encoding"
+    if (unpaired.byteCount != 4) return "unpaired byte count: ${unpaired.byteCount}"
     if (unpaired.codePointCount != 2) return "unpaired code points: ${unpaired.codePointCount}"
     return "OK"
 }

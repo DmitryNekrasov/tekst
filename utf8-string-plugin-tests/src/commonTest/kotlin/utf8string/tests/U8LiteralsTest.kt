@@ -8,10 +8,8 @@ package utf8string.tests
 import utf8string.Utf8String
 import utf8string.u8
 import kotlin.test.Test
-import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
-import kotlin.test.assertNotSame
 
 const val GREETING = "\u041F\u0440\u0438\u0432\u0435\u0442"
 const val COUNT = 3
@@ -78,14 +76,15 @@ class U8LiteralsTest {
     fun controlCharsInLargeLiteral() {
         val literal = (LATIN1 + LATIN1 + LATIN1).u8
         // Above 1 KiB, so every target gets the bytes from a Latin-1 string constant.
-        assertEquals(1185, literal.buffer.size)
+        assertEquals(1185, literal.byteCount)
         assertEncodes(LATIN1 + LATIN1 + LATIN1, literal)
     }
 
     @Test
     fun unpairedSurrogate() {
         val literal = "a\uD800".u8
-        assertContentEquals(byteArrayOf(0x61, 0xEF.toByte(), 0xBF.toByte(), 0xBD.toByte()), literal.buffer)
+        assertEquals(runtime("a\uD800"), literal)
+        assertEquals(4, literal.byteCount)
         assertEquals(2, literal.codePointCount)
     }
 
@@ -106,23 +105,13 @@ class U8LiteralsTest {
         assertEquals("12345", log.toString())
     }
 
-    @Test
-    fun freshArrayForEachEvaluation() {
-        val first = constant()
-        val second = constant()
-        assertNotSame(first.buffer, second.buffer)
-        first.buffer[0] = 0
-        assertEquals(0x61, second.buffer[0].toInt())
-    }
-
-    private fun constant() = "abc".u8
-
     private fun runtime(value: String) = value.u8
 
-    // A well-formed string's UTF-8 bytes are the stdlib's; each code point has one lead (non-continuation) byte.
+    // A well-formed string's UTF-8 size is the stdlib's; each code point has one lead (non-continuation) byte.
     private fun assertEncodes(expected: String, actual: Utf8String) {
         val bytes = expected.encodeToByteArray()
-        assertContentEquals(bytes, actual.buffer)
+        assertEquals(bytes.size, actual.byteCount)
         assertEquals(bytes.count { (it.toInt() and 0xC0) != 0x80 }, actual.codePointCount)
+        assertEquals(runtime(expected), actual)
     }
 }

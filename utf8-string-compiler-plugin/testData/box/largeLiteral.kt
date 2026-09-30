@@ -8,11 +8,16 @@ const val K1 = PART + PART + PART + PART + PART + PART + PART + PART + PART + PA
     PART + PART + PART + PART + PART + PART + PART + PART + PART + PART + PART + PART + PART + PART + PART + PART
 const val K8 = K1 + K1 + K1 + K1 + K1 + K1 + K1 + K1
 
+// The run-time encoding, which a folded literal must equal.
+fun runtime(value: String) = value.u8
+
 fun box(): String {
     val literal = (K8 + K8 + K8 + K8 + K8 + K8 + K8 + K8 + K8 + K8 + K8 + K8).u8
-    val expected = (K8 + K8 + K8 + K8 + K8 + K8 + K8 + K8 + K8 + K8 + K8 + K8).encodeToByteArray()
-    if (!literal.buffer.contentEquals(expected)) return "Fail: bytes, ${literal.buffer.size} vs ${expected.size}"
+    val text = K8 + K8 + K8 + K8 + K8 + K8 + K8 + K8 + K8 + K8 + K8 + K8
+    val expected = text.encodeToByteArray()
+    if (literal.byteCount != expected.size) return "Fail: byte count, ${literal.byteCount} vs ${expected.size}"
     val codePoints = expected.count { (it.toInt() and 0xC0) != 0x80 }
     if (literal.codePointCount != codePoints) return "Fail: code points, ${literal.codePointCount} vs $codePoints"
+    if (literal != runtime(text)) return "Fail: bytes differ from the run-time encoding"
     return "OK"
 }

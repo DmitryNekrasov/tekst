@@ -7,7 +7,6 @@ package utf8string
 
 import kotlin.random.Random
 import kotlin.test.Test
-import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 
@@ -62,6 +61,7 @@ class Utf8StringTest {
         }
     }
 
+    // Every other test compares through equals, so it must tell apart the bytes and the code point count.
     @Test
     fun equalsComparesBytesAndCodePointCount() {
         val ab = Utf8String(byteArrayOf(0x61, 0x62), 2)
@@ -74,18 +74,17 @@ class Utf8StringTest {
     }
 
     private fun assertEncodes(source: String, expectedHex: String, expectedCodePoints: Int) {
+        val expected = expectedHex.split(' ').filter { it.isNotEmpty() }.map { it.toInt(16).toByte() }.toByteArray()
         val utf8 = Utf8String.fromString(source)
-        val hex = utf8.buffer.joinToString(" ") { it.toUByte().toString(16).uppercase().padStart(2, '0') }
-        assertEquals(expectedHex, hex)
-        assertEquals(expectedCodePoints, utf8.codePointCount)
+        assertEquals(expected.size, utf8.byteCount, expectedHex)
+        assertEquals(Utf8String(expected, expectedCodePoints), utf8, expectedHex)
     }
 
     // Well-formed strings only: the stdlib replaces unpaired surrogates differently on the JVM.
     private fun assertMatchesStdlib(source: String) {
-        val utf8 = Utf8String.fromString(source)
-        assertContentEquals(source.encodeToByteArray(), utf8.buffer)
+        val bytes = source.encodeToByteArray()
         // Each code point has exactly one byte that is not a continuation byte (10xxxxxx).
-        assertEquals(utf8.buffer.count { it.toInt() and 0xC0 != 0x80 }, utf8.codePointCount)
+        assertEquals(Utf8String(bytes, bytes.count { it.toInt() and 0xC0 != 0x80 }), Utf8String.fromString(source))
     }
 
     private fun StringBuilder.appendSurrogatePair(codePoint: Int) {

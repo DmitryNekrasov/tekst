@@ -7,6 +7,6 @@ fun box(): String {
     val bound = "abc"::u8
     if (bound().codePointCount != 3) return "Fail: bound"
     val mapped = listOf("a", "\u043F\u0440").map(String::u8)
-    if (mapped.map { it.buffer.size } != listOf(1, 4)) return "Fail: mapped ${mapped.map { it.buffer.size }}"
+    if (mapped.map { it.byteCount } != listOf(1, 4)) return "Fail: mapped ${mapped.map { it.byteCount }}"
     return "OK"
 }

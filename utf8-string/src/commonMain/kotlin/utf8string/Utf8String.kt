@@ -5,7 +5,10 @@
 
 package utf8string
 
-public class Utf8String(public val buffer: ByteArray, public val codePointCount: Int) {
+public class Utf8String internal constructor(private val buffer: ByteArray, public val codePointCount: Int) {
+    public val byteCount: Int
+        get() = buffer.size
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         return other is Utf8String && codePointCount == other.codePointCount && buffer.contentEquals(other.buffer)
