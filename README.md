@@ -16,7 +16,7 @@ An unpaired surrogate has no UTF-8 encoding, so it becomes U+FFFD (`EF BF BD`) o
 
 Targets: JVM, JS, Wasm (JS and WASI), and Kotlin/Native for Linux, macOS, Windows, iOS, watchOS, and tvOS.
 
-The library uses experimental companion blocks, so Kotlin marks its binaries as pre-release, and a project that uses the library needs the `-Xskip-prerelease-check` compiler flag. `Utf8String.fromString` is a companion block member, so calling it also needs `-Xcompanion-blocks-and-extensions`.
+The library uses experimental companion blocks, so Kotlin marks its binaries as pre-release, and a project that uses the library needs the `-Xskip-prerelease-check` compiler flag. `Utf8String.fromString` is a companion block member, so a project that calls it needs `-Xcompanion-blocks-and-extensions` instead. That flag also accepts pre-release binaries, but it marks the project's own binaries as pre-release too.
 
 ## Compile-time literals
 
