@@ -84,9 +84,9 @@ class U8LiteralsTest {
     @Test
     fun unpairedSurrogate() {
         val literal = "a\uD800".u8
-        assertEquals(runtime("a\uD800"), literal)
         assertEquals(4, literal.byteCount)
         assertEquals(2, literal.codePointCount)
+        assertEquals(runtime("a\uD800"), literal)
     }
 
     @Test
@@ -108,8 +108,8 @@ class U8LiteralsTest {
 
     @Test
     fun literalIsCreatedOnce() {
-        assertSame(constant(), constant())
-        assertSame(constant(), "abc".u8)
+        assertSame(constant(), constant(), "each evaluation returns the same instance")
+        assertSame(constant(), "abc".u8, "equal literals of one file share the instance")
     }
 
     private fun constant() = "abc".u8

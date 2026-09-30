@@ -9,7 +9,6 @@ import java.nio.CharBuffer
 import java.nio.charset.CodingErrorAction
 import kotlin.random.Random
 import kotlin.test.Test
-import kotlin.test.assertEquals
 
 class Utf8StringJvmTest {
     // The JDK encoder with U+FFFD as the replacement is an independent reference for unpaired surrogates.
@@ -27,7 +26,8 @@ class Utf8StringJvmTest {
             val encoded = encoder.encode(CharBuffer.wrap(source))
             val expected = ByteArray(encoded.remaining()).also { encoded.get(it) }
 
-            assertEquals(Utf8String(expected, source.codePointCount(0, source.length)), Utf8String.fromString(source))
+            val expectedUtf8 = Utf8String(expected, source.codePointCount(0, source.length))
+            assertUtf8Equals(expectedUtf8, Utf8String.fromString(source), expected.toHex())
         }
     }
 }

@@ -85,16 +85,15 @@ class Utf8StringTest {
 
     private fun assertEncodes(source: String, expectedHex: String, expectedCodePoints: Int) {
         val expected = expectedHex.split(' ').filter { it.isNotEmpty() }.map { it.toInt(16).toByte() }.toByteArray()
-        val utf8 = Utf8String.fromString(source)
-        assertEquals(expected.size, utf8.byteCount, expectedHex)
-        assertEquals(Utf8String(expected, expectedCodePoints), utf8, expectedHex)
+        assertUtf8Equals(Utf8String(expected, expectedCodePoints), Utf8String.fromString(source), expectedHex)
     }
 
     // Well-formed strings only: the stdlib replaces unpaired surrogates differently on the JVM.
     private fun assertMatchesStdlib(source: String) {
         val bytes = source.encodeToByteArray()
         // Each code point has exactly one byte that is not a continuation byte (10xxxxxx).
-        assertEquals(Utf8String(bytes, bytes.count { it.toInt() and 0xC0 != 0x80 }), Utf8String.fromString(source))
+        val expected = Utf8String(bytes, bytes.count { it.toInt() and 0xC0 != 0x80 })
+        assertUtf8Equals(expected, Utf8String.fromString(source), bytes.toHex())
     }
 
     private fun StringBuilder.appendSurrogatePair(codePoint: Int) {
