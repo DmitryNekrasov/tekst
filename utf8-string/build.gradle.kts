@@ -66,7 +66,7 @@ kotlin {
     tvosArm64()
     tvosSimulatorArm64()
 
-    // nonJvmMain: the ASCII fast path for every target except the JVM.
+    // nonJvmMain: the latin1Bytes loop for every target except the JVM.
     @OptIn(ExperimentalKotlinGradlePluginApi::class)
     applyDefaultHierarchyTemplate {
         common {
