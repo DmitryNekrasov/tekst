@@ -10,8 +10,8 @@ public class Utf8String internal constructor(private val buffer: ByteArray, publ
         get() = buffer.size
 
     override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        return other is Utf8String && codePointCount == other.codePointCount && buffer.contentEquals(other.buffer)
+        return this === other ||
+                other is Utf8String && codePointCount == other.codePointCount && buffer.contentEquals(other.buffer)
     }
 
     override fun hashCode(): Int = buffer.contentHashCode()
@@ -52,11 +52,13 @@ public class Utf8String internal constructor(private val buffer: ByteArray, publ
                         buffer[pos++] = (0xC0 or (char.code shr 6)).toByte()
                         buffer[pos++] = (0x80 or (char.code and 0x3F)).toByte()
                     }
+
                     !char.isSurrogate() -> {
                         buffer[pos++] = (0xE0 or (char.code shr 12)).toByte()
                         buffer[pos++] = (0x80 or ((char.code shr 6) and 0x3F)).toByte()
                         buffer[pos++] = (0x80 or (char.code and 0x3F)).toByte()
                     }
+
                     char.isHighSurrogate() && i < length && source[i].isLowSurrogate() -> {
                         val codePoint = ((char.code - 0xD800) shl 10) + (source[i++].code - 0xDC00) + 0x10000
                         buffer[pos++] = (0xF0 or (codePoint shr 18)).toByte()
@@ -64,6 +66,7 @@ public class Utf8String internal constructor(private val buffer: ByteArray, publ
                         buffer[pos++] = (0x80 or ((codePoint shr 6) and 0x3F)).toByte()
                         buffer[pos++] = (0x80 or (codePoint and 0x3F)).toByte()
                     }
+
                     else -> {
                         // Unpaired surrogate: U+FFFD.
                         buffer[pos++] = 0xEF.toByte()
