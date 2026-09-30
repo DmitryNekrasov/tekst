@@ -10,6 +10,7 @@ import utf8string.u8
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertSame
 
 const val GREETING = "\u041F\u0440\u0438\u0432\u0435\u0442"
 const val COUNT = 3
@@ -104,6 +105,14 @@ class U8LiteralsTest {
         assertFailsWith<IllegalStateException> { (holder("5").NAME + thrower().NAME + holder("6").NAME).u8 }
         assertEquals("12345", log.toString())
     }
+
+    @Test
+    fun literalIsCreatedOnce() {
+        assertSame(constant(), constant())
+        assertSame(constant(), "abc".u8)
+    }
+
+    private fun constant() = "abc".u8
 
     private fun runtime(value: String) = value.u8
 

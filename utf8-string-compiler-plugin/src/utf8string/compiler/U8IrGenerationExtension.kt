@@ -8,8 +8,28 @@ package utf8string.compiler
 import org.jetbrains.kotlin.backend.common.IrElementTransformerVoidWithContext
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
+import org.jetbrains.kotlin.backend.common.lower.DeclarationIrBuilder
+import org.jetbrains.kotlin.descriptors.ClassKind
+import org.jetbrains.kotlin.descriptors.DescriptorVisibilities
 import org.jetbrains.kotlin.diagnostics.KtDiagnosticFactory0
+import org.jetbrains.kotlin.ir.builders.declarations.addConstructor
+import org.jetbrains.kotlin.ir.builders.declarations.addGetter
+import org.jetbrains.kotlin.ir.builders.declarations.addProperty
+import org.jetbrains.kotlin.ir.builders.declarations.buildClass
+import org.jetbrains.kotlin.ir.builders.declarations.buildField
+import org.jetbrains.kotlin.ir.builders.irBlockBody
+import org.jetbrains.kotlin.ir.builders.irDelegatingConstructorCall
+import org.jetbrains.kotlin.ir.builders.irExprBody
+import org.jetbrains.kotlin.ir.builders.irGet
+import org.jetbrains.kotlin.ir.builders.irGetField
+import org.jetbrains.kotlin.ir.builders.irReturn
+import org.jetbrains.kotlin.ir.declarations.IrClass
+import org.jetbrains.kotlin.ir.declarations.IrDeclarationOrigin
+import org.jetbrains.kotlin.ir.declarations.IrFile
+import org.jetbrains.kotlin.ir.declarations.IrFunction
 import org.jetbrains.kotlin.ir.declarations.IrModuleFragment
+import org.jetbrains.kotlin.ir.declarations.IrScript
+import org.jetbrains.kotlin.ir.declarations.IrSimpleFunction
 import org.jetbrains.kotlin.ir.expressions.IrCall
 import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.expressions.IrRichFunctionReference
@@ -17,10 +37,18 @@ import org.jetbrains.kotlin.ir.expressions.IrRichPropertyReference
 import org.jetbrains.kotlin.ir.expressions.impl.IrCallImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrCompositeImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrConstImpl
+import org.jetbrains.kotlin.ir.expressions.impl.IrGetObjectValueImpl
+import org.jetbrains.kotlin.ir.expressions.impl.IrInstanceInitializerCallImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrVarargImpl
 import org.jetbrains.kotlin.ir.symbols.IrSimpleFunctionSymbol
 import org.jetbrains.kotlin.ir.types.defaultType
+import org.jetbrains.kotlin.ir.util.SYNTHETIC_OFFSET
+import org.jetbrains.kotlin.ir.util.addChild
+import org.jetbrains.kotlin.ir.util.copyTo
+import org.jetbrains.kotlin.ir.util.createThisReceiverParameter
+import org.jetbrains.kotlin.ir.util.primaryConstructor
 import org.jetbrains.kotlin.ir.visitors.transformChildrenVoid
+import org.jetbrains.kotlin.load.kotlin.PackagePartClassUtils
 import org.jetbrains.kotlin.name.CallableId
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
@@ -65,6 +93,16 @@ class U8CallTransformer(
     private val symbols: U8Symbols,
 ) : IrElementTransformerVoidWithContext() {
     private val isJvm = context.platform.isJvm()
+    private var fileLiterals: FileLiterals? = null
+
+    override fun visitFileNew(declaration: IrFile): IrFile {
+        val literals = if (declaration.declarations.any { it is IrScript }) null else FileLiterals(declaration)
+        fileLiterals = literals
+        val file = super.visitFileNew(declaration)
+        fileLiterals = null
+        literals?.holder?.let(file::addChild)
+        return file
+    }
 
     override fun visitCall(expression: IrCall): IrExpression {
         expression.transformChildrenVoid()
@@ -76,7 +114,12 @@ class U8CallTransformer(
         }
         val literal = encodeUtf8(folded.value)
         if (literal.hasUnpairedSurrogate) report(expression, U8Diagnostics.U8_UNPAIRED_SURROGATE)
-        val replacement = buildLiteral(literal, expression.startOffset, expression.endOffset)
+        val literals = fileLiterals
+        val replacement = if (literals == null || isInInlineFunction()) {
+            buildLiteral(literal, expression.startOffset, expression.endOffset)
+        } else {
+            literals.get(literal, expression.startOffset, expression.endOffset)
+        }
         if (folded.sideEffects.isEmpty()) return replacement
         return IrCompositeImpl(expression.startOffset, expression.endOffset, expression.type, null).apply {
             statements += folded.sideEffects
@@ -93,6 +136,81 @@ class U8CallTransformer(
     override fun visitRichFunctionReference(expression: IrRichFunctionReference): IrExpression {
         for (i in expression.boundValues.indices) expression.boundValues[i] = expression.boundValues[i].transform(this, null)
         return expression
+    }
+
+    // The body of an inline function is copied into other files and modules, which cannot reach the file's private holder.
+    private fun isInInlineFunction(): Boolean = allScopes.any { (it.irElement as? IrFunction)?.isInline == true }
+
+    // Each distinct literal of a file is created once, in a private object of that file. The object has its own
+    // initialization, so using a literal does not initialize the other top-level properties of the file.
+    private inner class FileLiterals(private val file: IrFile) {
+        var holder: IrClass? = null
+            private set
+        private val getters = HashMap<String, IrSimpleFunction>()
+
+        fun get(literal: Utf8Literal, startOffset: Int, endOffset: Int): IrExpression {
+            val getter = getters.getOrPut(latin1String(literal.bytes)) { addLiteral(literal, startOffset, endOffset) }
+            val holder = holder!!
+            return IrCallImpl(startOffset, endOffset, getter.returnType, getter.symbol).apply {
+                arguments[0] = IrGetObjectValueImpl(startOffset, endOffset, holder.symbol.defaultType, holder.symbol)
+            }
+        }
+
+        private fun addLiteral(literal: Utf8Literal, startOffset: Int, endOffset: Int): IrSimpleFunction {
+            val holder = holder ?: createHolder().also { holder = it }
+            val name = Name.identifier("literal${getters.size}")
+            val type = symbols.u8Getter.owner.returnType
+            val property = holder.addProperty {
+                this.name = name
+                visibility = DescriptorVisibilities.INTERNAL
+            }
+            // Static on the JVM, like the fields of a Kotlin object: a static final field is a constant for the JIT.
+            val field = context.irFactory.buildField {
+                this.startOffset = SYNTHETIC_OFFSET
+                this.endOffset = SYNTHETIC_OFFSET
+                this.name = name
+                this.type = type
+                visibility = DescriptorVisibilities.PRIVATE
+                isFinal = true
+                isStatic = isJvm
+            }
+            field.parent = holder
+            field.correspondingPropertySymbol = property.symbol
+            field.initializer = DeclarationIrBuilder(context, holder.symbol)
+                .irExprBody(buildLiteral(literal, startOffset, endOffset))
+            property.backingField = field
+            return property.addGetter {
+                returnType = type
+                visibility = DescriptorVisibilities.INTERNAL
+                origin = IrDeclarationOrigin.DEFAULT_PROPERTY_ACCESSOR
+            }.also { getter ->
+                getter.parent = holder
+                val receiver = holder.thisReceiver!!.copyTo(getter)
+                getter.parameters += receiver
+                getter.body = DeclarationIrBuilder(context, getter.symbol).irBlockBody {
+                    +irReturn(irGetField(if (isJvm) null else irGet(receiver), field))
+                }
+            }
+        }
+
+        private fun createHolder(): IrClass = context.irFactory.buildClass {
+            startOffset = SYNTHETIC_OFFSET
+            endOffset = SYNTHETIC_OFFSET
+            kind = ClassKind.OBJECT
+            visibility = DescriptorVisibilities.PRIVATE
+            val fileName = file.fileEntry.name.substringAfterLast('/').substringAfterLast('\\')
+            name = Name.identifier("U8Literals\$" + PackagePartClassUtils.getFilePartShortName(fileName))
+        }.also { holder ->
+            holder.parent = file
+            holder.createThisReceiverParameter()
+            holder.addConstructor {
+                isPrimary = true
+                visibility = DescriptorVisibilities.PRIVATE
+            }.body = DeclarationIrBuilder(context, holder.symbol).irBlockBody {
+                +irDelegatingConstructorCall(context.irBuiltIns.anyClass.owner.primaryConstructor!!)
+                +IrInstanceInitializerCallImpl(startOffset, endOffset, holder.symbol, context.irBuiltIns.unitType)
+            }
+        }
     }
 
     private fun buildLiteral(literal: Utf8Literal, startOffset: Int, endOffset: Int): IrExpression {

@@ -20,9 +20,9 @@ The library uses experimental companion blocks, so Kotlin marks its binaries as 
 
 ## Compile-time literals
 
-With the utf8-string compiler plugin, `"...".u8` on a constant string is encoded during compilation, like `"..."u8` in C#. The generated code only copies the bytes into a new array for each evaluation. A constant string is a literal, a `const val`, a template or a `+` of them, and `trimIndent()` or `trimMargin()` on such a string.
+With the utf8-string compiler plugin, `"...".u8` on a constant string is encoded during compilation, like `"..."u8` in C#. A constant string is a literal, a `const val`, a template or a `+` of them, and `trimIndent()` or `trimMargin()` on such a string.
 
-On the JVM, the bytes are stored in a string constant, which holds 65535 bytes, and a non-ASCII byte takes 2 of them. So the Kotlin compiler splits a literal from about 32 KiB of non-ASCII text into pieces and joins them with a `StringBuilder` on each evaluation, which allocates 3 times the size of the literal.
+Each literal is created once: the plugin keeps the literals of a file in a private object of that file, and every evaluation returns the same `Utf8String`. A literal inside an inline function is created on each evaluation instead, because the inlined code can end up in another file, which cannot reach that object.
 
 ```kotlin
 plugins {
@@ -46,7 +46,7 @@ The library and the plugin are not published yet. The compiler plugin API change
 
 A receiver that is not a constant, for example `name.u8` or a template with a `Float`, `Double`, or unsigned value, is encoded at run time, and the plugin reports the `U8_NOT_CONSTANT` warning. An unpaired surrogate in a literal gives the `U8_UNPAIRED_SURROGATE` warning. These warnings come from the compiler backend, so the IDE editor does not highlight them, and `@Suppress` works for them only on a declaration, like a function, a local variable, or a file, not on an expression. With `-Werror`, use such a `@Suppress("U8_NOT_CONSTANT")` or `-Xwarning-level=U8_NOT_CONSTANT:warning`. The plugin reports from each platform compilation, so a warning in common code is repeated for every target.
 
-Without the plugin, `"...".u8` gives the same result at run time.
+Without the plugin, `"...".u8` gives an equal `Utf8String`, created on each evaluation.
 
 ## License
 

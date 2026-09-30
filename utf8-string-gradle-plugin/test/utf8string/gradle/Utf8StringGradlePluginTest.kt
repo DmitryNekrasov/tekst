@@ -32,9 +32,11 @@ class Utf8StringGradlePluginTest {
 
         runner("compileKotlin").build()
 
-        val literals = String(projectDir.resolve("build/classes/kotlin/main/LiteralsKt.class").readBytes(), Charsets.ISO_8859_1)
-        assertTrue("u8LiteralLatin1" in literals, "The literal is not rewritten")
-        assertFalse("getU8" in literals, "The literal is still encoded at run time")
+        val classes = projectDir.resolve("build/classes/kotlin/main")
+        val facade = String(classes.resolve("LiteralsKt.class").readBytes(), Charsets.ISO_8859_1)
+        val holder = String(classes.resolve("U8Literals\$LiteralsKt.class").readBytes(), Charsets.ISO_8859_1)
+        assertTrue("u8LiteralLatin1" in holder, "The literal is not rewritten")
+        assertFalse("getU8" in facade, "The literal is still encoded at run time")
     }
 
     @Test
