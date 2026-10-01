@@ -17,8 +17,23 @@ public class Utf8String internal constructor(private val buffer: ByteArray, inte
     @Volatile
     private var graphemeCount: Int = 0
 
-    internal val byteCount: Int
+    /** The number of bytes of the UTF-8 encoding. */
+    public val byteCount: Int
         get() = buffer.size
+
+    /** A copy of the UTF-8 bytes. */
+    public fun toByteArray(): ByteArray = buffer.copyOf()
+
+    /**
+     * Copies the UTF-8 bytes, or those from [startIndex] until [endIndex], into [destination] at [destinationOffset],
+     * and returns [destination]. The range counts bytes, so it can split a code point.
+     */
+    public fun copyInto(
+        destination: ByteArray,
+        destinationOffset: Int = 0,
+        startIndex: Int = 0,
+        endIndex: Int = byteCount,
+    ): ByteArray = buffer.copyInto(destination, destinationOffset, startIndex, endIndex)
 
     /** The number of extended grapheme clusters, computed on the first access. [String.length] counts UTF-16 chars. */
     public val length: Int

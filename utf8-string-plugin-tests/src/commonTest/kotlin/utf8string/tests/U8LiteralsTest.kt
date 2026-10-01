@@ -8,6 +8,7 @@ package utf8string.tests
 import utf8string.Utf8String
 import utf8string.u8
 import kotlin.test.Test
+import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertSame
@@ -116,6 +117,7 @@ class U8LiteralsTest {
     private fun runtime(value: String) = value.u8
 
     private fun assertEncodes(expected: String, actual: Utf8String) {
+        assertContentEquals(expected.encodeToByteArray(), actual.toByteArray(), expected)
         assertEquals(runtime(expected), actual, expected)
     }
 }

@@ -7,8 +7,12 @@ package utf8string
 
 import kotlin.random.Random
 import kotlin.test.Test
+import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertNotEquals
+import kotlin.test.assertNotSame
+import kotlin.test.assertSame
 
 class Utf8StringTest {
     @Test
@@ -91,9 +95,32 @@ class Utf8StringTest {
         assertEquals("a\uFFFDb", Utf8String.fromString("a\uD800b").toString())
     }
 
+    @Test
+    fun toByteArrayReturnsACopy() {
+        val string = Utf8String.fromString("ab")
+        val bytes = string.toByteArray()
+        assertNotSame(bytes, string.toByteArray())
+        bytes[0] = 0x7A
+        assertEquals(Utf8String.fromString("ab"), string)
+    }
+
+    @Test
+    fun copyIntoWritesTheBytesIntoTheDestination() {
+        val string = Utf8String.fromString("a\u20AC")
+        val destination = ByteArray(6)
+        assertSame(destination, string.copyInto(destination))
+        assertEquals("61 E2 82 AC 00 00", destination.toHex())
+        // A range counts bytes, so it can split a code point.
+        string.copyInto(destination, destinationOffset = 4, startIndex = 1, endIndex = 3)
+        assertEquals("61 E2 82 AC E2 82", destination.toHex())
+        assertFailsWith<IndexOutOfBoundsException> { string.copyInto(ByteArray(3)) }
+    }
+
     private fun assertEncodes(source: String, expectedHex: String, expectedCodePoints: Int) {
         val expected = expectedHex.split(' ').filter { it.isNotEmpty() }.map { it.toInt(16).toByte() }.toByteArray()
-        assertUtf8Equals(Utf8String(expected, expectedCodePoints), Utf8String.fromString(source), expectedHex)
+        val actual = Utf8String.fromString(source)
+        assertUtf8Equals(Utf8String(expected, expectedCodePoints), actual, expectedHex)
+        assertContentEquals(expected, actual.toByteArray(), expectedHex)
     }
 
     // Well-formed strings only: the stdlib replaces unpaired surrogates differently on the JVM.
