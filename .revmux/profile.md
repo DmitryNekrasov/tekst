@@ -60,6 +60,8 @@
   `@Suppress` works only on declarations.
 - Callable references such as `String::u8` are not rewritten and get no warning.
 - The entry points are `@PublishedApi internal`, because strict klib IR visibility validation rejects plain internal.
+- The public API of `utf8-string` is checked against the dumps in `utf8-string/api/` (`checkKotlinAbi` in `check`);
+  `./gradlew :utf8-string:updateKotlinAbi` rewrites them when the API changes on purpose.
 - The compiler plugin compiles against the non-relocated `kotlin-compiler`, and a test checks its classes against both
   embeddable compilers instead of shading.
 - The Kotlin/JS IR incremental cache is off (a regression of KT-31614). The configuration cache is on, with a 4 GB

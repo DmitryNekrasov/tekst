@@ -1,0 +1,32 @@
+public final class utf8string/Grapheme {
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+	public final fun toUtf8String ()Lutf8string/Utf8String;
+}
+
+public final class utf8string/GraphemeIterator : java/util/Iterator, kotlin/jvm/internal/markers/KMappedMarker {
+	public fun hasNext ()Z
+	public synthetic fun next ()Ljava/lang/Object;
+	public fun next ()Lutf8string/Grapheme;
+	public fun remove ()V
+}
+
+public final class utf8string/U8Kt {
+	public static final fun getU8 (Ljava/lang/String;)Lutf8string/Utf8String;
+	public static final fun u8Literal ([BI)Lutf8string/Utf8String;
+	public static final fun u8LiteralLatin1 (Ljava/lang/String;I)Lutf8string/Utf8String;
+}
+
+public final class utf8string/Utf8String {
+	public final fun copyInto ([BIII)[B
+	public static synthetic fun copyInto$default (Lutf8string/Utf8String;[BIIIILjava/lang/Object;)[B
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getByteCount ()I
+	public final fun getLength ()I
+	public fun hashCode ()I
+	public final fun iterator ()Lutf8string/GraphemeIterator;
+	public final fun toByteArray ()[B
+	public fun toString ()Ljava/lang/String;
+}
+

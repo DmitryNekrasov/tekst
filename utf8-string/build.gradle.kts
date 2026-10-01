@@ -1,6 +1,7 @@
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
@@ -9,6 +10,10 @@ plugins {
 
 kotlin {
     explicitApi()
+
+    // The public API must match the dumps in api/, which ./gradlew :utf8-string:updateKotlinAbi writes.
+    @OptIn(ExperimentalAbiValidation::class)
+    abiValidation()
 
     compilerOptions {
         allWarningsAsErrors.set(true)
