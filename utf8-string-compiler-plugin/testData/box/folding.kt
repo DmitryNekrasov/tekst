@@ -26,10 +26,6 @@ object Holder {
 fun runtime(value: String): Utf8String = value.u8
 
 fun check(actual: Utf8String, expected: String): String? {
-    val bytes = expected.encodeToByteArray()
-    if (actual.byteCount != bytes.size) return "byte count of '$expected': ${actual.byteCount}"
-    val codePoints = bytes.count { (it.toInt() and 0xC0) != 0x80 }
-    if (actual.codePointCount != codePoints) return "code points of '$expected': ${actual.codePointCount}"
     if (actual != runtime(expected)) return "bytes of '$expected' differ from the run-time encoding"
     return null
 }

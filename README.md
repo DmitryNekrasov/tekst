@@ -7,12 +7,10 @@ A Kotlin Multiplatform string stored as UTF-8 bytes.
 ```kotlin
 import utf8string.u8
 
-val utf8 = "Привет, 😀".u8
-utf8.byteCount      // 18
-utf8.codePointCount // 9
+val utf8 = "Привет, 😀".u8 // 18 bytes of UTF-8
 ```
 
-An unpaired surrogate has no UTF-8 encoding, so it becomes U+FFFD (`EF BF BD`) on every platform and counts as one code point. On the JVM, `String.encodeToByteArray()` writes `?` instead.
+An unpaired surrogate has no UTF-8 encoding, so it becomes U+FFFD (`EF BF BD`) on every platform. On the JVM, `String.encodeToByteArray()` writes `?` instead.
 
 Targets: JVM, JS, Wasm (JS and WASI), and Kotlin/Native for Linux, macOS, Windows, iOS, watchOS, and tvOS.
 
@@ -27,8 +25,7 @@ val text = "Hi 👋🏽 🇪🇸".u8
 for (grapheme in text) {
     print("[$grapheme]") // [H][i][ ][👋🏽][ ][🇪🇸]
 }
-text.length         // 6
-text.codePointCount // 8
+text.length // 6
 ```
 
 `length` counts graphemes, unlike `String.length`, which counts UTF-16 chars. It is computed on the first access and then kept.

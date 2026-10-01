@@ -38,9 +38,9 @@ fun two() = "ghij".u8
 package repro
 
 fun box(): String {
-    if (left().byteCount != 1) return "Fail: left ${left().byteCount}"
-    if (right().byteCount != 2) return "Fail: right ${right().byteCount}"
-    if (one().byteCount != 3) return "Fail: one ${one().byteCount}"
-    if (two().byteCount != 4) return "Fail: two ${two().byteCount}"
+    if (left().length != 1) return "Fail: left ${left().length}"
+    if (right().length != 2) return "Fail: right ${right().length}"
+    if (one().length != 3) return "Fail: one ${one().length}"
+    if (two().length != 4) return "Fail: two ${two().length}"
     return "OK"
 }

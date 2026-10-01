@@ -13,7 +13,7 @@ fun literal() = "\u043F\u0440\u0438".u8
 fun largeLiteral() = (K1 + "!").u8
 
 fun box(): String {
-    if (literal().codePointCount != 3) return "Fail: literal"
-    if (largeLiteral().byteCount != 1025) return "Fail: large literal ${largeLiteral().byteCount}"
+    if (literal().length != 3) return "Fail: literal"
+    if (largeLiteral().length != 1025) return "Fail: large literal ${largeLiteral().length}"
     return "OK"
 }

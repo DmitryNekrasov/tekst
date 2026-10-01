@@ -13,7 +13,7 @@ class HolderNamesTest {
     // left/Names.kt and right/Names.kt share a name and a package, and @JvmName tells them apart on the JVM.
     @Test
     fun filesWithOneNameKeepTheirLiterals() {
-        assertEquals(listOf(4, 10), listOf(leftLiteral().byteCount, rightLiteral().byteCount))
+        assertEquals(listOf(4, 10), listOf(leftLiteral().length, rightLiteral().length))
         assertEquals(runtime("left"), leftLiteral())
         assertEquals(runtime("right side"), rightLiteral())
     }

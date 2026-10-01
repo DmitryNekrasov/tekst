@@ -77,15 +77,14 @@ class U8LiteralsTest {
     fun controlCharsInLargeLiteral() {
         val literal = (LATIN1 + LATIN1 + LATIN1).u8
         // Above 1 KiB, so every target gets the bytes from a Latin-1 string constant.
-        assertEquals(1185, literal.byteCount)
+        assertEquals(1185, (LATIN1 + LATIN1 + LATIN1).encodeToByteArray().size)
         assertEncodes(LATIN1 + LATIN1 + LATIN1, literal)
     }
 
     @Test
     fun unpairedSurrogate() {
         val literal = "a\uD800".u8
-        assertEquals(4, literal.byteCount)
-        assertEquals(2, literal.codePointCount)
+        assertEquals(runtime("a\uFFFD"), literal)
         assertEquals(runtime("a\uD800"), literal)
     }
 
@@ -116,11 +115,7 @@ class U8LiteralsTest {
 
     private fun runtime(value: String) = value.u8
 
-    // A well-formed string's UTF-8 size is the stdlib's; each code point has one lead (non-continuation) byte.
     private fun assertEncodes(expected: String, actual: Utf8String) {
-        val bytes = expected.encodeToByteArray()
-        assertEquals(bytes.size, actual.byteCount)
-        assertEquals(bytes.count { (it.toInt() and 0xC0) != 0x80 }, actual.codePointCount)
-        assertEquals(runtime(expected), actual)
+        assertEquals(runtime(expected), actual, expected)
     }
 }

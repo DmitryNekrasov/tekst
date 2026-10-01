@@ -17,10 +17,10 @@ public class Grapheme internal constructor(
     private val start: Int,
     private val end: Int,
 ) {
-    public val byteCount: Int
+    internal val byteCount: Int
         get() = end - start
 
-    public val codePointCount: Int
+    internal val codePointCount: Int
         get() {
             var count = 0
             for (i in start..<end) if (bytes[i].toInt() and 0xC0 != 0x80) count++

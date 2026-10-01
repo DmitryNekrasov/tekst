@@ -9,13 +9,11 @@ fun template(name: String) = "Hi, $name".u8
 fun unsigned() = "u=$UNSIGNED".u8
 
 fun box(): String {
-    if (parameter("ab").byteCount != 2) return "Fail: parameter"
+    if (parameter("ab") != "ab".u8) return "Fail: parameter"
     if (template("x") != parameter("Hi, x")) return "Fail: template"
     if ("pi=$PI".u8 != parameter("pi=$PI")) return "Fail: floating"
     if (unsigned() != parameter("u=7")) return "Fail: unsigned"
-    val unpaired = parameter("a\uD800")
-    if (unpaired.byteCount != 4) return "Fail: unpaired byte count ${unpaired.byteCount}"
-    if (unpaired.codePointCount != 2) return "Fail: unpaired code points"
+    if (parameter("a\uD800") != "a\uFFFD".u8) return "Fail: unpaired"
     // trimMargin throws for a blank prefix, so the plugin leaves the call to run time.
     try {
         "|a".trimMargin(" ").u8

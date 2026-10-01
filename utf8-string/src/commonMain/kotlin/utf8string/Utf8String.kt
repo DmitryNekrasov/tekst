@@ -7,7 +7,7 @@ package utf8string
 
 import kotlin.concurrent.Volatile
 
-public class Utf8String internal constructor(private val buffer: ByteArray, public val codePointCount: Int) {
+public class Utf8String internal constructor(private val buffer: ByteArray, internal val codePointCount: Int) {
     // Computed once, since the bytes never change; 0 means not computed yet. Volatile, because two threads may compute
     // it at once, and on Kotlin/Native a plain read that races with a write is undefined.
     @Volatile
@@ -17,7 +17,7 @@ public class Utf8String internal constructor(private val buffer: ByteArray, publ
     @Volatile
     private var graphemeCount: Int = 0
 
-    public val byteCount: Int
+    internal val byteCount: Int
         get() = buffer.size
 
     /** The number of extended grapheme clusters, computed on the first access. [String.length] counts UTF-16 chars. */

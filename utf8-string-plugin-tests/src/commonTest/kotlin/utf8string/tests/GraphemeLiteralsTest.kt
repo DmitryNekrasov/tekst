@@ -24,8 +24,8 @@ class GraphemeLiteralsTest {
         // Above 1 KiB, so every target gets the bytes from a Latin-1 string constant.
         val large = (K1 + K1).u8
         val controls = (LATIN1 + LATIN1 + LATIN1).u8
-        assertEquals(1728, large.byteCount)
-        assertEquals(1185, controls.byteCount)
+        assertEquals(1728, (K1 + K1).encodeToByteArray().size)
+        assertEquals(1185, (LATIN1 + LATIN1 + LATIN1).encodeToByteArray().size)
         assertGraphemes(K1 + K1, large)
         assertGraphemes(LATIN1 + LATIN1 + LATIN1, controls)
     }

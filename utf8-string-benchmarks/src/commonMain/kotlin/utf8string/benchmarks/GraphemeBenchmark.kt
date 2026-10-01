@@ -32,9 +32,9 @@ class GraphemeBenchmark {
     // The graphemes do not escape, so a JIT may remove their allocation.
     @Benchmark
     fun iterate(): Int {
-        var byteCount = 0
-        for (grapheme in string) byteCount += grapheme.byteCount
-        return byteCount
+        var count = 0
+        for (grapheme in string) count++
+        return count
     }
 
     // The graphemes escape into a list, as when code keeps them.
@@ -50,5 +50,5 @@ class GraphemeBenchmark {
     fun lengthOfNewString(): Int = source.u8.length
 
     @Benchmark
-    fun encode(): Int = source.u8.byteCount
+    fun encode(): Utf8String = source.u8
 }
