@@ -77,13 +77,6 @@ class Utf8StringGradlePluginTest {
             dependencies {
                 implementation("${BuildConfig.COMPILER_PLUGIN_GROUP}:utf8-string:${BuildConfig.COMPILER_PLUGIN_VERSION}")
             }
-
-            kotlin {
-                compilerOptions {
-                    // utf8-string is compiled with companion blocks, so its binaries are pre-release.
-                    freeCompilerArgs.add("-Xskip-prerelease-check")
-                }
-            }
             """.trimIndent(),
         )
     }

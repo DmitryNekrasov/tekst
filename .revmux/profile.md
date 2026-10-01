@@ -12,8 +12,7 @@
 - Iteration by extended grapheme clusters (`for (c in string)`, `Grapheme`, `length`) after UAX #29 for Unicode 18.0.
   `utf8-string-generator/` generates its tables and test data from the Unicode files in `unicode/`, and
   `utf8-string-benchmarks/` measures it (kotlinx-benchmark, run on request only).
-- One maintainer. Nothing is published yet. The library binaries are pre-release because of experimental companion
-  blocks.
+- One maintainer. Nothing is published yet.
 
 ## What a real failure looks like
 

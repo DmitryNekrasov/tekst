@@ -13,8 +13,6 @@ kotlin {
     compilerOptions {
         allWarningsAsErrors.set(true)
         freeCompilerArgs.addAll(
-            // utf8-string is compiled with companion blocks, so its binaries are pre-release.
-            "-Xskip-prerelease-check",
             // The tests use non-constant receivers and unpaired surrogates on purpose.
             "-Xwarning-level=U8_NOT_CONSTANT:warning",
             "-Xwarning-level=U8_UNPAIRED_SURROGATE:warning",

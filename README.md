@@ -15,8 +15,6 @@ An unpaired surrogate has no UTF-8 encoding, so it becomes U+FFFD (`EF BF BD`) o
 
 Targets: JVM, JS, Wasm (JS and WASI), and Kotlin/Native for Linux, macOS, Windows, iOS, watchOS, and tvOS.
 
-The library uses experimental companion blocks, so Kotlin marks its binaries as pre-release, and a project that uses the library needs the `-Xskip-prerelease-check` compiler flag. `Utf8String.fromString` is a companion block member, so a project that calls it needs `-Xcompanion-blocks-and-extensions` instead. That flag also accepts pre-release binaries, but it marks the project's own binaries as pre-release too.
-
 ## Graphemes
 
 `for` iterates over the extended grapheme clusters of a `Utf8String` ([UAX #29](https://www.unicode.org/reports/tr29/)): what a user sees as one character, such as a letter with its accents, a flag, or an emoji with a skin tone.
@@ -50,9 +48,6 @@ plugins {
 }
 
 kotlin {
-    compilerOptions {
-        freeCompilerArgs.add("-Xskip-prerelease-check")
-    }
     sourceSets {
         commonMain.dependencies {
             implementation("io.github.dmitrynekrasov:utf8-string:0.1.0-SNAPSHOT")

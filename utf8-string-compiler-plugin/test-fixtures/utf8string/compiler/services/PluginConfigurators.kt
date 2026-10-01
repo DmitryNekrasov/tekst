@@ -7,15 +7,11 @@ package utf8string.compiler.services
 
 import org.jetbrains.kotlin.cli.jvm.config.addJvmClasspathRoots
 import org.jetbrains.kotlin.compiler.plugin.CompilerPluginRegistrar
-import org.jetbrains.kotlin.config.AnalysisFlag
-import org.jetbrains.kotlin.config.AnalysisFlags
 import org.jetbrains.kotlin.config.CompilerConfiguration
-import org.jetbrains.kotlin.config.LanguageVersion
 import org.jetbrains.kotlin.js.config.JSConfigurationKeys
 import org.jetbrains.kotlin.platform.isJs
 import org.jetbrains.kotlin.platform.jvm.isJvm
 import org.jetbrains.kotlin.test.builders.TestConfigurationBuilder
-import org.jetbrains.kotlin.test.directives.model.RegisteredDirectives
 import org.jetbrains.kotlin.test.model.TestModule
 import org.jetbrains.kotlin.test.services.EnvironmentConfigurator
 import org.jetbrains.kotlin.test.services.RuntimeClasspathProvider
@@ -40,7 +36,7 @@ private class PluginRegistrarConfigurator(testServices: TestServices) : Environm
     }
 }
 
-// Puts the utf8-string library on the compile classpath. Its binaries are pre-release, like -Xskip-prerelease-check.
+// Puts the utf8-string library on the compile classpath.
 private class Utf8StringRuntimeConfigurator(testServices: TestServices) : EnvironmentConfigurator(testServices) {
     override fun configureCompilerConfiguration(configuration: CompilerConfiguration, module: TestModule) {
         val platform = module.targetPlatform(testServices)
@@ -52,11 +48,6 @@ private class Utf8StringRuntimeConfigurator(testServices: TestServices) : Enviro
             }
         }
     }
-
-    override fun provideAdditionalAnalysisFlags(
-        directives: RegisteredDirectives,
-        languageVersion: LanguageVersion,
-    ): Map<AnalysisFlag<*>, Any?> = mapOf(AnalysisFlags.skipPrereleaseCheck to true)
 }
 
 private class Utf8StringRuntimeClasspathProvider(testServices: TestServices) : RuntimeClasspathProvider(testServices) {

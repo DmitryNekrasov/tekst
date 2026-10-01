@@ -11,8 +11,6 @@ plugins {
 kotlin {
     compilerOptions {
         allWarningsAsErrors.set(true)
-        // utf8-string is compiled with companion blocks, so its binaries are pre-release.
-        freeCompilerArgs.add("-Xskip-prerelease-check")
     }
 
     jvmToolchain(25)
