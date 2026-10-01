@@ -35,5 +35,6 @@ final class utf8string/Utf8String { // utf8string/Utf8String|null[0]
 final val utf8string/u8 // utf8string/u8|@kotlin.String{}u8[0]
     final fun (kotlin/String).<get-u8>(): utf8string/Utf8String // utf8string/u8.<get-u8>|<get-u8>@kotlin.String(){}[0]
 
+final fun (kotlin/String).utf8string/toUtf8String(): utf8string/Utf8String // utf8string/toUtf8String|toUtf8String@kotlin.String(){}[0]
 final fun utf8string/u8Literal(kotlin/ByteArray, kotlin/Int): utf8string/Utf8String // utf8string/u8Literal|u8Literal(kotlin.ByteArray;kotlin.Int){}[0]
 final fun utf8string/u8LiteralLatin1(kotlin/String, kotlin/Int): utf8string/Utf8String // utf8string/u8LiteralLatin1|u8LiteralLatin1(kotlin.String;kotlin.Int){}[0]

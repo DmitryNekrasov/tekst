@@ -14,6 +14,7 @@ public final class utf8string/GraphemeIterator : java/util/Iterator, kotlin/jvm/
 
 public final class utf8string/U8Kt {
 	public static final fun getU8 (Ljava/lang/String;)Lutf8string/Utf8String;
+	public static final fun toUtf8String (Ljava/lang/String;)Lutf8string/Utf8String;
 	public static final fun u8Literal ([BI)Lutf8string/Utf8String;
 	public static final fun u8LiteralLatin1 (Ljava/lang/String;I)Lutf8string/Utf8String;
 }

@@ -16,6 +16,13 @@ class U8Test {
     }
 
     @Test
+    fun toUtf8StringEncodesLikeFromString() {
+        for (source in listOf("", "ascii", "\u041F\u0440\u0438\u0432\u0435\u0442", "a\u20AC\uD83D\uDE00", "\uD800x")) {
+            assertUtf8Equals(Utf8String.fromString(source), source.toUtf8String(), source)
+        }
+    }
+
+    @Test
     fun u8LiteralWrapsTheBytes() {
         assertUtf8Equals(Utf8String(byteArrayOf(0x61, 0x62), 2), u8Literal(byteArrayOf(0x61, 0x62), 2), "61 62")
     }
