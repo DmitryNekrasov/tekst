@@ -96,3 +96,31 @@ fun verifyAutomaton(automaton: BreakAutomaton) {
         verify(List(random.nextInt(1, 40)) { alphabet.random(random) })
     }
 }
+
+// GraphemeIterator.advance decides a grapheme that starts with ASCII without the tables. That is right only while
+// printable ASCII is Other, no code point below U+0300 (a lead byte below 0xCC) joins it, and an ASCII control is a
+// grapheme by itself, except CR LF.
+fun verifyAsciiFastPaths(classes: IntArray, automaton: BreakAutomaton) {
+    fun joins(first: Int, nextClass: Int): Boolean {
+        val transition = automaton.transitions[automaton.startStates[classes[first]] * automaton.classCount + nextClass]
+        return transition < BreakAutomaton.BOUNDARY
+    }
+    for (ascii in 0x20..0x7E) {
+        check(classes[ascii] == GraphemeClass.Other.ordinal) { "U+%04X is not Other".format(ascii) }
+    }
+    for (next in 0..<0x300) {
+        check(!joins('a'.code, classes[next])) { "U+%04X joins printable ASCII: lower the 0xCC bound".format(next) }
+    }
+    for (control in (0..<0x20) + 0x7F) {
+        for (next in GraphemeClass.entries) {
+            val expected = control == 0x0D && next == GraphemeClass.LF
+            check(joins(control, next.ordinal) == expected) {
+                "U+%04X before %s breaks the control fast path".format(control, next)
+            }
+        }
+    }
+    for (ascii in 0..<0x80) {
+        val isLf = classes[ascii] == GraphemeClass.LF.ordinal
+        check(isLf == (ascii == 0x0A)) { "U+%04X is not the only LF".format(ascii) }
+    }
+}

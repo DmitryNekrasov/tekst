@@ -6,6 +6,8 @@
 package utf8string
 
 import kotlin.random.Random
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 // A segmentation test: code points, and whether a cluster boundary is expected before each position from 0 to the end.
 internal class SegmentationTest(val codePoints: IntArray, val boundaries: BooleanArray, val line: String)
@@ -155,6 +157,18 @@ internal object GraphemeModel {
         while (j >= 0 && text[j].clusterBreak == "Regional_Indicator") j--
         return i - 1 - j
     }
+}
+
+// Checks our boundaries against an independent implementation. One of Unicode 17.0 (older) may differ only by the
+// GB9c rule of 18.0, and then ours must be the 18.0 answer and its the 17.0 one. Returns whether the two differed.
+internal fun checkAgainstOracle(codePoints: IntArray, ours: List<Int>, oracle: BooleanArray, older: Boolean): Boolean {
+    if (ours == byteBoundaries(codePoints, oracle)) return false
+    val message = codePoints.joinToString(" ") { it.toString(16) }
+    assertTrue(older, "The oracle disagrees: $message")
+    assertEquals(byteBoundaries(codePoints, GraphemeModel.boundaries(codePoints)), ours, "Ours is not Unicode 18.0: $message")
+    val unicode17 = GraphemeModel.boundaries(codePoints, legacyConjuncts = true)
+    assertTrue(oracle.contentEquals(unicode17), "The oracle is not Unicode 17.0: $message")
+    return true
 }
 
 // Random texts whose code points are spread evenly over the grapheme classes, so that every rule meets every class.

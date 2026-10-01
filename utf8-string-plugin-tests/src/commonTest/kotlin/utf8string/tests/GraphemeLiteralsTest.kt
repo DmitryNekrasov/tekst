@@ -41,6 +41,7 @@ class GraphemeLiteralsTest {
 
     private fun assertGraphemes(source: String, literal: Utf8String) {
         val expected = runtime(source)
+        assertEquals(expected, literal, source)
         assertEquals(graphemes(expected), graphemes(literal), source)
         assertEquals(expected.length, literal.length, source)
     }

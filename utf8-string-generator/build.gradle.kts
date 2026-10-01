@@ -8,9 +8,13 @@ sourceSets {
         resources.setSrcDirs(emptyList<String>())
     }
     test {
-        java.setSrcDirs(emptyList<String>())
+        java.setSrcDirs(listOf("test"))
         resources.setSrcDirs(emptyList<String>())
     }
+}
+
+dependencies {
+    testImplementation(libs.kotlin.test.junit5)
 }
 
 kotlin {
@@ -52,4 +56,10 @@ val checkUnicodeData = tasks.register<JavaExec>("checkUnicodeData") {
 
 tasks.named("check") {
     dependsOn(checkUnicodeData)
+}
+
+tasks.test {
+    useJUnitPlatform()
+    inputs.dir(unicodeDir).withPropertyName("unicode").withPathSensitivity(PathSensitivity.RELATIVE)
+    systemProperty("utf8string.unicodeDir", unicodeDir.asFile.absolutePath)
 }

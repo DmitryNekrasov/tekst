@@ -28,12 +28,14 @@ class GraphemeLongInputTest {
     fun emojiWithManyExtenders() {
         val string = ("\uD83D\uDED1" + "\u0308".repeat(100_000) + "\u200D\uD83D\uDED1").u8
         assertEquals(1, string.length)
+        assertEquals(listOf(0, string.byteCount), string.iteratedBoundaries())
     }
 
     @Test
     fun conjunctWithManyExtenders() {
         val string = ("\u0915\u094D" + "\u0308".repeat(100_000) + "\u0924").u8
         assertEquals(1, string.length)
+        assertEquals(listOf(0, string.byteCount), string.iteratedBoundaries())
     }
 
     @Test

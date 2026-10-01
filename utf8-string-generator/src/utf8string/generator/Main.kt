@@ -24,23 +24,27 @@ fun main(args: Array<String>) {
         println("Wrote ${files.keys.joinToString()} in $sourceDir")
         return
     }
-    // A checkout with CRLF line endings, as core.autocrlf makes on Windows, holds the same files.
-    val stale = files.filter { (path, content) ->
-        sourceDir.resolve(path).let { !it.exists() || it.readText().replace("\r\n", "\n") != content }
-    }
+    val stale = staleFiles(sourceDir, files)
     if (stale.isNotEmpty()) {
-        System.err.println("Stale generated files in $sourceDir: ${stale.keys.joinToString()}. Run ./gradlew generateUnicodeData.")
+        System.err.println("Stale generated files in $sourceDir: ${stale.joinToString()}. Run ./gradlew generateUnicodeData.")
         exitProcess(1)
     }
     marker.parentFile.mkdirs()
     marker.writeText("")
 }
 
+// The paths of the files that sourceDir lacks or holds with other content. A checkout with CRLF line endings, as
+// core.autocrlf makes on Windows, holds the same files.
+fun staleFiles(sourceDir: File, files: Map<String, String>): List<String> = files.filter { (path, content) ->
+    sourceDir.resolve(path).let { !it.exists() || it.readText().replace("\r\n", "\n") != content }
+}.keys.toList()
+
 fun generate(unicodeDir: File): Map<String, String> {
     val versionDir = unicodeDir.resolve(UNICODE_VERSION)
     val classes = classify(readGraphemeProperties(versionDir.resolve("ucd"), UNICODE_VERSION))
     val automaton = buildBreakAutomaton()
     verifyAutomaton(automaton)
+    verifyAsciiFastPaths(classes, automaton)
 
     val breakTest = readBreakTest(versionDir.resolve("ucd/auxiliary/GraphemeBreakTest.txt"), UNICODE_VERSION)
     val cldrTest = readCldrTests(unicodeDir.resolve("cldr-$CLDR_VERSION"))

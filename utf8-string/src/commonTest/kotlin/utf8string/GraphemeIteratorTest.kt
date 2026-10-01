@@ -64,6 +64,10 @@ class GraphemeIteratorTest {
         // ASCII graphemes are shared, but that must not show in equality.
         assertEquals("zq".u8.iterator().next(), "z".u8.iterator().next())
         assertNotEquals("z".u8.iterator().next(), "y".u8.iterator().next())
+        // The same size and first byte, different bytes after it.
+        assertNotEquals("a\u0301".u8.iterator().next(), "a\u0300".u8.iterator().next())
+        val family = "\uD83D\uDC68\u200D\uD83D\uDC69\u200D\uD83D\uDC67\u200D"
+        assertNotEquals((family + "\uD83D\uDC66").u8.iterator().next(), (family + "\uD83D\uDC67").u8.iterator().next())
     }
 
     @Test

@@ -19,6 +19,8 @@ class GraphemeMalformedTest {
             "E1", "E2 82", "80", "BF 80", "C0 80", "C1", "ED A0 80", "ED BF BF", "F4 90 80 80", "F5", "FF", "F0 9F 98",
             "F0 3F 3F 3F", "F0 7F 41 41", "F3 E0 80 80", "F3 60 80 80", "61 E1 62", "E1 CC 81", "CC", "61 CC", "0D E2",
             "F0 9F 98 80 80 80", "E0 80 80", "F8 88 80 80 80",
+            // Overlong forms of LF after CR, which the automaton joins to it.
+            "0D C0 8A", "0D E0 80 8A", "0D F0 80 80 8A",
         )) {
             assertCovered(hex.split(' ').map { it.toInt(16).toByte() }.toByteArray(), hex)
         }
@@ -44,6 +46,9 @@ class GraphemeMalformedTest {
         for (grapheme in string) {
             assertTrue(grapheme.byteCount > 0, message)
             grapheme.toString()
+            // Each grapheme holds the next bytes of the string.
+            val slice = bytes.copyOfRange(byteCount, byteCount + grapheme.byteCount)
+            assertUtf8Equals(Utf8String(slice, slice.count { it.toInt() and 0xC0 != 0x80 }), grapheme.toUtf8String(), message)
             byteCount += grapheme.byteCount
             graphemeCount++
         }

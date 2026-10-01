@@ -21,6 +21,7 @@ class GraphemeIntlSegmenterTest {
         val corpus = GraphemeCorpus(excluded = if (older) CHANGED_SINCE_UNICODE_17 else emptyList())
         val segmenter = graphemeSegmenter()
         val random = Random(32)
+        var newRuleDifferences = 0
         repeat(RANDOM_TEXT_COUNT) {
             val codePoints = corpus.text(random)
             val source = codePointsToString(codePoints)
@@ -35,11 +36,10 @@ class GraphemeIntlSegmenterTest {
             val intl = BooleanArray(codePoints.size + 1)
             for (index in segmentStarts(segmenter, source)) intl[codePointAt[index]] = true
             intl[codePoints.size] = true
-            if (byteBoundaries(codePoints, intl) != source.u8.iteratedBoundaries()) {
-                val message = codePoints.joinToString(" ") { it.toString(16) }
-                assertTrue(older && intl.contentEquals(GraphemeModel.boundaries(codePoints, legacyConjuncts = true)), message)
-            }
+            if (checkAgainstOracle(codePoints, source.u8.iteratedBoundaries(), intl, older)) newRuleDifferences++
         }
+        // The texts are random enough to meet the changed rule.
+        if (older) assertTrue(newRuleDifferences > 0)
     }
 }
 
