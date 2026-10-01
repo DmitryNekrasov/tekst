@@ -50,6 +50,9 @@ public class Utf8String internal constructor(private val buffer: ByteArray, inte
         return h
     }
 
+    /** Decodes the UTF-8 bytes into a [String], again on each call. */
+    override fun toString(): String = buffer.decodeToString()
+
     companion {
         public fun fromString(source: String): Utf8String {
             val length = source.length

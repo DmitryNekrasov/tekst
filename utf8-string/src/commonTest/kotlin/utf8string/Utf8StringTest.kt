@@ -83,6 +83,14 @@ class Utf8StringTest {
         assertEquals(zero.hashCode(), Utf8String(byteArrayOf(-31), 1).hashCode())
     }
 
+    @Test
+    fun toStringDecodesTheBytes() {
+        val sources = listOf("", "ascii", "\u041F\u0440\u0438\u0432\u0435\u0442", "a\u20AC\uD83D\uDE00", "e\u0301\r\n")
+        for (source in sources) assertEquals(source, Utf8String.fromString(source).toString())
+        // An unpaired surrogate was encoded as U+FFFD.
+        assertEquals("a\uFFFDb", Utf8String.fromString("a\uD800b").toString())
+    }
+
     private fun assertEncodes(source: String, expectedHex: String, expectedCodePoints: Int) {
         val expected = expectedHex.split(' ').filter { it.isNotEmpty() }.map { it.toInt(16).toByte() }.toByteArray()
         assertUtf8Equals(Utf8String(expected, expectedCodePoints), Utf8String.fromString(source), expectedHex)
@@ -93,7 +101,9 @@ class Utf8StringTest {
         val bytes = source.encodeToByteArray()
         // Each code point has exactly one byte that is not a continuation byte (10xxxxxx).
         val expected = Utf8String(bytes, bytes.count { it.toInt() and 0xC0 != 0x80 })
-        assertUtf8Equals(expected, Utf8String.fromString(source), bytes.toHex())
+        val actual = Utf8String.fromString(source)
+        assertUtf8Equals(expected, actual, bytes.toHex())
+        assertEquals(source, actual.toString(), bytes.toHex())
     }
 
     private fun StringBuilder.appendSurrogatePair(codePoint: Int) {

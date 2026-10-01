@@ -2,12 +2,13 @@
 
 A Kotlin Multiplatform string stored as UTF-8 bytes.
 
-`.u8` encodes a `String`. It counts the UTF-8 length first, so it allocates only the result array:
+`.u8` encodes a `String`. It counts the UTF-8 length first, so it allocates only the result array. `toString()` decodes the bytes back into a `String` on each call:
 
 ```kotlin
 import utf8string.u8
 
 val utf8 = "Привет, 😀".u8 // 18 bytes of UTF-8
+utf8.toString() // Привет, 😀
 ```
 
 An unpaired surrogate has no UTF-8 encoding, so it becomes U+FFFD (`EF BF BD`) on every platform. On the JVM, `String.encodeToByteArray()` writes `?` instead.
