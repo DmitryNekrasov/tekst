@@ -31,6 +31,7 @@ import org.jetbrains.kotlin.ir.declarations.IrModuleFragment
 import org.jetbrains.kotlin.ir.declarations.IrScript
 import org.jetbrains.kotlin.ir.declarations.IrSimpleFunction
 import org.jetbrains.kotlin.ir.expressions.IrCall
+import org.jetbrains.kotlin.ir.expressions.IrConst
 import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.expressions.IrRichFunctionReference
 import org.jetbrains.kotlin.ir.expressions.IrRichPropertyReference
@@ -46,11 +47,14 @@ import org.jetbrains.kotlin.ir.util.SYNTHETIC_OFFSET
 import org.jetbrains.kotlin.ir.util.addChild
 import org.jetbrains.kotlin.ir.util.copyTo
 import org.jetbrains.kotlin.ir.util.createThisReceiverParameter
+import org.jetbrains.kotlin.ir.util.getAnnotation
+import org.jetbrains.kotlin.ir.util.hasAnnotation
 import org.jetbrains.kotlin.ir.util.primaryConstructor
 import org.jetbrains.kotlin.ir.visitors.transformChildrenVoid
 import org.jetbrains.kotlin.load.kotlin.PackagePartClassUtils
 import org.jetbrains.kotlin.name.CallableId
 import org.jetbrains.kotlin.name.FqName
+import org.jetbrains.kotlin.name.JvmStandardClassIds
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.platform.jvm.isJvm
 
@@ -198,8 +202,7 @@ class U8CallTransformer(
             endOffset = SYNTHETIC_OFFSET
             kind = ClassKind.OBJECT
             visibility = DescriptorVisibilities.PRIVATE
-            val fileName = file.fileEntry.name.substringAfterLast('/').substringAfterLast('\\')
-            name = Name.identifier("U8Literals\$" + PackagePartClassUtils.getFilePartShortName(fileName))
+            name = holderName(file)
         }.also { holder ->
             holder.parent = file
             holder.createThisReceiverParameter()
@@ -235,6 +238,21 @@ class U8CallTransformer(
             arguments[0] = bytes
             arguments[1] = codePointCount
         }
+    }
+
+    // Named after the JVM class of the file, so two files with one name in one package, which @JvmName tells apart,
+    // get two holders: <name>Kt by default, else the @JvmName, or <JvmName>__<name>Kt in a multifile class.
+    private fun holderName(file: IrFile): Name {
+        val fileName = file.fileEntry.name.substringAfterLast('/').substringAfterLast('\\')
+        val part = PackagePartClassUtils.getFilePartShortName(fileName)
+        val jvmName = (file.getAnnotation(JvmStandardClassIds.JVM_NAME)?.arguments?.getOrNull(0) as? IrConst)?.value as? String
+        val jvmClass = when {
+            jvmName == null -> part
+            file.hasAnnotation(JvmStandardClassIds.JVM_MULTIFILE_CLASS) ->
+                jvmName + JvmStandardClassIds.MULTIFILE_PART_NAME_DELIMITER + part
+            else -> jvmName
+        }
+        return Name.identifier("U8Literals\$" + jvmClass)
     }
 
     private fun call(symbol: IrSimpleFunctionSymbol, startOffset: Int, endOffset: Int): IrCall =

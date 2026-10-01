@@ -49,8 +49,10 @@
 
 ## Deliberate conventions
 
-- Each literal is created once, in a private object of its file (`U8Literals$<File>Kt`), and the call site reads it.
-  A literal inside an inline function is created on each evaluation, because inlined code cannot reach the object.
+- Each literal is created once, in a private object of its file, and the call site reads it. The object is named after
+  the JVM class of the file: `U8Literals$<File>Kt`, `U8Literals$<JvmName>`, or `U8Literals$<JvmName>__<File>Kt` in a
+  multifile class, so that files with one name in one package do not share it on the JVM. A literal inside an inline
+  function is created on each evaluation, because inlined code cannot reach the object.
 - The object creates a literal from a Latin-1 string constant on the JVM and above 1 KiB on other targets, and from
   `byteArrayOf` up to 1 KiB on klib targets.
 - A receiver that does not fold stays a run-time call with the `U8_NOT_CONSTANT` warning. Float, Double and unsigned
