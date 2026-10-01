@@ -2,7 +2,7 @@
 
 A Kotlin Multiplatform string stored as UTF-8 bytes.
 
-`.u8` encodes a `String`. It counts the UTF-8 length first, so it allocates only the result array. `toByteArray()` copies the bytes out, `copyInto` writes them into an existing array without allocating, with the signature of `ByteArray.copyInto`, and `toString()` decodes them back into a `String` on each call:
+`.u8` encodes a `String`. It counts the UTF-8 length first, so it allocates only the result array. `toByteArray()` copies the bytes out, `copyInto` writes them into an existing array instead of a new one, with the signature of `ByteArray.copyInto`, and `toString()` decodes them back into a `String` on each call:
 
 ```kotlin
 import utf8string.u8
