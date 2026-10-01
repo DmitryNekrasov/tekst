@@ -15,6 +15,6 @@ fun runtime(value: String) = value.u8
 
 fun box(): String {
     val literal = commonLiteral()
-    if (literal != runtime("common \u043A\u043E\u0434")) return "Fail: bytes"
+    if (literal != runtime("common \u043A\u043E\u0434")) return "Fail: differs from the run-time encoding"
     return "OK"
 }

@@ -14,6 +14,6 @@ fun runtime(value: String) = value.u8
 fun box(): String {
     val literal = (K8 + K8 + K8 + K8 + K8 + K8 + K8 + K8 + K8 + K8 + K8 + K8).u8
     val text = K8 + K8 + K8 + K8 + K8 + K8 + K8 + K8 + K8 + K8 + K8 + K8
-    if (literal != runtime(text)) return "Fail: bytes differ from the run-time encoding"
+    if (literal != runtime(text)) return "Fail: differs from the run-time encoding"
     return "OK"
 }

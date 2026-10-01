@@ -90,7 +90,7 @@ class U8LiteralsTest {
 
     @Test
     fun nonConstant() {
-        assertEncodes("x \u043C\u0438\u0440", runtime("x \u043C\u0438\u0440"))
+        assertEquals("x \u043C\u0438\u0440".u8, runtime("x \u043C\u0438\u0440"))
     }
 
     @Test
