@@ -24,7 +24,7 @@ fun thrower(): Holder = throw IllegalStateException("boom")
 fun runtime(value: String): Utf8String = value.u8
 
 fun check(name: String, actual: Utf8String, expected: String, expectedLog: String): String? {
-    if (actual != runtime(expected)) return "Fail: $name differs from the run-time encoding of '$expected'"
+    if (actual != runtime(expected)) return "Fail: $name differs from the run-time encoding of '$expected': '$actual'"
     if (log.toString() != expectedLog) return "Fail: $name log '$log'"
     log.clear()
     return null

@@ -5,7 +5,7 @@ import utf8string.u8
 fun runtime(value: String): Utf8String = value.u8
 
 fun check(actual: Utf8String, expected: String): String? {
-    if (actual != runtime(expected)) return "'$expected' differs from the run-time encoding"
+    if (actual != runtime(expected)) return "'$expected' differs from the run-time encoding: '$actual'"
     return null
 }
 
