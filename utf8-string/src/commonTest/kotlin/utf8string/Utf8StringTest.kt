@@ -114,6 +114,13 @@ class Utf8StringTest {
         string.copyInto(destination, destinationOffset = 4, startIndex = 1, endIndex = 3)
         assertEquals("61 E2 82 AC E2 82", destination.toHex())
         assertFailsWith<IndexOutOfBoundsException> { string.copyInto(ByteArray(3)) }
+        // Each default is independent: a start index alone copies the rest.
+        val tail = ByteArray(3)
+        string.copyInto(tail, startIndex = 1)
+        assertEquals("E2 82 AC", tail.toHex())
+        // An empty string copies nothing, even into an empty array.
+        val empty = ByteArray(0)
+        assertSame(empty, Utf8String.fromString("").copyInto(empty))
     }
 
     private fun assertEncodes(source: String, expectedHex: String, expectedCodePoints: Int) {
