@@ -27,8 +27,6 @@ Targets: JVM, JS, Wasm (JS and WASI), and Kotlin/Native for Linux, macOS arm64, 
 
 utf8-string is a personal hobby project.
 
-API reference: [dmitrynekrasov.github.io/utf8-string](https://dmitrynekrasov.github.io/utf8-string/).
-
 ## Setup
 
 ```kotlin
