@@ -12,8 +12,8 @@ public val String.u8: Utf8String
     get() = Utf8String.fromString(this)
 
 /**
- * UTF-8 encoding of this string at run time. The utf8-string compiler plugin leaves this call alone, so unlike [u8] it
- * reports no `U8_NOT_CONSTANT` warning for a string that is not a constant.
+ * UTF-8 encoding of this string at run time. The compiler plugin leaves this call alone, so unlike [u8] it gives no
+ * `U8_NOT_CONSTANT` warning.
  */
 public fun String.toUtf8String(): Utf8String = Utf8String.fromString(this)
 
@@ -26,5 +26,4 @@ internal fun u8Literal(bytes: ByteArray, codePointCount: Int): Utf8String = Utf8
 internal fun u8LiteralLatin1(latin1: String, codePointCount: Int): Utf8String =
     Utf8String(latin1Bytes(latin1), codePointCount)
 
-// Every char of the string is below U+0100 and stands for one byte.
 internal expect fun latin1Bytes(latin1: String): ByteArray

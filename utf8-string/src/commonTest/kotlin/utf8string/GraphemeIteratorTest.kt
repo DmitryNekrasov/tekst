@@ -70,10 +70,8 @@ class GraphemeIteratorTest {
         assertEquals(a.hashCode(), b.hashCode())
         assertNotEquals(a, "a".u8.iterator().next())
         assertNotEquals<Any>(a, "a\u0301".u8)
-        // ASCII graphemes are shared, but that must not show in equality.
         assertEquals("zq".u8.iterator().next(), "z".u8.iterator().next())
         assertNotEquals("z".u8.iterator().next(), "y".u8.iterator().next())
-        // The same size and first byte, different bytes after it.
         assertNotEquals("a\u0301".u8.iterator().next(), "a\u0300".u8.iterator().next())
         val family = "\uD83D\uDC68\u200D\uD83D\uDC69\u200D\uD83D\uDC67\u200D"
         assertNotEquals((family + "\uD83D\uDC66").u8.iterator().next(), (family + "\uD83D\uDC67").u8.iterator().next())
@@ -143,7 +141,7 @@ class GraphemeIteratorTest {
         assertGraphemes("\uD83D\uDED1\u0308\u0308\u200D\uD83D\uDED1", "\uD83D\uDED1\u0308\u0308\u200D\uD83D\uDED1")
         assertGraphemes("\uD83D\uDED1\u200D\u200D|\uD83D\uDED1", "\uD83D\uDED1\u200D\u200D\uD83D\uDED1")
         assertGraphemes("a\u200D|\uD83D\uDED1", "a\u200D\uD83D\uDED1")
-        // Where JDK 25 is wrong: SpacingMark is not Extend in GB11; Prepend joins; an unassigned code point is Other.
+        // JDK 25 is wrong here. SpacingMark is not Extend in GB11, Prepend joins, and unassigned code points are Other.
         assertGraphemes("\uD83D\uDED1\u0903\u200D|\uD83D\uDED1", "\uD83D\uDED1\u0903\u200D\uD83D\uDED1")
         assertGraphemes("\u0600\uD83D\uDED1\u200D\uD83D\uDED1", "\u0600\uD83D\uDED1\u200D\uD83D\uDED1")
         assertGraphemes("\u0379\u0308", "\u0379\u0308")
@@ -169,13 +167,11 @@ class GraphemeIteratorTest {
         assertGraphemes("\u1100\uAC00", "\u1100\uAC00")
         assertGraphemes("\u11A8|\u1100", "\u11A8\u1100")
         assertGraphemes("\u0E01\u0E33", "\u0E01\u0E33")
-        // An unpaired surrogate becomes U+FFFD, which a combining mark joins.
         assertGraphemes("\uFFFD\u0301|b", "\uD800\u0301b")
         val zalgo = "Z" + "\u0351\u036B\u0343\u036A\u0302\u036B\u033D\u034F\u0334".repeat(5)
         assertGraphemes(zalgo, zalgo)
     }
 
-    // expected lists the graphemes of source separated by '|'.
     private fun assertGraphemes(expected: String, source: String) {
         val graphemes = ArrayList<String>()
         for (grapheme in source.u8) graphemes += grapheme.toString()

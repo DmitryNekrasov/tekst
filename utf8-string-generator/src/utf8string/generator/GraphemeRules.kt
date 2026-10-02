@@ -18,8 +18,7 @@ import utf8string.generator.GraphemeClass.T
 import utf8string.generator.GraphemeClass.V
 import utf8string.generator.GraphemeClass.ZWJ
 
-// Code points that the rules cannot tell apart: one combination of Grapheme_Cluster_Break, Extended_Pictographic and
-// Indic_Conjunct_Break. The ordinal is the class number in the generated tables, and Other must stay 0.
+// The ordinal is the class number in the generated tables.
 enum class GraphemeClass(val clusterBreak: String, val extendedPictographic: Boolean, val conjunctBreak: String) {
     Other("Other", false, "None"),
     CR("CR", false, "None"),
@@ -48,8 +47,6 @@ enum class GraphemeClass(val clusterBreak: String, val extendedPictographic: Boo
     val isConjunctConsonant: Boolean get() = conjunctBreak == "Consonant"
 }
 
-// The class number of every code point. Fails on a combination of properties that no class covers: a new Unicode
-// version may need a new class and a review of the rules.
 fun classify(properties: GraphemeProperties): IntArray {
     val byProperties = GraphemeClass.entries.associateBy { Triple(it.clusterBreak, it.extendedPictographic, it.conjunctBreak) }
     return IntArray(CODE_POINT_LIMIT) { codePoint ->
@@ -62,8 +59,6 @@ fun classify(properties: GraphemeProperties): IntArray {
     }
 }
 
-// What the rules need to know about the cluster so far. The rules never look before the start of the current cluster,
-// so a cluster starts from startState of its first code point.
 // emoji: 1 after ExtPict Extend*, 2 after ExtPict Extend* ZWJ, 0 otherwise (GB11).
 // afterLinker: after InCB=Linker InCB=Extend* (GB9c).
 data class RuleState(
@@ -76,7 +71,6 @@ data class RuleState(
 fun startState(first: GraphemeClass): RuleState =
     RuleState(first, first == RegionalIndicator, if (first == ExtendedPictographic) 1 else 0, first.isConjunctLinker)
 
-// UAX #29 revision 49 (Unicode 18.0), rules GB3 to GB999: whether a cluster boundary comes before next.
 fun isBoundary(state: RuleState, next: GraphemeClass): Boolean {
     val previous = state.previous
     return when {
@@ -96,7 +90,6 @@ fun isBoundary(state: RuleState, next: GraphemeClass): Boolean {
     }
 }
 
-// The state after next joins the cluster.
 fun append(state: RuleState, next: GraphemeClass): RuleState = RuleState(
     previous = next,
     oddRegionalIndicators = next == RegionalIndicator &&
@@ -110,8 +103,7 @@ fun append(state: RuleState, next: GraphemeClass): RuleState = RuleState(
     afterLinker = next.isConjunctLinker || next.isConjunctExtend && state.afterLinker,
 )
 
-// The same rules read directly from the text, without the forward state: whether a boundary comes between
-// text[position - 1] and text[position]. The generator checks the automaton against it.
+// The same rules read from the whole text instead of the state, to check the automaton against.
 fun isBoundaryInText(text: List<GraphemeClass>, position: Int): Boolean {
     val previous = text[position - 1]
     val next = text[position]
@@ -134,7 +126,6 @@ fun isBoundaryInText(text: List<GraphemeClass>, position: Int): Boolean {
     }
 }
 
-// The class at the last index up to from whose class does not satisfy skip, or null if there is none.
 private fun List<GraphemeClass>.skipBack(from: Int, skip: (GraphemeClass) -> Boolean): GraphemeClass? {
     var i = from
     while (i >= 0 && skip(this[i])) i--

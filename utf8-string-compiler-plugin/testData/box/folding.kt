@@ -22,7 +22,6 @@ object Holder {
     const val NAME = "holder"
 }
 
-// The run-time encoding, which a folded literal must equal.
 fun runtime(value: String): Utf8String = value.u8
 
 fun check(actual: Utf8String, expected: String): String? {

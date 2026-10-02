@@ -7,7 +7,6 @@ package utf8string.benchmarks
 
 import kotlin.random.Random
 
-// Deterministic texts of about 64 KiB of UTF-16 for each kind of script.
 internal object Corpora {
     fun text(name: String): String {
         val random = Random(name.hashCode())
@@ -35,13 +34,11 @@ internal object Corpora {
         return text.toString()
     }
 
-    // A word of 2 to 9 code points and a space; next returns a code point, or -1 when it has appended one itself.
     private fun StringBuilder.word(random: Random, next: () -> Int) {
         repeat(random.nextInt(2, 10)) { next().let { if (it >= 0) appendCodePoint(it) } }
         append(' ')
     }
 
-    // Syllables of consonants joined by virama (conjuncts, GB9c), with a vowel sign or none.
     private fun StringBuilder.devanagariWord(random: Random) {
         repeat(random.nextInt(1, 5)) {
             appendCodePoint(0x0915 + random.nextInt(0x25))
@@ -68,8 +65,6 @@ internal object Corpora {
         "grapheme", "cluster", "is", "what", "user", "sees", "as", "one", "character;", "UTF-8", "bytes", "(2026)",
     )
 
-    // A family, a thumbs up with a skin tone, two flags, a keycap, the flag of Scotland (tags), a technologist with a
-    // skin tone, a red heart with VS16, and a grinning face.
     private val EMOJI = listOf(
         intArrayOf(0x1F468, 0x200D, 0x1F469, 0x200D, 0x1F467, 0x200D, 0x1F466),
         intArrayOf(0x1F44D, 0x1F3FD),

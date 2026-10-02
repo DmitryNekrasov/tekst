@@ -10,7 +10,7 @@ import org.jetbrains.kotlin.compiler.plugin.CliOption
 import org.jetbrains.kotlin.compiler.plugin.CommandLineProcessor
 import org.jetbrains.kotlin.config.CompilerConfiguration
 
-@Suppress("unused") // Loaded through META-INF/services.
+@Suppress("unused")
 class Utf8StringCommandLineProcessor : CommandLineProcessor {
     override val pluginId: String
         get() = BuildConfig.KOTLIN_PLUGIN_ID

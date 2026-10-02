@@ -6,8 +6,6 @@ plugins {
     alias(libs.plugins.kotlinx.benchmark)
 }
 
-// Benchmarks of utf8-string. They run only on request: ./gradlew :utf8-string-benchmarks:benchmark, or
-// :utf8-string-benchmarks:jvmBenchmarkAllocations for the bytes allocated per operation on the JVM.
 kotlin {
     compilerOptions {
         allWarningsAsErrors.set(true)
@@ -42,8 +40,7 @@ allOpen {
     annotation("org.openjdk.jmh.annotations.State")
 }
 
-// The build only compiles the benchmarks. A Kotlin/Native benchmark is a release executable that takes minutes to link,
-// so its benchmark target exists only when a benchmark task is requested.
+// A Kotlin/Native benchmark takes minutes to link, so its target exists only when a benchmark task is requested.
 val benchmarksRequested = gradle.startParameter.taskNames.any { it.substringAfterLast(':').contains("enchmark") }
 
 benchmark {
@@ -63,7 +60,6 @@ benchmark {
             iterationTime = 1
             iterationTimeUnit = "s"
         }
-        // Iteration only, to compare variants of the iterator quickly: ./gradlew jvmIterationBenchmark and so on.
         register("iteration") {
             include("GraphemeBenchmark.iterate")
             param("corpus", "ascii", "cyrillic", "cjk")
@@ -92,7 +88,6 @@ tasks.withType<AbstractTestTask>().configureEach {
     enabled = false
 }
 
-// JMH with its GC profiler, which reports the bytes allocated per operation (gc.alloc.rate.norm).
 tasks.register<JavaExec>("jvmBenchmarkAllocations") {
     val jar = tasks.named("jvmBenchmarkJar")
     classpath(jar)

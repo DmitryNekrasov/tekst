@@ -37,7 +37,6 @@ class GeneratorTest {
         assertEquals(listOf(missing, edited), staleFiles(sourceDir, generated))
     }
 
-    // A locale whose digits are not Latin, as Persian, must not change the generated files.
     @Test
     fun outputDoesNotDependOnTheLocale() {
         val default = Locale.getDefault()
@@ -57,7 +56,6 @@ class GeneratorTest {
     private companion object {
         val unicodeDir = File(System.getProperty("utf8string.unicodeDir"))
 
-        // Generating takes seconds, so the tests share one result.
         val generated: Map<String, String> by lazy { generate(unicodeDir) }
     }
 }

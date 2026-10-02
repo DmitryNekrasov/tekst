@@ -14,10 +14,9 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinCompilerPluginSupportPlugin
 import org.jetbrains.kotlin.gradle.plugin.SubpluginArtifact
 import org.jetbrains.kotlin.gradle.plugin.SubpluginOption
 
-@Suppress("unused") // Applied by its plugin id.
+@Suppress("unused")
 class Utf8StringGradlePlugin : KotlinCompilerPluginSupportPlugin {
     override fun apply(target: Project) {
-        // The compiler plugin API changes in every Kotlin release, so the plugin works only with the version it is built for.
         target.plugins.withType(KotlinBasePlugin::class.java).configureEach { kotlinPlugin ->
             if (kotlinPlugin.pluginVersion != BuildConfig.KOTLIN_VERSION) {
                 throw GradleException(

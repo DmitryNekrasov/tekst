@@ -10,8 +10,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.fail
 
-// Reads the Unicode files independently of the generator, which catches a bug that the generated tables and the
-// generated test data share.
+// Reads the Unicode files itself, which catches a bug that the generated tables and the generated test data share.
 class GraphemeUcdTest {
     private val unicodeDir = File(System.getProperty("utf8string.unicodeDir")).resolve(UNICODE_VERSION)
 
@@ -43,7 +42,6 @@ class GraphemeUcdTest {
         assertEquals(5244, count)
     }
 
-    // "Grapheme_Cluster_Break Extended_Pictographic Indic_Conjunct_Break" of every code point.
     private fun readProperties(): Array<String> {
         val clusterBreak = Array(0x110000) { "Other" }
         val pictographic = BooleanArray(0x110000)

@@ -1,7 +1,6 @@
 // RUN_PIPELINE_TILL: BACKEND
 import utf8string.u8
 
-// A local function or a member of a local class is not the stdlib function with the same name.
 fun localFunction(): Int {
     fun plus(a: String, b: String) = b + a
     return plus("a", "b").<!U8_NOT_CONSTANT!>u8<!>.length

@@ -8,7 +8,7 @@ package utf8string
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-// A grapheme has no size limit. These would take hours if a rule looked back over the cluster at each code point.
+// These would take hours if a rule looked back over the cluster at each code point.
 class GraphemeLongInputTest {
     @Test
     fun combiningMarks() {

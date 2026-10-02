@@ -9,8 +9,7 @@ import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
-// Intl.Segmenter of Node as an independent implementation, with the same treatment of its Unicode version as the ICU
-// test. Browsers do not tell their Unicode version, so the test runs only on Node.
+// Browsers do not tell their Unicode version, so the test runs only on Node.
 class GraphemeIntlSegmenterTest {
     @Test
     fun iterationMatchesIntlSegmenterOnRandomTexts() {
@@ -25,7 +24,6 @@ class GraphemeIntlSegmenterTest {
         repeat(RANDOM_TEXT_COUNT) {
             val codePoints = corpus.text(random)
             val source = codePointsToString(codePoints)
-            // The UTF-16 offset of each code point, to map the offsets of the segments to code point positions.
             val codePointAt = IntArray(source.length + 1)
             var offset = 0
             for ((i, codePoint) in codePoints.withIndex()) {
@@ -38,7 +36,6 @@ class GraphemeIntlSegmenterTest {
             intl[codePoints.size] = true
             if (checkAgainstOracle(codePoints, source.u8.iteratedBoundaries(), intl, older)) newRuleDifferences++
         }
-        // The texts are random enough to meet the changed rule.
         if (older) assertTrue(newRuleDifferences > 0)
     }
 }

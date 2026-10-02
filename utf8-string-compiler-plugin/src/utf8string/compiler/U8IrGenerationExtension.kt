@@ -60,7 +60,6 @@ import org.jetbrains.kotlin.platform.jvm.isJvm
 
 class U8IrGenerationExtension : IrGenerationExtension {
     override fun generate(moduleFragment: IrModuleFragment, pluginContext: IrPluginContext) {
-        // Without the utf8-string library on the classpath there is nothing to rewrite.
         val symbols = U8Symbols.find(pluginContext) ?: return
         moduleFragment.transformChildrenVoid(U8CallTransformer(pluginContext, symbols))
     }
@@ -131,7 +130,7 @@ class U8CallTransformer(
         }
     }
 
-    // A reference such as String::u8 calls the getter on a parameter, not on a constant; only bound values can be constant.
+    // String::u8 calls the getter on a parameter, not on a constant, so only the bound values are transformed.
     override fun visitRichPropertyReference(expression: IrRichPropertyReference): IrExpression {
         for (i in expression.boundValues.indices) expression.boundValues[i] = expression.boundValues[i].transform(this, null)
         return expression
@@ -142,11 +141,10 @@ class U8CallTransformer(
         return expression
     }
 
-    // The body of an inline function is copied into other files and modules, which cannot reach the file's private holder.
+    // The body of an inline function is copied into other files and modules, which cannot reach the private holder.
     private fun isInInlineFunction(): Boolean = allScopes.any { (it.irElement as? IrFunction)?.isInline == true }
 
-    // Each distinct literal of a file is created once, in a private object of that file. The object has its own
-    // initialization, so using a literal does not initialize the other top-level properties of the file.
+    // A private object of the file, so that a literal does not initialize the other top-level properties of the file.
     private inner class FileLiterals(private val file: IrFile) {
         var holder: IrClass? = null
             private set
@@ -168,7 +166,7 @@ class U8CallTransformer(
                 this.name = name
                 visibility = DescriptorVisibilities.INTERNAL
             }
-            // Static on the JVM, like the fields of a Kotlin object: a static final field is a constant for the JIT.
+            // Static on the JVM, like the fields of a Kotlin object, so that the JIT treats it as a constant.
             val field = context.irFactory.buildField {
                 this.startOffset = SYNTHETIC_OFFSET
                 this.endOffset = SYNTHETIC_OFFSET
@@ -240,8 +238,7 @@ class U8CallTransformer(
         }
     }
 
-    // Named after the JVM class of the file, so two files with one name in one package, which @JvmName tells apart,
-    // get two holders: <name>Kt by default, else the @JvmName, or <JvmName>__<name>Kt in a multifile class.
+    // Named after the JVM class of the file, so that two files with one name in one package get two holders.
     private fun holderName(file: IrFile): Name {
         val fileName = file.fileEntry.name.substringAfterLast('/').substringAfterLast('\\')
         val part = PackagePartClassUtils.getFilePartShortName(fileName)

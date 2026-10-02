@@ -11,7 +11,6 @@ import utf8string.compiler.runners.AbstractJsOnlyBoxTest
 import utf8string.compiler.runners.AbstractJvmBoxTest
 import utf8string.compiler.runners.AbstractJvmDiagnosticTest
 
-// box/ runs on both JVM and JS; jvm/ and js/ hold platform-specific tests such as IR dumps.
 fun main(args: Array<String>) {
     generateTestGroupSuiteWithJUnit5 {
         testGroup(testsRoot = args[0], testDataRoot = args[1]) {

@@ -10,8 +10,6 @@ import utf8string.u8
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-// The plugin stores literals as a Latin-1 string or as byteArrayOf depending on the target and the size, so each
-// storage must give the same graphemes as run-time encoding.
 class GraphemeLiteralsTest {
     @Test
     fun literalsHaveTheGraphemesOfRuntimeStrings() {

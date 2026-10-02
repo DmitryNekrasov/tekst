@@ -13,8 +13,6 @@ import kotlin.test.Test
 import kotlin.test.assertTrue
 import kotlin.test.fail
 
-// ICU4J as an independent implementation. Until it implements Unicode 18.0, the texts leave out the code points whose
-// properties changed, and checkAgainstOracle accepts only a difference that the new GB9c explains.
 class GraphemeIcuTest {
     private val icuVersion = UCharacter.getUnicodeVersion().major
     private val tablesVersion = UNICODE_VERSION.substringBefore('.').toInt()
@@ -50,11 +48,9 @@ class GraphemeIcuTest {
             }
             if (checkAgainstOracle(codePoints, source.u8.iteratedBoundaries(), icu, older)) newRuleDifferences++
         }
-        // The texts are random enough to meet the changed rule.
         if (older) assertTrue(newRuleDifferences > 0)
     }
 
-    // "Grapheme_Cluster_Break Extended_Pictographic Indic_Conjunct_Break" in ICU, as in GRAPHEME_CLASS_PROPERTIES.
     private fun icuProperties(codePoint: Int): String {
         fun name(property: Int): String = UCharacter.getPropertyValueName(
             property,

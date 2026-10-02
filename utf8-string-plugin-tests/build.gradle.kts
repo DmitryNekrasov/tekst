@@ -8,7 +8,6 @@ plugins {
     alias(libs.plugins.kotlin.multiplatform)
 }
 
-// Tests of the compiler plugin on every target of the library, without going through the Gradle plugin.
 kotlin {
     compilerOptions {
         allWarningsAsErrors.set(true)
@@ -73,7 +72,7 @@ val verifyU8Rewritten = tasks.register("verifyU8Rewritten") {
     dependsOn(kotlin.targets.filter { it.platformType != KotlinPlatformType.common }.map { it.compilations.getByName("test").compileTaskProvider })
 
     doLast {
-        // A local function: a top-level one belongs to the script object, which the configuration cache cannot store.
+        // Local, since a top-level function belongs to the script object, which the configuration cache cannot store.
         fun containsU8LiteralCall(file: File): Boolean {
             val contents = if (file.extension == "klib") {
                 ZipFile(file).use { zip -> zip.entries().asSequence().map { zip.getInputStream(it).readBytes() }.toList() }

@@ -62,7 +62,6 @@ gradlePlugin {
     }
 }
 
-// The fixture project resolves the plugin, the compiler plugin and the library from build/localMaven.
 tasks.test {
     dependsOn(
         ":utf8-string:publishKotlinMultiplatformPublicationToTestingRepository",
@@ -71,7 +70,7 @@ tasks.test {
         "publishAllPublicationsToTestingRepository",
     )
     // dependsOn adds no inputs, so without these the tests stay up to date after a change to the compiler plugin or the
-    // library. The repository itself is not an input: every publication adds new timestamped snapshot files.
+    // library. The repository itself is not an input, since every publication adds new timestamped snapshot files.
     val compilerPlugin = project(":utf8-string-compiler-plugin")
     val library = project(":utf8-string")
     inputs.files(compilerPlugin.tasks.named("jar"), library.tasks.named("jvmJar"))

@@ -7,8 +7,6 @@ import utf8string.u8
 const val P64 = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
 const val K1 = P64 + P64 + P64 + P64 + P64 + P64 + P64 + P64 + P64 + P64 + P64 + P64 + P64 + P64 + P64 + P64
 
-// The holder object of the file creates each literal once: a small one from new Int8Array([...]), one above 1 KiB
-// from a Latin-1 string.
 fun literal() = "\u043F\u0440\u0438".u8
 fun largeLiteral() = (K1 + "!").u8
 

@@ -7,8 +7,7 @@ package utf8string
 
 import kotlin.test.assertEquals
 
-// Compares the counts before the bytes: a failure shows the strings decoded, and the same bytes with another code point
-// count, or malformed bytes, decode alike.
+// The counts first, since a failure shows the strings decoded, which hides a wrong count or malformed bytes.
 internal fun assertUtf8Equals(expected: Utf8String, actual: Utf8String, message: String) {
     assertEquals(expected.byteCount, actual.byteCount, "byte count of $message")
     assertEquals(expected.codePointCount, actual.codePointCount, "code point count of $message")

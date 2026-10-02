@@ -1,6 +1,5 @@
 import utf8string.u8
 
-// A callable reference is not a literal: it encodes at run time, without a diagnostic.
 fun box(): String {
     val unbound = String::u8
     if (unbound("ab") != "ab".u8) return "Fail: unbound"

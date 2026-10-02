@@ -5,7 +5,6 @@
 
 package utf8string
 
-/** Iterates over the extended grapheme clusters of a [Utf8String] from the first to the last. */
 public class GraphemeIterator internal constructor(private val bytes: ByteArray) : Iterator<Grapheme> {
     private val classes = GraphemeTables.classes
     private val index = GraphemeTables.index
@@ -13,12 +12,11 @@ public class GraphemeIterator internal constructor(private val bytes: ByteArray)
     private val startStates = GraphemeTables.startStates
     private val asciiGraphemes = AsciiGraphemes.single
 
-    // The offset of the next grapheme.
     private var position = 0
 
-    // When the search for the previous boundary has classified the code point at position, and it is not ASCII: its
-    // length and the row of the automaton state after it; otherwise carriedLength is 0. Two fields, so that the start of
-    // the next code point does not wait for the table lookups that give the state.
+    // The length of the code point at position and the automaton row after it, when the previous search has classified
+    // it and it is not ASCII, else carriedLength is 0. Two fields, so that the start of the next code point does not
+    // wait for the table lookups that give the state.
     private var carriedLength = 0
     private var carriedRow = 0
 
@@ -37,7 +35,6 @@ public class GraphemeIterator internal constructor(private val bytes: ByteArray)
         return Grapheme(bytes, start, end)
     }
 
-    // Moves past the next grapheme and returns its end.
     private fun advance(): Int {
         val start = position
         val carriedLength = carriedLength
@@ -65,7 +62,6 @@ public class GraphemeIterator internal constructor(private val bytes: ByteArray)
         return search(start + length, startStates[graphemeClassAt(bytes, start, length, classes, index)].code)
     }
 
-    // Runs the automaton from the state at row up to the next boundary after from.
     private fun search(from: Int, row: Int): Int {
         var end = from
         var current = row
@@ -92,15 +88,13 @@ public class GraphemeIterator internal constructor(private val bytes: ByteArray)
     }
 }
 
-// The length of the code point at i from its lead byte alone, so that finding the next code point does not wait for
-// the table lookup of this one. Malformed bytes give 1 to 4, never past the end.
+// From the lead byte alone, so that finding the next code point does not wait for the table lookup of this one.
 internal fun utf8LengthAt(bytes: ByteArray, i: Int): Int {
     val lead = bytes[i].toInt() and 0xFF
     val length = if (lead < 0xC0) 1 else if (lead < 0xE0) 2 else if (lead < 0xF0) 3 else 4
     return if (length <= bytes.size - i) length else bytes.size - i
 }
 
-// The grapheme class of the code point of the given length at i, read from its UTF-8 bytes without decoding it.
 // Malformed bytes give some class, with indices that stay within the tables.
 internal fun graphemeClassAt(bytes: ByteArray, i: Int, length: Int, classes: ByteArray, index: CharArray): Int {
     val lead = bytes[i].toInt() and 0xFF
@@ -125,8 +119,6 @@ internal fun graphemeClassAt(bytes: ByteArray, i: Int, length: Int, classes: Byt
     }
 }
 
-// The number of graphemes in bytes. In ASCII every byte is a grapheme except the LF of CR LF. Otherwise the automaton
-// runs in one loop, where its state stays in a local variable: each transition that holds a boundary counts.
 internal fun countGraphemes(bytes: ByteArray, isAscii: Boolean): Int {
     if (isAscii) {
         var count = bytes.size
@@ -150,7 +142,6 @@ internal fun countGraphemes(bytes: ByteArray, isAscii: Boolean): Int {
     return count
 }
 
-// The generated tables, decoded once.
 internal object GraphemeTables {
     val classes: ByteArray = latin1Bytes(GRAPHEME_CLASS_DATA).also { data ->
         for (i in data.indices) data[i] = (data[i] - 'A'.code).toByte()

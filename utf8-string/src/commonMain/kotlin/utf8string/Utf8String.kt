@@ -8,26 +8,20 @@ package utf8string
 import kotlin.concurrent.Volatile
 
 public class Utf8String internal constructor(private val buffer: ByteArray, internal val codePointCount: Int) {
-    // Computed once, since the bytes never change; 0 means not computed yet. Volatile, because two threads may compute
-    // it at once, and on Kotlin/Native a plain read that races with a write is undefined.
+    // Volatile, because on Kotlin/Native a plain read that races with a write is undefined.
     @Volatile
     private var hash: Int = 0
 
-    // The same for the number of graphemes; 0 means not computed yet, or an empty string.
     @Volatile
     private var graphemeCount: Int = 0
 
-    /** The number of bytes of the UTF-8 encoding. */
     public val byteCount: Int
         get() = buffer.size
 
     /** A copy of the UTF-8 bytes. */
     public fun toByteArray(): ByteArray = buffer.copyOf()
 
-    /**
-     * Copies the UTF-8 bytes, or those from [startIndex] until [endIndex], into [destination] at [destinationOffset],
-     * and returns [destination]. The range counts bytes, so it can split a code point.
-     */
+    /** Like [ByteArray.copyInto], for the UTF-8 bytes. The range counts bytes, so it can split a code point. */
     public fun copyInto(
         destination: ByteArray,
         destinationOffset: Int = 0,
@@ -46,7 +40,6 @@ public class Utf8String internal constructor(private val buffer: ByteArray, inte
             return count
         }
 
-    /** Iterates over the extended grapheme clusters: `for (grapheme in string)`. */
     public operator fun iterator(): GraphemeIterator = GraphemeIterator(buffer)
 
     /** The extended grapheme clusters as a sequence, which can be iterated more than once. */
@@ -62,7 +55,6 @@ public class Utf8String internal constructor(private val buffer: ByteArray, inte
         var h = hash
         if (h == 0) {
             h = buffer.contentHashCode()
-            // A content hash of 0 is stored as 1, so that it is not computed again.
             if (h == 0) h = 1
             hash = h
         }
@@ -77,7 +69,6 @@ public class Utf8String internal constructor(private val buffer: ByteArray, inte
             val length = source.length
             var i = 0
             while (i < length && source[i] < '\u0080') i++
-            // An ASCII string is also Latin-1, with the same bytes.
             if (i == length) return Utf8String(latin1Bytes(source), length)
 
             val asciiPrefix = i
@@ -87,7 +78,7 @@ public class Utf8String internal constructor(private val buffer: ByteArray, inte
                 val char = source[i++]
                 // Branch-free: +1 byte from U+0080, +1 more from U+0800.
                 byteCount += ((0x7F - char.code) ushr 31) + ((0x7FF - char.code) ushr 31)
-                // A surrogate pair takes 4 bytes; an unpaired surrogate becomes 3-byte U+FFFD.
+                // A surrogate pair takes 4 bytes, and an unpaired surrogate becomes the 3 bytes of U+FFFD.
                 if (char.isHighSurrogate() && i < length && source[i].isLowSurrogate()) {
                     i++
                     codePointCount--

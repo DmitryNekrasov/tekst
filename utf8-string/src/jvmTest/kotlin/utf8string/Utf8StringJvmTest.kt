@@ -11,7 +11,6 @@ import kotlin.random.Random
 import kotlin.test.Test
 
 class Utf8StringJvmTest {
-    // The JDK encoder with U+FFFD as the replacement is an independent reference for unpaired surrogates.
     private val encoder = Charsets.UTF_8.newEncoder()
         .onMalformedInput(CodingErrorAction.REPLACE)
         .replaceWith(byteArrayOf(0xEF.toByte(), 0xBF.toByte(), 0xBD.toByte()))

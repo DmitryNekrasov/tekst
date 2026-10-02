@@ -33,14 +33,12 @@ val generatedFiles = listOf(
     "commonTest/kotlin/utf8string/EmojiTestData.kt",
 )
 
-// Writes the grapheme tables of utf8-string and their test data from the Unicode files in unicode/.
 tasks.register<JavaExec>("generateUnicodeData") {
     classpath = sourceSets.main.get().runtimeClasspath
     mainClass.set("utf8string.generator.MainKt")
     args(unicodeDir.asFile.absolutePath, librarySourceDir.asFile.absolutePath)
 }
 
-// Fails when a generated file differs from what the Unicode files give, so that the build catches stale or edited data.
 val checkUnicodeData = tasks.register<JavaExec>("checkUnicodeData") {
     val marker = layout.buildDirectory.file("checkUnicodeData/ok")
     inputs.dir(unicodeDir).withPropertyName("unicode").withPathSensitivity(PathSensitivity.RELATIVE)

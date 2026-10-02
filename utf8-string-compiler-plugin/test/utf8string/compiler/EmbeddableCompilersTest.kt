@@ -43,7 +43,6 @@ class EmbeddableCompilersTest {
         assertTrue(problems.isEmpty(), problems.joinToString("\n"))
     }
 
-    // Class names from the constant pool: class entries and every type in descriptors and signatures.
     private fun referencedClasses(classFile: ByteArray): Set<String> {
         val input = DataInputStream(ByteArrayInputStream(classFile))
         input.skipBytes(8) // magic, minor and major version

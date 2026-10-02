@@ -1,7 +1,6 @@
 import utf8string.Utf8String
 import utf8string.u8
 
-// The run-time encoding, which a folded literal must equal.
 fun runtime(value: String): Utf8String = value.u8
 
 fun check(actual: Utf8String, expected: String): String? {
@@ -19,7 +18,6 @@ fun box(): String {
     check("a\nb\t\u0000\\\"".u8, "a\nb\t\u0000\\\"")?.let { return it }
     check("""raw $ "x" \n""".u8, "raw \$ \"x\" \\n")?.let { return it }
     check("${'$'}{not a template}".u8, "\${not a template}")?.let { return it }
-    // An unpaired surrogate is folded too: it becomes U+FFFD.
     val unpaired = "a\uD800".u8
     if (unpaired != runtime("a\uD800")) return "unpaired: differs from the run-time encoding"
     if (unpaired != runtime("a\uFFFD")) return "unpaired: not U+FFFD"

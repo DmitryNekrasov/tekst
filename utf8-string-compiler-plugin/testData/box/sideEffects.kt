@@ -12,7 +12,6 @@ object Holder {
 
 val log = StringBuilder()
 
-// A const val read through a receiver with side effects: the receiver stays in an IrComposite.
 fun holder(tag: String): Holder {
     log.append(tag)
     return Holder
@@ -20,7 +19,6 @@ fun holder(tag: String): Holder {
 
 fun thrower(): Holder = throw IllegalStateException("boom")
 
-// The run-time encoding, which a folded literal must equal.
 fun runtime(value: String): Utf8String = value.u8
 
 fun check(name: String, actual: Utf8String, expected: String, expectedLog: String): String? {

@@ -9,7 +9,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.fail
 
-// Each target decodes the table literals itself, so the table is checked on every target.
 class GraphemeClassTableTest {
     @Test
     fun classOfEveryCodePoint() {

@@ -24,7 +24,7 @@ class Utf8StringCompilerPluginRegistrar : CompilerPluginRegistrar() {
     }
 }
 
-// The plugin has no FIR logic; registering the diagnostics makes their names work in @Suppress and -Xwarning-level.
+// No FIR logic. Registering the diagnostics makes their names work in @Suppress and -Xwarning-level.
 class Utf8StringFirExtensionRegistrar : FirExtensionRegistrar() {
     override fun ExtensionRegistrarContext.configurePlugin() {
         registerDiagnosticContainers(U8Diagnostics)

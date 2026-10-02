@@ -23,7 +23,7 @@ open class AbstractJvmBoxTest : AbstractJvmBlackBoxCodegenTestBase(FirParser.Lig
         super.configure(this)
         defaultDirectives {
             +JvmEnvironmentConfigurationDirectives.FULL_JDK
-            +CodegenTestDirectives.IGNORE_DEXING // Avoids loading R8 from the classpath.
+            +CodegenTestDirectives.IGNORE_DEXING
         }
         configurePlugin()
     }

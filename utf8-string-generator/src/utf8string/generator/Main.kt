@@ -11,8 +11,6 @@ import kotlin.system.exitProcess
 const val UNICODE_VERSION: String = "18.0.0"
 const val CLDR_VERSION: String = "48"
 
-// Usage: <unicode dir> <utf8-string src dir> [--check <marker file>]. Writes the generated files, or with --check
-// compares them with the files on disk and creates the marker file if they match.
 fun main(args: Array<String>) {
     val unicodeDir = File(args[0])
     val sourceDir = File(args[1])
@@ -33,8 +31,7 @@ fun main(args: Array<String>) {
     marker.writeText("")
 }
 
-// The paths of the files that sourceDir lacks or holds with other content. A checkout with CRLF line endings, as
-// core.autocrlf makes on Windows, holds the same files.
+// A checkout with CRLF line endings, as core.autocrlf makes on Windows, holds the same files.
 fun staleFiles(sourceDir: File, files: Map<String, String>): List<String> = files.filter { (path, content) ->
     sourceDir.resolve(path).let { !it.exists() || it.readText().replace("\r\n", "\n") != content }
 }.keys.toList()

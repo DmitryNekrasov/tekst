@@ -13,7 +13,6 @@ import kotlinx.benchmark.State
 import com.ibm.icu.text.BreakIterator as IcuBreakIterator
 import java.text.BreakIterator as JdkBreakIterator
 
-// Counting graphemes with ICU4J and the JDK, on UTF-16 strings, for comparison with GraphemeBenchmark.
 @State(Scope.Benchmark)
 class BreakIteratorBenchmark {
     @Param("ascii", "cyrillic", "cjk", "hangul", "emoji", "indic", "zalgo", "crlf")

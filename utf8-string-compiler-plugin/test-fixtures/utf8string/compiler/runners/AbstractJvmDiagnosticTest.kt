@@ -26,7 +26,7 @@ open class AbstractJvmDiagnosticTest : AbstractFirPhasedDiagnosticTest(FirParser
         defaultDirectives {
             +FirDiagnosticsDirectives.DISABLE_GENERATED_FIR_TAGS
             +JvmEnvironmentConfigurationDirectives.FULL_JDK
-            +CodegenTestDirectives.IGNORE_DEXING // Avoids loading R8 from the classpath.
+            +CodegenTestDirectives.IGNORE_DEXING
         }
         configurePlugin()
     }

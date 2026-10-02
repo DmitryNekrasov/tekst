@@ -40,7 +40,6 @@ class GraphemeConformanceTest {
         }
     }
 
-    // The reference model must pass the same tests, since the random tests trust it.
     @Test
     fun modelPassesTheTests() {
         for (test in parseSegmentationTests(GRAPHEME_BREAK_TEST) + parseSegmentationTests(CLDR_GRAPHEME_TEST)) {
@@ -55,7 +54,6 @@ class GraphemeConformanceTest {
         assertEquals(expected, string.iteratedBoundaries(), test.line)
         assertEquals(expected.size - 1, string.length, test.line)
 
-        // Each grapheme has the bytes, the code points and the text of its part of the string.
         var codePoint = 0
         for (grapheme in string) {
             val end = (codePoint + 1..test.codePoints.size).first { test.boundaries[it] }

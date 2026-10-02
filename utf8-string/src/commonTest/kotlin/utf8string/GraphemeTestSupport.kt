@@ -9,10 +9,8 @@ import kotlin.random.Random
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-// A segmentation test: code points, and whether a cluster boundary is expected before each position from 0 to the end.
 internal class SegmentationTest(val codePoints: IntArray, val boundaries: BooleanArray, val line: String)
 
-// Lines of hex code points with '/' at a boundary and 'x' elsewhere, then '#' and a comment.
 internal fun parseSegmentationTests(text: String): List<SegmentationTest> = text.lines().filter { it.isNotEmpty() }.map { line ->
     val tokens = line.substringBefore('#').trim().split(' ').filter { it.isNotEmpty() }
     SegmentationTest(
@@ -60,14 +58,12 @@ internal fun utf8Bytes(codePoint: Int): ByteArray = when (utf8Length(codePoint))
     )
 }
 
-// The byte offsets of the grapheme boundaries that iteration gives, from 0 to byteCount.
 internal fun Utf8String.iteratedBoundaries(): List<Int> {
     val boundaries = arrayListOf(0)
     for (grapheme in this) boundaries += boundaries.last() + grapheme.byteCount
     return boundaries
 }
 
-// The expected byte offsets of the boundaries of codePoints.
 internal fun byteBoundaries(codePoints: IntArray, boundaries: BooleanArray): List<Int> {
     val result = ArrayList<Int>()
     var offset = 0
@@ -78,8 +74,8 @@ internal fun byteBoundaries(codePoints: IntArray, boundaries: BooleanArray): Lis
     return result
 }
 
-// The rules of UAX #29 applied to the whole text before a position, as the standard states them, with none of the
-// library's automaton, table or fast paths. It classifies code points with the generated class runs.
+// UAX #29 as the standard states it, with none of the library's automaton, table or fast paths.
+// It classifies code points with the generated class runs.
 internal object GraphemeModel {
     private class ClassProperties(val clusterBreak: String, val extendedPictographic: Boolean, val conjunctBreak: String)
 
@@ -102,8 +98,7 @@ internal object GraphemeModel {
         return runClasses[low]
     }
 
-    // Whether a boundary comes before each position from 0 to codePoints.size. With legacyConjuncts, GB9c is the rule of
-    // Unicode 15.1 to 17.0, which also needs a consonant before the linker.
+    // With legacyConjuncts, GB9c is the rule of Unicode 15.1 to 17.0, which also needs a consonant before the linker.
     fun boundaries(codePoints: IntArray, legacyConjuncts: Boolean = false): BooleanArray {
         val text = codePoints.map { classProperties[classOf(it)] }
         return BooleanArray(text.size + 1) { i -> i == 0 || i == text.size || isBoundary(text, i, legacyConjuncts) }
@@ -159,8 +154,7 @@ internal object GraphemeModel {
     }
 }
 
-// Checks our boundaries against an independent implementation. One of Unicode 17.0 (older) may differ only by the
-// GB9c rule of 18.0, and then ours must be the 18.0 answer and its the 17.0 one. Returns whether the two differed.
+// An oracle of Unicode 17.0 (older) may differ only by the GB9c rule of 18.0. Returns whether it differed.
 internal fun checkAgainstOracle(codePoints: IntArray, ours: List<Int>, oracle: BooleanArray, older: Boolean): Boolean {
     if (ours == byteBoundaries(codePoints, oracle)) return false
     val message = codePoints.joinToString(" ") { it.toString(16) }
@@ -171,10 +165,8 @@ internal fun checkAgainstOracle(codePoints: IntArray, ours: List<Int>, oracle: B
     return true
 }
 
-// Random texts whose code points are spread evenly over the grapheme classes, so that every rule meets every class.
-// The excluded code points never occur, and a class that has no other code points neither.
+// Code points spread evenly over the grapheme classes, so that every rule meets every class.
 internal class GraphemeCorpus(excluded: List<IntRange> = emptyList()) {
-    // For each class, the ranges of its code points, without surrogates and the excluded ones: start, end, start, end...
     private val ranges: List<IntArray> = List(GraphemeModel.classCount) { cls ->
         val bounds = ArrayList<Int>()
         val starts = GraphemeModel.runStarts
@@ -198,8 +190,7 @@ internal class GraphemeCorpus(excluded: List<IntRange> = emptyList()) {
         return random.nextInt(bounds[2 * range], bounds[2 * range + 1] + 1)
     }
 
-    // Up to 16 code points, from all classes or from a few, which gives long runs such as RI RI RI or linker chains;
-    // or ASCII mixed with the few code points that join it or end a line.
+    // A few classes give long runs such as RI RI RI or linker chains. ASCII with its neighbors covers the fast paths.
     fun text(random: Random): IntArray {
         val length = random.nextInt(1, 17)
         return when (random.nextInt(3)) {
@@ -216,13 +207,12 @@ internal class GraphemeCorpus(excluded: List<IntRange> = emptyList()) {
     }
 
     private companion object {
-        // Combining diaeresis, ZWJ, a spacing mark, a prepend, a virama, CR, LF, a C1 control, soft hyphen, (c).
         val ASCII_NEIGHBORS = intArrayOf(0x0308, 0x200D, 0x0903, 0x0600, 0x094D, 0x0D, 0x0A, 0x85, 0xAD, 0xA9)
     }
 }
 
-// The code points whose Grapheme_Cluster_Break, Extended_Pictographic or Indic_Conjunct_Break differ between Unicode
-// 17.0 and 18.0, computed from the UCD files of both versions. An oracle that implements 17.0 must not see them.
+// The code points whose class properties differ between the UCD files of Unicode 17.0 and 18.0, which an oracle of 17.0
+// must not see.
 internal val CHANGED_SINCE_UNICODE_17: List<IntRange> = listOf(
     0x05C8..0x05C9, 0x0B53..0x0B54, 0x1ADE..0x1ADF, 0x1AEC..0x1AF0, 0x1CF5..0x1CF6, 0x10ECB..0x10ECF, 0x10EF0..0x10EF9,
     0x11A3A..0x11A3A, 0x11B0A..0x11B0A, 0x11DF0..0x11DF1, 0x1D127..0x1D128, 0x1D250..0x1D252, 0x1D25B..0x1D25C,

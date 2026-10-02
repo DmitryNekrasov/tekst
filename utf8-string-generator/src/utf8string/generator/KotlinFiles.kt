@@ -5,12 +5,11 @@
 
 package utf8string.generator
 
-// A string constant must fit the 65,535 bytes of modified UTF-8 that the JVM gives a constant; longer data is split.
+// A JVM string constant holds 65,535 bytes of modified UTF-8.
 private const val MAX_CONSTANT_BYTES = 65_535
 private const val MAX_CHUNK_CHARS = 60_000
 private const val MAX_LINE_CHARS = 100
 
-// A generated Kotlin file in package utf8string. Every char outside printable ASCII is escaped.
 class KotlinFile(sources: List<String>) {
     private val text = StringBuilder()
 
@@ -32,7 +31,6 @@ class KotlinFile(sources: List<String>) {
         text.appendLine("internal const val $name: Int = $value")
     }
 
-    // With lines, value is text whose lines each get a line of source; otherwise the source is split anywhere.
     fun stringConstant(comment: String, name: String, value: String, visibility: String = "internal", lines: Boolean = false) {
         comment(comment)
         check(modifiedUtf8Length(value) <= MAX_CONSTANT_BYTES) { "$name is too long for one constant" }
@@ -53,7 +51,6 @@ class KotlinFile(sources: List<String>) {
         }
     }
 
-    // Lines of text, as one constant or, above the constant size, as a list of constants.
     fun linesConstant(comment: String, name: String, lines: List<String>) {
         val chunks = ArrayList<List<String>>()
         var chunk = ArrayList<String>()
@@ -89,7 +86,6 @@ private fun escape(value: String): String = buildString {
     }
 }
 
-// Splits escaped text into source lines without cutting an escape.
 private fun String.chunkedEscapes(): List<String> {
     val lines = ArrayList<String>()
     var start = 0

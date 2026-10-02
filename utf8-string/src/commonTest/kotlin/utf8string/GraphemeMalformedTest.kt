@@ -10,8 +10,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-// Only the internal constructor can make a Utf8String of malformed UTF-8. Its graphemes are unspecified, but iteration
-// must end, stay within the bytes and put every byte into exactly one grapheme.
 class GraphemeMalformedTest {
     @Test
     fun malformedSequences() {
@@ -46,7 +44,6 @@ class GraphemeMalformedTest {
         for (grapheme in string) {
             assertTrue(grapheme.byteCount > 0, message)
             grapheme.toString()
-            // Each grapheme holds the next bytes of the string.
             val slice = bytes.copyOfRange(byteCount, byteCount + grapheme.byteCount)
             assertUtf8Equals(Utf8String(slice, slice.count { it.toInt() and 0xC0 != 0x80 }), grapheme.toUtf8String(), message)
             byteCount += grapheme.byteCount

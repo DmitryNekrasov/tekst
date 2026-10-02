@@ -27,5 +27,4 @@ open class AbstractJsBoxTest(testDir: String = "box") : AbstractJsTest(
     }
 }
 
-// JS-only tests, such as IR dumps, which differ from the JVM ones.
 open class AbstractJsOnlyBoxTest : AbstractJsBoxTest("js")

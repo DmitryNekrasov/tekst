@@ -11,7 +11,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
-// The number of random texts per test: more on the JVM, where the tests run fastest.
 internal expect val RANDOM_TEXT_COUNT: Int
 
 class GraphemeModelTest {
@@ -29,15 +28,12 @@ class GraphemeModelTest {
         }
     }
 
-    // The oracle tests accept a difference only as the GB9c change of Unicode 18.0, never as an error of ours.
     @Test
     fun oracleCheckAcceptsOnlyTheNewConjunctRule() {
-        // a, virama, ta: one grapheme in 18.0, a break before ta in 17.0.
         val conjunct = intArrayOf(0x61, 0x094D, 0x0924)
         val unicode17 = booleanArrayOf(true, false, true, true)
         assertTrue(checkAgainstOracle(conjunct, listOf(0, 7), unicode17, older = true))
         assertFailsWith<AssertionError> { checkAgainstOracle(conjunct, listOf(0, 7), unicode17, older = false) }
-        // "ab" as one grapheme is an error of ours, whatever the oracle's version.
         assertFailsWith<AssertionError> {
             checkAgainstOracle(intArrayOf(0x61, 0x62), listOf(0, 2), booleanArrayOf(true, true, true), older = true)
         }

@@ -11,7 +11,6 @@ plugins {
 kotlin {
     explicitApi()
 
-    // The public API must match the dumps in api/, which ./gradlew :utf8-string:updateKotlinAbi writes.
     @OptIn(ExperimentalAbiValidation::class)
     abiValidation()
 
@@ -45,31 +44,24 @@ kotlin {
         nodejs()
     }
 
-    // Native - Linux
     linuxX64()
     linuxArm64()
 
-    // Native - macOS
     macosArm64()
 
-    // Native - Windows
     mingwX64()
 
-    // Native - iOS
     iosArm64()
     iosX64()
     iosSimulatorArm64()
 
-    // Native - watchOS
     watchosArm32()
     watchosArm64()
     watchosSimulatorArm64()
 
-    // Native - tvOS
     tvosArm64()
     tvosSimulatorArm64()
 
-    // nonJvmMain: the latin1Bytes loop for every target except the JVM.
     @OptIn(ExperimentalKotlinGradlePluginApi::class)
     applyDefaultHierarchyTemplate {
         common {
@@ -92,7 +84,6 @@ kotlin {
     }
 }
 
-// The JVM tests check the generated grapheme tables against the Unicode files themselves.
 tasks.named<Test>("jvmTest") {
     val unicodeDir = rootProject.layout.projectDirectory.dir("unicode")
     inputs.dir(unicodeDir).withPropertyName("unicode").withPathSensitivity(PathSensitivity.RELATIVE)

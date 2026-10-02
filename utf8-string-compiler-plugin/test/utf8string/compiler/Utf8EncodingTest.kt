@@ -13,7 +13,6 @@ import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 
 class Utf8EncodingTest {
-    // The JDK encoder with U+FFFD as the replacement, the same reference the library's own JVM test uses.
     private val encoder = Charsets.UTF_8.newEncoder()
         .onMalformedInput(CodingErrorAction.REPLACE)
         .replaceWith(byteArrayOf(0xEF.toByte(), 0xBF.toByte(), 0xBD.toByte()))

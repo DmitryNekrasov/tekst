@@ -9,7 +9,6 @@ import java.io.File
 
 const val CODE_POINT_LIMIT: Int = 0x110000
 
-// The three properties that the extended grapheme cluster rules of UAX #29 use, for every code point.
 class GraphemeProperties(
     val clusterBreak: Array<String>,
     val extendedPictographic: BooleanArray,
@@ -32,7 +31,6 @@ fun readGraphemeProperties(ucd: File, version: String): GraphemeProperties {
     return GraphemeProperties(clusterBreak, extendedPictographic, conjunctBreak)
 }
 
-// Calls action with the code point range and the fields of each data line. The header must have the line versionLine.
 private fun readDataFile(file: File, versionLine: String, action: (IntRange, List<String>) -> Unit) {
     val lines = file.readLines()
     require(lines.take(20).any { it.trim() == versionLine }) { "$file has no \"$versionLine\" line in its header" }
@@ -45,11 +43,8 @@ private fun readDataFile(file: File, versionLine: String, action: (IntRange, Lis
     }
 }
 
-// A segmentation test: code points, and for each position from before the first code point to after the last one,
-// whether a cluster boundary is expected there.
 class SegmentationTest(val codePoints: List<Int>, val boundaries: List<Boolean>, val comment: String)
 
-// GraphemeBreakTest.txt. The comment of a test lists the numbers of the rules that decide each position.
 fun readBreakTest(file: File, version: String): List<SegmentationTest> {
     val lines = file.readLines()
     require(lines.first() == "# GraphemeBreakTest-$version.txt") { "$file is not the $version test" }
@@ -62,7 +57,6 @@ fun readBreakTest(file: File, version: String): List<SegmentationTest> {
     }
 }
 
-// Tokens alternate between a marker (U+00F7 for a boundary, U+00D7 for none) and a code point in hex.
 private fun parseMarkedCodePoints(tokens: List<String>, line: String): SegmentationTest {
     require(tokens.size % 2 == 1) { "Unexpected format: $line" }
     val boundaries = tokens.filterIndexed { i, _ -> i % 2 == 0 }.map {
@@ -76,8 +70,6 @@ private fun parseMarkedCodePoints(tokens: List<String>, line: String): Segmentat
     return SegmentationTest(codePoints, boundaries, "")
 }
 
-// The emoji sequences of emoji-test.txt, each with its status (fully-qualified, minimally-qualified, unqualified or
-// component).
 class EmojiSequence(val codePoints: List<Int>, val status: String)
 
 fun readEmojiTest(file: File, version: String): List<EmojiSequence> {
@@ -90,11 +82,9 @@ fun readEmojiTest(file: File, version: String): List<EmojiSequence> {
     }
 }
 
-// The CLDR TestSegmenter-<script>.txt files: a word, ';', and the word with U+00F7 at each cluster boundary.
 fun readCldrTests(dir: File): List<SegmentationTest> =
     dir.listFiles { file -> file.name.startsWith("TestSegmenter-") }!!.sortedBy { it.name }.flatMap { file ->
         val script = file.name.removePrefix("TestSegmenter-").removeSuffix(".txt")
-        // Some files start with a byte order mark, and '#' comments out a word.
         file.readLines().map { it.removePrefix("\uFEFF") }.filter { it.isNotBlank() && !it.startsWith("#") }.map { line ->
             val (word, marked) = line.split(';').map { it.trim() }
             val parts = marked.split('\u00F7').filter { it.isNotEmpty() }

@@ -36,7 +36,6 @@ private class PluginRegistrarConfigurator(testServices: TestServices) : Environm
     }
 }
 
-// Puts the utf8-string library on the compile classpath.
 private class Utf8StringRuntimeConfigurator(testServices: TestServices) : EnvironmentConfigurator(testServices) {
     override fun configureCompilerConfiguration(configuration: CompilerConfiguration, module: TestModule) {
         val platform = module.targetPlatform(testServices)

@@ -6,11 +6,8 @@
 package utf8string
 
 /**
- * An extended grapheme cluster of a [Utf8String] (UAX #29): what a user perceives as one character, such as a letter
- * with its combining marks, a flag, or an emoji ZWJ sequence.
- *
- * Graphemes are equal when their UTF-8 bytes are equal. A grapheme reads the bytes of the string it comes from, so it
- * keeps them in memory; [toUtf8String] copies it.
+ * An extended grapheme cluster of a [Utf8String] (UAX #29), what a user sees as one character. Graphemes with the same
+ * UTF-8 bytes are equal. A grapheme keeps the bytes of its string in memory, and [toUtf8String] copies it.
  */
 public class Grapheme internal constructor(
     private val bytes: ByteArray,
@@ -29,7 +26,7 @@ public class Grapheme internal constructor(
 
     public fun toUtf8String(): Utf8String = Utf8String(bytes.copyOfRange(start, end), codePointCount)
 
-    // No identity check first: comparing with this in a loop would keep the JIT from removing the allocation.
+    // No identity check, since comparing with this in a loop keeps the JIT from removing the allocation.
     override fun equals(other: Any?): Boolean {
         if (other !is Grapheme) return false
         val size = end - start
@@ -47,7 +44,6 @@ public class Grapheme internal constructor(
     override fun toString(): String = bytes.decodeToString(start, end)
 }
 
-// The graphemes of one ASCII char and of CR LF, shared by all strings, so that ASCII text iterates without allocation.
 internal object AsciiGraphemes {
     private val bytes = ByteArray(130) { if (it < 128) it.toByte() else if (it == 128) 0x0D else 0x0A }
     val single: Array<Grapheme> = Array(128) { Grapheme(bytes, it, it + 1) }

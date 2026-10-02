@@ -1,6 +1,6 @@
 // RUN_PIPELINE_TILL: BACKEND
 // LANGUAGE: +MultiPlatformProjects
-// Every receiver form that the plugin folds. None has a marker, so a U8_NOT_CONSTANT here is a missed rewrite.
+// A U8_NOT_CONSTANT on any of these is a missed rewrite.
 
 // MODULE: lib
 // FILE: lib.kt

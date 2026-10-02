@@ -89,7 +89,7 @@ private fun foldCall(call: IrCall, sideEffects: MutableList<IrStatement>): Strin
         TRIM_MARGIN -> {
             val receiver = call.arguments[0]?.let { fold(it, sideEffects) } ?: return null
             val marginPrefix = call.arguments[1]?.let { fold(it, sideEffects) ?: return null } ?: "|"
-            // trimMargin throws for a blank prefix; leave that to run time.
+            // trimMargin throws for a blank prefix, so that stays at run time.
             if (marginPrefix.isBlank()) null else receiver.trimMargin(marginPrefix)
         }
         else -> null

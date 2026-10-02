@@ -9,8 +9,7 @@ import java.io.ByteArrayOutputStream
 
 class Utf8Literal(val bytes: ByteArray, val codePointCount: Int, val hasUnpairedSurrogate: Boolean)
 
-// The same encoding as Utf8String.fromString. The compiler's own String.toByteArray(UTF_8) writes '?' for an unpaired
-// surrogate, while the library writes U+FFFD.
+// The compiler's String.toByteArray(UTF_8) writes '?' for an unpaired surrogate, while the library writes U+FFFD.
 fun encodeUtf8(source: String): Utf8Literal {
     val bytes = ByteArrayOutputStream(source.length)
     var codePointCount = 0
@@ -49,5 +48,4 @@ fun encodeUtf8(source: String): Utf8Literal {
     return Utf8Literal(bytes.toByteArray(), codePointCount, hasUnpairedSurrogate)
 }
 
-// Each char is one byte, below U+0100.
 fun latin1String(bytes: ByteArray): String = String(CharArray(bytes.size) { (bytes[it].toInt() and 0xFF).toChar() })

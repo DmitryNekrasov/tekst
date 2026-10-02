@@ -7,12 +7,10 @@ package utf8string.generator
 
 import kotlin.random.Random
 
-// The minimized automaton of the rules. For state s and class c, transitions[s * classCount + c] is the next state, or
-// BOUNDARY plus the start state of c when a cluster boundary comes before c.
+// transitions[s * classCount + c] is the next state, or BOUNDARY + the start state of c when c starts a cluster.
 class BreakAutomaton(val stateCount: Int, val startStates: IntArray, val transitions: IntArray) {
     val classCount: Int get() = startStates.size
 
-    // Whether a boundary comes before each position of classes, from 0 to classes.size.
     fun boundaries(classes: List<Int>): List<Boolean> {
         if (classes.isEmpty()) return listOf(true)
         val result = arrayListOf(true)
@@ -33,7 +31,6 @@ class BreakAutomaton(val stateCount: Int, val startStates: IntArray, val transit
 
 fun buildBreakAutomaton(): BreakAutomaton {
     val classes = GraphemeClass.entries
-    // The reachable states, in the order in which a search from the start states finds them.
     val states = ArrayList<RuleState>()
     val ids = HashMap<RuleState, Int>()
     fun id(state: RuleState): Int = ids.getOrPut(state) { states += state; states.size - 1 }
@@ -76,8 +73,7 @@ fun buildBreakAutomaton(): BreakAutomaton {
     return BreakAutomaton(numbers.size, startStates, transitions)
 }
 
-// Checks that the automaton, which forgets everything before the current cluster, finds the same boundaries as the rules
-// read from the whole text: for every sequence of up to five classes and for long random ones.
+// The automaton forgets everything before the current cluster, so check it against the rules read from the whole text.
 fun verifyAutomaton(automaton: BreakAutomaton) {
     val classes = GraphemeClass.entries
     fun verify(text: List<GraphemeClass>) {
@@ -97,9 +93,7 @@ fun verifyAutomaton(automaton: BreakAutomaton) {
     }
 }
 
-// GraphemeIterator.advance decides a grapheme that starts with ASCII without the tables. That is right only while
-// printable ASCII is Other, no code point below U+0300 (a lead byte below 0xCC) joins it, and an ASCII control is a
-// grapheme by itself, except CR LF.
+// The conditions that the ASCII fast paths of GraphemeIterator.advance rely on.
 fun verifyAsciiFastPaths(classes: IntArray, automaton: BreakAutomaton) {
     fun joins(first: Int, nextClass: Int): Boolean {
         val transition = automaton.transitions[automaton.startStates[classes[first]] * automaton.classCount + nextClass]

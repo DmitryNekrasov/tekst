@@ -29,7 +29,6 @@ class GraphemeBenchmark {
         string = source.u8
     }
 
-    // The graphemes do not escape, so a JIT may remove their allocation.
     @Benchmark
     fun iterate(): Int {
         var count = 0
@@ -37,7 +36,6 @@ class GraphemeBenchmark {
         return count
     }
 
-    // The graphemes escape into a list, as when code keeps them.
     @Benchmark
     fun iterateAndKeep(): Int {
         kept.clear()
@@ -45,7 +43,6 @@ class GraphemeBenchmark {
         return kept.size
     }
 
-    // A new string does not have its length cached; encode gives the cost of making it.
     @Benchmark
     fun lengthOfNewString(): Int = source.u8.length
 

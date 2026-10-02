@@ -41,12 +41,10 @@ idea {
 
 val testArtifacts: Configuration = configurations.create("testArtifact")
 
-// Gradle runs the plugin in these shaded compilers, not in the kotlin-compiler it is compiled against.
 val embeddableCompilers: Configuration = configurations.create("embeddableCompilers") {
     isTransitive = false
 }
 
-// The utf8-string library, which the generated code calls: its JVM jar and its JS klib.
 val utf8StringRuntimeClasspath = configurations.dependencyScope("utf8StringRuntimeClasspath") {
     isTransitive = false
 }
@@ -74,7 +72,6 @@ dependencies {
     embeddableCompilers(libs.kotlin.compiler.embeddable)
     embeddableCompilers(libs.kotlin.native.compiler.embeddable)
 
-    // Dependencies required to run the internal test framework.
     testArtifacts(libs.kotlin.stdlib)
     testArtifacts(libs.kotlin.stdlib.jdk8)
     testArtifacts(libs.kotlin.reflect)
@@ -111,7 +108,7 @@ java {
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
-// The test fixtures only serve this module's tests.
+// Not published, since they only serve this module's tests.
 (components["java"] as AdhocComponentWithVariants).apply {
     withVariantsFromConfiguration(configurations["testFixturesApiElements"]) { skip() }
     withVariantsFromConfiguration(configurations["testFixturesRuntimeElements"]) { skip() }
@@ -130,8 +127,7 @@ tasks.test {
 
     useJUnitPlatform()
     workingDir = rootDir
-    // The test framework runs up to 16 tests at once, and each JS box test compiles a whole program with the stdlib,
-    // so the default 512 MB heap runs out on a machine with many cores.
+    // The test framework runs up to 16 tests at once, and each JS box test compiles a whole program with the stdlib.
     maxHeapSize = "2g"
 
     // The tests compile against the library and run it, so it is an input, not only a dependency.
@@ -148,7 +144,6 @@ tasks.test {
     systemProperty("embeddableCompilers", embeddableCompilers.asPath)
     systemProperty("pluginClassesDirs", sourceSets.main.get().output.classesDirs.asPath)
 
-    // Properties required to run the internal test framework.
     setLibraryProperty("org.jetbrains.kotlin.test.kotlin-stdlib", "kotlin-stdlib")
     setLibraryProperty("org.jetbrains.kotlin.test.kotlin-stdlib-jdk8", "kotlin-stdlib-jdk8")
     setLibraryProperty("org.jetbrains.kotlin.test.kotlin-reflect", "kotlin-reflect")
@@ -159,7 +154,6 @@ tasks.test {
     systemProperty("idea.ignore.disabled.plugins", "true")
     systemProperty("idea.home.path", rootDir)
 
-    // Properties required to run JS tests from the internal test framework.
     val d8EnvSpec = project.the<D8EnvSpec>()
     with(d8EnvSpec) { dependsOn(project.d8SetupTaskProvider) }
 

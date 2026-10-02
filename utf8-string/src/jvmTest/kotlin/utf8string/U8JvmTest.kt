@@ -11,7 +11,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class U8JvmTest {
-    // Classes compiled with the plugin call the entry points as static methods of utf8string.U8Kt.
     @Test
     fun entryPointsStayInU8Kt() {
         val u8Kt = Class.forName("utf8string.U8Kt")

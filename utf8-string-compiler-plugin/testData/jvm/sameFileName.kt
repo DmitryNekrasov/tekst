@@ -1,5 +1,3 @@
-// Two files with one name in one package, which @JvmName tells apart, and the parts of a multifile class: each file
-// keeps its own literals.
 // FILE: left/Part.kt
 @file:JvmName("LeftPart")
 package repro

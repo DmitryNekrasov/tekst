@@ -65,7 +65,6 @@ class Utf8StringTest {
         }
     }
 
-    // Every other test compares through equals, so it must tell apart the bytes and the code point count.
     @Test
     fun equalsComparesBytesAndCodePointCount() {
         val ab = Utf8String(byteArrayOf(0x61, 0x62), 2)
@@ -79,7 +78,6 @@ class Utf8StringTest {
 
     @Test
     fun zeroContentHashIsStoredAsNonZero() {
-        // The content hash of these bytes is 0, which the cache reserves for a hash that is not computed yet.
         assertEquals(0, byteArrayOf(-31).contentHashCode())
         val zero = Utf8String(byteArrayOf(-31), 1)
         assertNotEquals(0, zero.hashCode())
@@ -91,7 +89,6 @@ class Utf8StringTest {
     fun toStringDecodesTheBytes() {
         val sources = listOf("", "ascii", "\u041F\u0440\u0438\u0432\u0435\u0442", "a\u20AC\uD83D\uDE00", "e\u0301\r\n")
         for (source in sources) assertEquals(source, Utf8String.fromString(source).toString())
-        // An unpaired surrogate was encoded as U+FFFD.
         assertEquals("a\uFFFDb", Utf8String.fromString("a\uD800b").toString())
     }
 
@@ -110,15 +107,12 @@ class Utf8StringTest {
         val destination = ByteArray(6)
         assertSame(destination, string.copyInto(destination))
         assertEquals("61 E2 82 AC 00 00", destination.toHex())
-        // A range counts bytes, so it can split a code point.
         string.copyInto(destination, destinationOffset = 4, startIndex = 1, endIndex = 3)
         assertEquals("61 E2 82 AC E2 82", destination.toHex())
         assertFailsWith<IndexOutOfBoundsException> { string.copyInto(ByteArray(3)) }
-        // Each default is independent: a start index alone copies the rest.
         val tail = ByteArray(3)
         string.copyInto(tail, startIndex = 1)
         assertEquals("E2 82 AC", tail.toHex())
-        // An empty string copies nothing, even into an empty array.
         val empty = ByteArray(0)
         assertSame(empty, Utf8String.fromString("").copyInto(empty))
     }
@@ -130,10 +124,8 @@ class Utf8StringTest {
         assertContentEquals(expected, actual.toByteArray(), expectedHex)
     }
 
-    // Well-formed strings only: the stdlib replaces unpaired surrogates differently on the JVM.
     private fun assertMatchesStdlib(source: String) {
         val bytes = source.encodeToByteArray()
-        // Each code point has exactly one byte that is not a continuation byte (10xxxxxx).
         val expected = Utf8String(bytes, bytes.count { it.toInt() and 0xC0 != 0x80 })
         val actual = Utf8String.fromString(source)
         assertUtf8Equals(expected, actual, bytes.toHex())

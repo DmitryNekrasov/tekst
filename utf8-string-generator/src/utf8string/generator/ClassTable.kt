@@ -7,13 +7,10 @@ package utf8string.generator
 
 const val BLOCK_SIZE: Int = 64
 
-// The code points that the index covers: planes 0 and 1, and U+E0000..U+E0FFF (tags and variation selectors). Every
-// other code point must be Other. A block is indexed by cp shr 6 below U+20000, and by 2048 + ((cp shr 6) and 0x3F) in
-// U+E0000..U+E0FFF, which is what the UTF-8 bytes of the code point give without decoding it.
+// Planes 0 and 1, and U+E0000..U+E0FFF (tags and variation selectors). Every other code point must be Other.
 val INDEXED_BLOCKS: List<Int> = (0..<0x20000 step BLOCK_SIZE) + (0xE0000..<0xE1000 step BLOCK_SIZE)
 
-// The class of each code point in 64-entry blocks: the block of the code point starts at data[index[...]]. Blocks
-// overlap in data where the end of one equals the start of another.
+// data[index[block] + offset] is the class. Blocks overlap in data where the end of one equals the start of another.
 class ClassTable(val index: IntArray, val data: IntArray)
 
 fun buildClassTable(classes: IntArray): ClassTable {
@@ -43,8 +40,7 @@ fun buildClassTable(classes: IntArray): ClassTable {
     return table
 }
 
-// The greedy shortest-superstring heuristic: join the pairs of blocks with the largest overlap first, never giving a
-// block two successors or two predecessors and never closing a cycle. Ties go to the lower block numbers.
+// The greedy shortest-superstring heuristic, joining the pairs with the largest overlap first.
 private fun chainByOverlap(blocks: List<List<Int>>): List<List<Int>> {
     val pairs = ArrayList<Triple<Int, Int, Int>>()
     for (a in blocks.indices) for (b in blocks.indices) {
@@ -68,7 +64,6 @@ private fun chainByOverlap(blocks: List<List<Int>>): List<List<Int>> {
     return blocks.indices.filter { previous[it] == -1 }.map { head -> generateSequence(head) { next[it].takeIf { n -> n != -1 } }.toList() }
 }
 
-// The length of the longest proper suffix of a that is a prefix of b.
 private fun overlap(a: List<Int>, b: List<Int>): Int {
     for (length in BLOCK_SIZE - 1 downTo 1) {
         if ((0..<length).all { a[BLOCK_SIZE - length + it] == b[it] }) return length
