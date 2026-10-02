@@ -42,6 +42,15 @@ class GraphemeIteratorTest {
     }
 
     @Test
+    fun graphemesCanBeIteratedMoreThanOnce() {
+        val graphemes = "Hi \uD83D\uDC4B\uD83C\uDFFD!".u8.graphemes
+        val expected = listOf("H", "i", " ", "\uD83D\uDC4B\uD83C\uDFFD", "!")
+        assertEquals(expected, graphemes.map { it.toString() }.toList())
+        assertEquals(expected, graphemes.map { it.toString() }.toList())
+        assertEquals("Hi \uD83D\uDC4B\uD83C\uDFFD", graphemes.take(4).joinToString(""))
+    }
+
+    @Test
     fun iteratorsAreIndependent() {
         val string = "\u0915\u094D\u0937a\uD83C\uDDEA\uD83C\uDDF8".u8
         val first = string.iterator()

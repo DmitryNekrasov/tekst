@@ -49,6 +49,10 @@ public class Utf8String internal constructor(private val buffer: ByteArray, inte
     /** Iterates over the extended grapheme clusters: `for (grapheme in string)`. */
     public operator fun iterator(): GraphemeIterator = GraphemeIterator(buffer)
 
+    /** The extended grapheme clusters as a sequence, which can be iterated more than once. */
+    public val graphemes: Sequence<Grapheme>
+        get() = Sequence { iterator() }
+
     override fun equals(other: Any?): Boolean {
         return this === other ||
                 other is Utf8String && codePointCount == other.codePointCount && buffer.contentEquals(other.buffer)

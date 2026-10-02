@@ -24,6 +24,7 @@ public final class utf8string/Utf8String {
 	public static synthetic fun copyInto$default (Lutf8string/Utf8String;[BIIIILjava/lang/Object;)[B
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getByteCount ()I
+	public final fun getGraphemes ()Lkotlin/sequences/Sequence;
 	public final fun getLength ()I
 	public fun hashCode ()I
 	public final fun iterator ()Lutf8string/GraphemeIterator;

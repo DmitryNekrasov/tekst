@@ -21,6 +21,8 @@ final class utf8string/GraphemeIterator : kotlin.collections/Iterator<utf8string
 final class utf8string/Utf8String { // utf8string/Utf8String|null[0]
     final val byteCount // utf8string/Utf8String.byteCount|{}byteCount[0]
         final fun <get-byteCount>(): kotlin/Int // utf8string/Utf8String.byteCount.<get-byteCount>|<get-byteCount>(){}[0]
+    final val graphemes // utf8string/Utf8String.graphemes|{}graphemes[0]
+        final fun <get-graphemes>(): kotlin.sequences/Sequence<utf8string/Grapheme> // utf8string/Utf8String.graphemes.<get-graphemes>|<get-graphemes>(){}[0]
     final val length // utf8string/Utf8String.length|{}length[0]
         final fun <get-length>(): kotlin/Int // utf8string/Utf8String.length.<get-length>|<get-length>(){}[0]
 
