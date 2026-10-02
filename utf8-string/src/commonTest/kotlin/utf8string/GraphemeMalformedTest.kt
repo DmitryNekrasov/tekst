@@ -10,6 +10,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
+// The graphemes of malformed UTF-8 are unspecified. The tests check only that every byte is in exactly one grapheme.
 class GraphemeMalformedTest {
     @Test
     fun malformedSequences() {

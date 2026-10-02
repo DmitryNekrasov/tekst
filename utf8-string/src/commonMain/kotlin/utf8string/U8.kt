@@ -6,8 +6,9 @@
 package utf8string
 
 /**
- * The UTF-8 encoding of this string. The utf8-string compiler plugin encodes a constant string at compile time,
- * and gives the `U8_NOT_CONSTANT` warning for any other string.
+ * The UTF-8 encoding of this string. The utf8-string compiler plugin encodes `.u8` on a constant string at compile
+ * time, and gives the `U8_NOT_CONSTANT` warning for `.u8` on any other string. A call through a reference such as
+ * `String::u8` encodes at run time, with no warning.
  */
 public val String.u8: Utf8String
     get() = Utf8String.fromString(this)
