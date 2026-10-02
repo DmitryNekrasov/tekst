@@ -7,6 +7,10 @@ package utf8string
 
 import kotlin.concurrent.Volatile
 
+/**
+ * An immutable string stored as UTF-8 bytes. Its [length] counts graphemes, what a user sees as one character, and
+ * `for` iterates over them. [u8] and [toUtf8String] make one from a [String], and nothing makes one from bytes.
+ */
 public class Utf8String internal constructor(private val buffer: ByteArray, internal val codePointCount: Int) {
     // Volatile, because on Kotlin/Native a plain read that races with a write is undefined.
     @Volatile
@@ -15,6 +19,7 @@ public class Utf8String internal constructor(private val buffer: ByteArray, inte
     @Volatile
     private var graphemeCount: Int = 0
 
+    /** The number of UTF-8 bytes. */
     public val byteCount: Int
         get() = buffer.size
 
@@ -29,7 +34,7 @@ public class Utf8String internal constructor(private val buffer: ByteArray, inte
         endIndex: Int = byteCount,
     ): ByteArray = buffer.copyInto(destination, destinationOffset, startIndex, endIndex)
 
-    /** The number of extended grapheme clusters, computed on the first access. [String.length] counts UTF-16 chars. */
+    /** The number of graphemes, computed on the first access. [String.length] counts UTF-16 chars. */
     public val length: Int
         get() {
             var count = graphemeCount
@@ -40,17 +45,20 @@ public class Utf8String internal constructor(private val buffer: ByteArray, inte
             return count
         }
 
+    /** An iterator over the graphemes, which a `for` loop over the string uses. */
     public operator fun iterator(): GraphemeIterator = GraphemeIterator(buffer)
 
-    /** The extended grapheme clusters as a sequence, which can be iterated more than once. */
+    /** The graphemes as a sequence, which can be iterated more than once. */
     public val graphemes: Sequence<Grapheme>
         get() = Sequence { iterator() }
 
+    /** True when [other] is a [Utf8String] with the same UTF-8 bytes, without Unicode normalization. */
     override fun equals(other: Any?): Boolean {
         return this === other ||
                 other is Utf8String && codePointCount == other.codePointCount && buffer.contentEquals(other.buffer)
     }
 
+    /** A hash of the UTF-8 bytes, computed on the first call. */
     override fun hashCode(): Int {
         var h = hash
         if (h == 0) {

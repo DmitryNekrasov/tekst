@@ -6,8 +6,8 @@
 package utf8string
 
 /**
- * An extended grapheme cluster of a [Utf8String] (UAX #29), what a user sees as one character. Graphemes with the same
- * UTF-8 bytes are equal. A grapheme keeps the bytes of its string in memory, and [toUtf8String] copies it.
+ * An extended grapheme cluster of a [Utf8String] (UAX #29), what a user sees as one character. A grapheme does not
+ * copy its bytes, so it can keep all the bytes of its string in memory.
  */
 public class Grapheme internal constructor(
     private val bytes: ByteArray,
@@ -24,10 +24,12 @@ public class Grapheme internal constructor(
             return count
         }
 
+    /** A [Utf8String] of this grapheme, with its own copy of the bytes. */
     public fun toUtf8String(): Utf8String = Utf8String(bytes.copyOfRange(start, end), codePointCount)
 
-    // No identity check, since comparing with this in a loop keeps the JIT from removing the allocation.
+    /** True when [other] is a [Grapheme] with the same UTF-8 bytes, without Unicode normalization. */
     override fun equals(other: Any?): Boolean {
+        // No identity check, since comparing with this in a loop keeps the JIT from removing the allocation.
         if (other !is Grapheme) return false
         val size = end - start
         if (size != other.end - other.start) return false
@@ -41,6 +43,7 @@ public class Grapheme internal constructor(
         return hash
     }
 
+    /** Decodes the UTF-8 bytes into a [String], again on each call. */
     override fun toString(): String = bytes.decodeToString(start, end)
 }
 

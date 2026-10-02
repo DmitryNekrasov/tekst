@@ -5,6 +5,10 @@
 
 package utf8string
 
+/**
+ * An iterator over the graphemes of a [Utf8String]. For one ASCII char or CR LF, [next] returns a shared object, and
+ * for any other grapheme it allocates one small object.
+ */
 public class GraphemeIterator internal constructor(private val bytes: ByteArray) : Iterator<Grapheme> {
     private val classes = GraphemeTables.classes
     private val index = GraphemeTables.index
