@@ -4,6 +4,7 @@ junit = "4.13.2"
 buildconfig = "5.6.5"
 icu4j = "78.3"
 kotlinx-benchmark = "0.5.0"
+dokka = "2.2.0"
 
 [libraries]
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
@@ -30,3 +31,4 @@ kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref 
 kotlin-allopen = { id = "org.jetbrains.kotlin.plugin.allopen", version.ref = "kotlin" }
 kotlinx-benchmark = { id = "org.jetbrains.kotlinx.benchmark", version.ref = "kotlinx-benchmark" }
 buildconfig = { id = "com.github.gmazzo.buildconfig", version.ref = "buildconfig" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }

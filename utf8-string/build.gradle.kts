@@ -5,6 +5,7 @@ import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.dokka)
     `maven-publish`
 }
 
@@ -88,4 +89,19 @@ tasks.named<Test>("jvmTest") {
     val unicodeDir = rootProject.layout.projectDirectory.dir("unicode")
     inputs.dir(unicodeDir).withPropertyName("unicode").withPathSensitivity(PathSensitivity.RELATIVE)
     systemProperty("utf8string.unicodeDir", unicodeDir.asFile.absolutePath)
+}
+
+dokka {
+    dokkaPublications.html {
+        failOnWarning.set(true)
+        outputDirectory.set(rootDir.resolve("docs"))
+    }
+
+    dokkaSourceSets.named("commonMain") {
+        sourceLink {
+            localDirectory.set(rootDir)
+            val ref = if (version.toString().endsWith("-SNAPSHOT")) "main" else "v$version"
+            remoteUrl("https://github.com/DmitryNekrasov/utf8-string/tree/$ref")
+        }
+    }
 }
