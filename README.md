@@ -44,7 +44,7 @@ Like `String`, `Utf8String` is not an `Iterable`. Its `graphemes` property is a 
 text.graphemes.take(4).joinToString("") // Hi 👋🏽
 ```
 
-A `Grapheme` equals another one with the same UTF-8 bytes. A grapheme reads the bytes of its string instead of copying them, so it keeps all of them in memory, and `toUtf8String()` copies only the grapheme. Iteration allocates nothing for an ASCII char or CR LF, which are shared objects, and one small object for any other grapheme.
+A `Grapheme` equals another one with the same UTF-8 bytes. A grapheme reads the bytes of its string instead of copying them, so it can keep all of them in memory, and `toUtf8String()` copies only the grapheme. Iteration allocates nothing for an ASCII char or CR LF, which are shared objects, and one small object for any other grapheme.
 
 The rules also keep a conjunct of an Indic script in one grapheme:
 
