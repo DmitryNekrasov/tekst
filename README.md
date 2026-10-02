@@ -20,6 +20,8 @@ Targets: JVM, JS, Wasm (JS and WASI), and Kotlin/Native for Linux, macOS arm64, 
 
 utf8-string is a personal hobby project.
 
+API reference: [dmitrynekrasov.github.io/utf8-string](https://dmitrynekrasov.github.io/utf8-string/).
+
 ## Setup
 
 ```kotlin
@@ -129,6 +131,8 @@ Each JVM number is the mean of 5 forks, and each Node.js number is the median of
 `./gradlew generateUnicodeData` generates the grapheme tables and the test data from the Unicode 18.0 and CLDR 48 files in `unicode/`, and `./gradlew build` fails when the committed files differ from what it writes. A new Unicode version also needs the version constants in `utf8-string-generator/src/utf8string/generator/Main.kt` changed and the rules reviewed. The JVM tests also check the generated tables against the Unicode files.
 
 `./gradlew :utf8-string-benchmarks:benchmark` runs the benchmarks on the JVM, JS and Wasm JS, and on Kotlin/Native for macOS arm64 or Linux x64 when the host is one of them. `:utf8-string-benchmarks:jvmBenchmarkAllocations` reports the bytes allocated per operation on the JVM.
+
+`./gradlew dokkaGenerate` writes the API reference to `docs/`. GitHub Pages serves it from the `docs/` of the gh-pages branch.
 
 ## License
 
