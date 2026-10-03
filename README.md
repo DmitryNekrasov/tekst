@@ -1,5 +1,12 @@
 # utf8-string
 
+[![JetBrains team project](https://jb.gg/badges/team.svg)](https://confluence.jetbrains.com/display/ALL/JetBrains+on+GitHub)
+[![GitHub license](https://img.shields.io/badge/license-Apache%202.0-green.svg?style=flat)](https://github.com/DmitryNekrasov/utf8-string/blob/main/LICENSE)
+[![Kotlin](https://img.shields.io/badge/kotlin-2.4.20-blue.svg?logo=kotlin)](https://kotlinlang.org)
+[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/dmitrynekrasov/utf8-string/build.yml)](https://github.com/DmitryNekrasov/utf8-string/actions/workflows/build.yml)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.dmitrynekrasov/utf8-string.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.dmitrynekrasov/utf8-string)
+[![KDoc link](https://img.shields.io/badge/API_reference-KDoc-blue)](https://dmitrynekrasov.github.io/utf8-string/)
+
 A Kotlin Multiplatform string for working with graphemes. Its `length` counts them, and `for` iterates over them. A grapheme is what a user sees as one character, such as a letter with its accents, a flag, or an emoji with a skin tone. The string is immutable and stored as UTF-8 bytes.
 
 ```kotlin
@@ -20,21 +27,19 @@ Targets: JVM, JS, Wasm (JS and WASI), and Kotlin/Native for Linux, macOS arm64, 
 
 utf8-string is a personal hobby project.
 
-API reference: [dmitrynekrasov.github.io/utf8-string](https://dmitrynekrasov.github.io/utf8-string/).
-
 ## Setup
 
 ```kotlin
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation("io.github.dmitrynekrasov:utf8-string:0.1.0-SNAPSHOT")
+            implementation("io.github.dmitrynekrasov:utf8-string:0.1.0")
         }
     }
 }
 ```
 
-The library needs Kotlin 2.4.20 or newer. In a JVM or Android project, the same `implementation` line goes into `dependencies`. The library and its compiler plugin are not published yet.
+The library needs Kotlin 2.4.20 or newer. In a JVM or Android project, the same `implementation` line goes into `dependencies`.
 
 ## Graphemes
 
@@ -80,7 +85,7 @@ Each literal is created once, in a private object of its file, and every evaluat
 ```kotlin
 plugins {
     kotlin("multiplatform") version "2.4.20"
-    id("io.github.dmitrynekrasov.utf8-string") version "0.1.0-SNAPSHOT"
+    id("io.github.dmitrynekrasov.utf8-string") version "0.1.0"
 }
 ```
 

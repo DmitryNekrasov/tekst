@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.buildconfig)
     `java-gradle-plugin`
     `maven-publish`
+    alias(libs.plugins.plugin.publish)
 }
 
 sourceSets {
@@ -52,12 +53,15 @@ buildConfig {
 }
 
 gradlePlugin {
+    website.set("https://github.com/DmitryNekrasov/utf8-string")
+    vcsUrl.set("https://github.com/DmitryNekrasov/utf8-string")
     plugins {
         create("utf8String") {
             id = "${project.group}.utf8-string"
             displayName = "utf8-string"
             description = "Computes the UTF-8 bytes of constant \"...\".u8 literals at compile time"
             implementationClass = "utf8string.gradle.Utf8StringGradlePlugin"
+            tags.set(listOf("kotlin", "kotlin-multiplatform", "compiler-plugin", "utf-8", "unicode"))
         }
     }
 }

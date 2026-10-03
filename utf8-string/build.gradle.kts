@@ -6,6 +6,7 @@ import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.dokka)
+    alias(libs.plugins.nmcp)
     `maven-publish`
 }
 
@@ -102,6 +103,22 @@ dokka {
             localDirectory.set(rootDir)
             val ref = if (version.toString().endsWith("-SNAPSHOT")) "main" else "v$version"
             remoteUrl("https://github.com/DmitryNekrasov/utf8-string/tree/$ref")
+        }
+    }
+}
+
+// Maven Central requires a javadoc jar, and the API reference is on GitHub Pages, so the jar is empty. One jar per
+// publication, so that the publications do not share a signature task.
+publishing {
+    publications.withType<MavenPublication>().configureEach {
+        val publication = name
+        artifact(tasks.register<Jar>("${publication}JavadocJar") {
+            archiveClassifier.set("javadoc")
+            archiveAppendix.set(publication)
+        })
+        pom {
+            name.set("utf8-string")
+            description.set("A Kotlin Multiplatform string for working with graphemes, stored as UTF-8 bytes")
         }
     }
 }

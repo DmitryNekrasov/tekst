@@ -15,7 +15,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "utf8-string"
+rootProject.name = "utf8-string-root"
 
 include("utf8-string")
 include("utf8-string-compiler-plugin")
