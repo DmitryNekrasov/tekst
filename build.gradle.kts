@@ -12,7 +12,7 @@ plugins {
 
 allprojects {
     group = "io.github.dmitrynekrasov"
-    version = "0.1.0-SNAPSHOT"
+    version = "0.1.0"
 
     plugins.withId("maven-publish") {
         extensions.configure<PublishingExtension> {
