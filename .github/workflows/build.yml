@@ -22,3 +22,6 @@ jobs:
 
       - name: Run gradlew build
         run: ./gradlew build
+
+      - name: Run gradlew dokkaGenerate
+        run: ./gradlew dokkaGenerate
