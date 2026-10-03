@@ -3,7 +3,7 @@
  * Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
-// The API reference shows these samples, so only the invisible characters are escaped.
+// The API reference shows these samples, so they hold the characters themselves, except where 2 strings look the same.
 
 package samples
 
@@ -18,9 +18,9 @@ import kotlin.test.assertTrue
 class GraphemeSamples {
     @Test
     fun graphemeIsOneCharacter() {
-        val family = "👨\u200D👩\u200D👧".u8
+        val family = "👨‍👩‍👧".u8
         val grapheme = family.graphemes.single()
-        assertEquals(8, grapheme.toString().length) // 5 code points, 8 UTF-16 chars
+        assertEquals(8, grapheme.toString().length) // 3 people and 2 zero width joiners, 8 UTF-16 chars
         assertEquals(family, grapheme.toUtf8String())
     }
 
@@ -55,10 +55,10 @@ class GraphemeSamples {
 
     @Test
     fun hasNextAndNextWalkTheGraphemes() {
-        val iterator = "a\u0301b".u8.iterator()
+        val iterator = "👋🏽!".u8.iterator()
         assertTrue(iterator.hasNext())
-        assertEquals("a\u0301", iterator.next().toString())
-        assertEquals("b", iterator.next().toString())
+        assertEquals("👋🏽", iterator.next().toString())
+        assertEquals("!", iterator.next().toString())
         assertFalse(iterator.hasNext())
         assertFailsWith<NoSuchElementException> { iterator.next() }
     }
