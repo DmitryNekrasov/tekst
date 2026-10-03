@@ -3,7 +3,7 @@
  * Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
-// The API reference shows these samples, so only the invisible characters are escaped.
+// The API reference shows these samples, so they hold the characters themselves, except where 2 strings look the same.
 
 package samples
 
