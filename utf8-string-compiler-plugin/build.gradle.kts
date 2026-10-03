@@ -10,6 +10,7 @@ import org.jetbrains.kotlin.gradle.targets.wasm.d8.D8Plugin
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.buildconfig)
+    alias(libs.plugins.nmcp)
     `java-test-fixtures`
     `maven-publish`
     idea
@@ -106,6 +107,8 @@ kotlin {
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
+    withSourcesJar()
+    withJavadocJar()
 }
 
 // Not published, since they only serve this module's tests.
@@ -118,6 +121,10 @@ publishing {
     publications {
         create<MavenPublication>("maven") {
             from(components["java"])
+            pom {
+                name.set("utf8-string-compiler-plugin")
+                description.set("The utf8-string compiler plugin, which encodes constant \"...\".u8 at compile time")
+            }
         }
     }
 }
