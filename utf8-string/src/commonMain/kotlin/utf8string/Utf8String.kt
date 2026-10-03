@@ -12,7 +12,7 @@ import kotlin.concurrent.Volatile
  * `for` iterates over them. [u8] and [toUtf8String] make one from a [String], and nothing makes one from bytes.
  */
 public class Utf8String internal constructor(private val buffer: ByteArray, internal val codePointCount: Int) {
-    // Volatile, because on Kotlin/Native a plain read that races with a write is undefined.
+    // Volatile, because on Kotlin/Native reading a plain field while another thread writes it is undefined.
     @Volatile
     private var hash: Int = 0
 
