@@ -43,7 +43,7 @@
         </button>
         <div class="navigation-controls--break ui-kit_mobile-only"></div>
         <div class="library-version" id="library-version">
-0.1.0        </div>
+0.1.1        </div>
         <div class="navigation-controls">
         <ul class="filter-section filter-section_loading" id="filter-section" aria-label="Target filter">
                 <button class="platform-tag platform-selector common-like" data-active="" aria-pressed="true"
@@ -107,7 +107,12 @@
   <div class="breadcrumbs"><a href="../../../index.html">utf8-string</a><span class="delimiter">/</span><a href="../index.html">utf8string</a><span class="delimiter">/</span><span class="current">GraphemeIterator</span></div>
   <div class="cover ">
     <h1 class="cover"><span>Grapheme</span><wbr></wbr><span><span>Iterator</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":utf8-string/commonMain"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">GraphemeIterator</a> : <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-iterator/index.html">Iterator</a><span class="token operator">&lt;</span><a href="../-grapheme/index.html">Grapheme</a><span class="token operator">&gt; </span><span class="source-link-wrapper"><span class="source-link" data-element-type="source-link">(<a href="https://github.com/DmitryNekrasov/utf8-string/tree/v0.1.0/utf8-string/src/commonMain/kotlin/utf8string/GraphemeIterator.kt#L12">source</a>)</span></span></div><p class="paragraph">An iterator over the graphemes of a <a href="../-utf8-string/index.html">Utf8String</a>. For one ASCII char or CR LF, <a href="next.html">next</a> returns a shared object, and for any other grapheme it allocates one small object.</p></div></div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":utf8-string/commonMain"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">GraphemeIterator</a> : <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-iterator/index.html">Iterator</a><span class="token operator">&lt;</span><a href="../-grapheme/index.html">Grapheme</a><span class="token operator">&gt; </span><span class="source-link-wrapper"><span class="source-link" data-element-type="source-link">(<a href="https://github.com/DmitryNekrasov/utf8-string/tree/v0.1.1/utf8-string/src/commonMain/kotlin/utf8string/GraphemeIterator.kt#L14">source</a>)</span></span></div><p class="paragraph">An iterator over the graphemes of a <a href="../-utf8-string/index.html">Utf8String</a>. For one ASCII char or CR LF, <a href="next.html">next</a> returns a shared object, and for any other grapheme it allocates one small object.</p><h4 class="">Samples</h4><div class="sample-container"><pre><code class="monospace block lang-kotlin" theme="idea">val iterator = &quot;a\u0301b&quot;.u8.iterator()
+assertTrue(iterator.hasNext())
+assertEquals(&quot;a\u0301&quot;, iterator.next().toString())
+assertEquals(&quot;b&quot;, iterator.next().toString())
+assertFalse(iterator.hasNext())
+assertFailsWith&lt;NoSuchElementException&gt; { iterator.next() }</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div></div></div>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
