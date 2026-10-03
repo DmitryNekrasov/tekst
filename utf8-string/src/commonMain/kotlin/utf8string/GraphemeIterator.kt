@@ -8,6 +8,8 @@ package utf8string
 /**
  * An iterator over the graphemes of a [Utf8String]. For one ASCII char or CR LF, [next] returns a shared object, and
  * for any other grapheme it allocates one small object.
+ *
+ * @sample samples.GraphemeSamples.hasNextAndNextWalkTheGraphemes
  */
 public class GraphemeIterator internal constructor(private val bytes: ByteArray) : Iterator<Grapheme> {
     private val classes = GraphemeTables.classes
@@ -24,9 +26,11 @@ public class GraphemeIterator internal constructor(private val bytes: ByteArray)
     private var carriedLength = 0
     private var carriedRow = 0
 
+    /** @sample samples.GraphemeSamples.hasNextAndNextWalkTheGraphemes */
     override fun hasNext(): Boolean = position < bytes.size
 
     // Small, with one allocation, so that the JIT can inline it into the loop and remove the allocation.
+    /** @sample samples.GraphemeSamples.hasNextAndNextWalkTheGraphemes */
     override fun next(): Grapheme {
         val start = position
         if (start >= bytes.size) throw NoSuchElementException()

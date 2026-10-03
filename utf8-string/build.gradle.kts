@@ -99,6 +99,7 @@ dokka {
     }
 
     dokkaSourceSets.named("commonMain") {
+        samples.from("src/commonTest/kotlin/samples")
         sourceLink {
             localDirectory.set(rootDir)
             val ref = if (version.toString().endsWith("-SNAPSHOT")) "main" else "v$version"

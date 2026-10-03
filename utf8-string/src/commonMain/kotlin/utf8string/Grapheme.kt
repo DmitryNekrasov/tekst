@@ -8,6 +8,8 @@ package utf8string
 /**
  * An extended grapheme cluster of a [Utf8String] (UAX #29), what a user sees as one character. A grapheme does not
  * copy its bytes, so it can keep all the bytes of its string in memory.
+ *
+ * @sample samples.GraphemeSamples.graphemeIsOneCharacter
  */
 public class Grapheme internal constructor(
     private val bytes: ByteArray,
@@ -24,10 +26,18 @@ public class Grapheme internal constructor(
             return count
         }
 
-    /** A [Utf8String] of this grapheme, with its own copy of the bytes. */
+    /**
+     * A [Utf8String] of this grapheme, with its own copy of the bytes.
+     *
+     * @sample samples.GraphemeSamples.toUtf8StringCopiesTheGrapheme
+     */
     public fun toUtf8String(): Utf8String = Utf8String(bytes.copyOfRange(start, end), codePointCount)
 
-    /** True when [other] is a [Grapheme] with the same UTF-8 bytes, without Unicode normalization. */
+    /**
+     * True when [other] is a [Grapheme] with the same UTF-8 bytes, without Unicode normalization.
+     *
+     * @sample samples.GraphemeSamples.equalsComparesTheBytes
+     */
     override fun equals(other: Any?): Boolean {
         // No identity check, since comparing with this in a loop keeps the JIT from removing the allocation.
         if (other !is Grapheme) return false
@@ -37,13 +47,22 @@ public class Grapheme internal constructor(
         return true
     }
 
+    /**
+     * A hash of the UTF-8 bytes.
+     *
+     * @sample samples.GraphemeSamples.hashCodeAgreesWithEquals
+     */
     override fun hashCode(): Int {
         var hash = 1
         for (i in start..<end) hash = 31 * hash + bytes[i]
         return hash
     }
 
-    /** Decodes the UTF-8 bytes into a [String], again on each call. */
+    /**
+     * Decodes the UTF-8 bytes into a [String], again on each call.
+     *
+     * @sample samples.GraphemeSamples.toStringDecodesTheGrapheme
+     */
     override fun toString(): String = bytes.decodeToString(start, end)
 }
 
