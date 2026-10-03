@@ -10,23 +10,37 @@ import kotlin.concurrent.Volatile
 /**
  * An immutable string stored as UTF-8 bytes. Its [length] counts graphemes, what a user sees as one character, and
  * `for` iterates over them. [u8] and [toUtf8String] make one from a [String], and nothing makes one from bytes.
+ *
+ * @sample samples.Utf8StringSamples.countAndIterateGraphemes
  */
 public class Utf8String internal constructor(private val buffer: ByteArray, internal val codePointCount: Int) {
-    // Volatile, because on Kotlin/Native a plain read that races with a write is undefined.
+    // Volatile, because on Kotlin/Native reading a plain field while another thread writes it is undefined.
     @Volatile
     private var hash: Int = 0
 
     @Volatile
     private var graphemeCount: Int = 0
 
-    /** The number of UTF-8 bytes. */
+    /**
+     * The number of UTF-8 bytes.
+     *
+     * @sample samples.Utf8StringSamples.byteCountCountsUtf8Bytes
+     */
     public val byteCount: Int
         get() = buffer.size
 
-    /** A copy of the UTF-8 bytes. */
+    /**
+     * A copy of the UTF-8 bytes.
+     *
+     * @sample samples.Utf8StringSamples.toByteArrayCopiesTheBytes
+     */
     public fun toByteArray(): ByteArray = buffer.copyOf()
 
-    /** Like [ByteArray.copyInto], for the UTF-8 bytes. The range counts bytes, so it can split a code point. */
+    /**
+     * Like [ByteArray.copyInto], for the UTF-8 bytes. The range counts bytes, so it can split a code point.
+     *
+     * @sample samples.Utf8StringSamples.copyIntoWritesIntoOneBuffer
+     */
     public fun copyInto(
         destination: ByteArray,
         destinationOffset: Int = 0,
@@ -34,7 +48,11 @@ public class Utf8String internal constructor(private val buffer: ByteArray, inte
         endIndex: Int = byteCount,
     ): ByteArray = buffer.copyInto(destination, destinationOffset, startIndex, endIndex)
 
-    /** The number of graphemes, computed on the first access. [String.length] counts UTF-16 chars. */
+    /**
+     * The number of graphemes, computed on the first access. [String.length] counts UTF-16 chars.
+     *
+     * @sample samples.Utf8StringSamples.lengthCountsGraphemes
+     */
     public val length: Int
         get() {
             var count = graphemeCount
@@ -45,20 +63,36 @@ public class Utf8String internal constructor(private val buffer: ByteArray, inte
             return count
         }
 
-    /** An iterator over the graphemes, which a `for` loop over the string uses. */
+    /**
+     * An iterator over the graphemes, which a `for` loop over the string uses.
+     *
+     * @sample samples.Utf8StringSamples.forLoopUsesTheIterator
+     */
     public operator fun iterator(): GraphemeIterator = GraphemeIterator(buffer)
 
-    /** The graphemes as a sequence, which can be iterated more than once. */
+    /**
+     * The graphemes as a sequence, which can be iterated more than once.
+     *
+     * @sample samples.Utf8StringSamples.graphemesIsASequence
+     */
     public val graphemes: Sequence<Grapheme>
         get() = Sequence { iterator() }
 
-    /** True when [other] is a [Utf8String] with the same UTF-8 bytes, without Unicode normalization. */
+    /**
+     * True when [other] is a [Utf8String] with the same UTF-8 bytes, without Unicode normalization.
+     *
+     * @sample samples.Utf8StringSamples.equalsComparesTheBytes
+     */
     override fun equals(other: Any?): Boolean {
         return this === other ||
                 other is Utf8String && codePointCount == other.codePointCount && buffer.contentEquals(other.buffer)
     }
 
-    /** A hash of the UTF-8 bytes, computed on the first call. */
+    /**
+     * A hash of the UTF-8 bytes, computed on the first call.
+     *
+     * @sample samples.Utf8StringSamples.hashCodeAgreesWithEquals
+     */
     override fun hashCode(): Int {
         var h = hash
         if (h == 0) {
@@ -69,7 +103,11 @@ public class Utf8String internal constructor(private val buffer: ByteArray, inte
         return h
     }
 
-    /** Decodes the UTF-8 bytes into a [String], again on each call. */
+    /**
+     * Decodes the UTF-8 bytes into a [String], again on each call.
+     *
+     * @sample samples.Utf8StringSamples.toStringDecodesTheBytes
+     */
     override fun toString(): String = buffer.decodeToString()
 
     internal companion object {
