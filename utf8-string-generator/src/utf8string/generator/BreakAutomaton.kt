@@ -72,6 +72,7 @@ fun buildBreakAutomaton(): BreakAutomaton {
     val transitions = IntArray(numbers.size * classes.size) { i ->
         val state = representatives[i / classes.size]
         val next = classes[i % classes.size]
+        // A cluster after a boundary starts as at the start of a text, so take and drop know the length of a part.
         if (isBoundary(state, next)) BreakAutomaton.BOUNDARY + startStates[next.ordinal] else number(append(state, next))
     }
     return BreakAutomaton(numbers.size, startStates, transitions)

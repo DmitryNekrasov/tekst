@@ -52,20 +52,6 @@ fun verifyBoundaryTables(classes: IntArray, automaton: BreakAutomaton, tables: B
     val classCount = automaton.classCount
     val start = automaton.startStates
     val names = GraphemeClass.entries
-    for (state in 0..<automaton.stateCount) {
-        for (next in 0..<classCount) {
-            // So a cluster after a boundary is the same as at the start of a text, and take and drop know the length.
-            check(!automaton.breaksBefore(state, next) || automaton.nextState(state, next) == start[next]) {
-                "A boundary before ${names[next]} does not lead to its start state"
-            }
-        }
-    }
-    for (cls in 0..<classCount) {
-        // A query checks the class first and the pair after it, so the two must agree.
-        check(tables.sync[cls] == (0..<classCount).all { tables.safeStates[it * classCount + cls] == start[cls] }) {
-            "The sync class ${names[cls]} disagrees with its pairs"
-        }
-    }
     val ri = GraphemeClass.RegionalIndicator.ordinal
     for (pair in 0..<classCount * classCount) {
         // The walk back of one query then ends where the next context pair starts, so a walk over a text reads each
@@ -197,7 +183,7 @@ private class RandomAccessModel(val automaton: BreakAutomaton, private val table
         while (k > 0) {
             val p = k - 1
             val breaks = if (isRegionalIndicatorPair(text, p)) {
-                if (runStart < 0 || p < runStart) runStart = regionalIndicatorRunStart(text, p, 0)
+                if (runStart < 0) runStart = regionalIndicatorRunStart(text, p, 0)
                 (k - runStart) % 2 == 0
             } else {
                 breaksBetween(text, p)

@@ -74,8 +74,9 @@ internal fun previousGraphemeBoundaryAt(bytes: ByteArray, start: Int, end: Int, 
         val p = codePointStartAt(bytes, start, k - 1)
         val a = classAt(bytes, p, end)
         val breaks = if (a == GRAPHEME_CLASS_REGIONAL_INDICATOR && b == GRAPHEME_CLASS_REGIONAL_INDICATOR) {
-            // The walk can check 2 pairs of a run, and it reads the run once.
-            if (runStart < 0 || p < runStart) runStart = regionalIndicatorRunStart(bytes, start, end, p)
+            // The walk can check 2 pairs of a run, and it reads the run once. It meets one run at most: before a run
+            // only Prepend joins, and before Prepend only Prepend.
+            if (runStart < 0) runStart = regionalIndicatorRunStart(bytes, start, end, p)
             breaksInRegionalIndicators(runStart, k)
         } else {
             breaksBetween(bytes, start, end, p, a, b)
