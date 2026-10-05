@@ -211,6 +211,8 @@ public class Utf8String internal constructor(private val buffer: ByteArray, inte
     // length, which counts the graphemes of the for loop: on malformed bytes the walk back can split the text
     // differently.
     private fun indexBefore(n: Int): Int {
+        // Each grapheme takes at least a byte.
+        if (n >= buffer.size) return 0
         val graphemes = GraphemeIterator(buffer, buffer.size)
         var skipped = 0
         while (skipped < n && graphemes.hasPrevious()) {
