@@ -223,6 +223,7 @@ class GraphemeBoundaryTest {
         val start = random.nextInt(string.byteCount + 1)
         val graphemes = string.iterator(start)
         var at = boundaries.indexOfLast { it <= start }
+        var endChecked = false
         repeat(60) {
             assertEquals(boundaries[at], graphemes.index, message)
             assertEquals(at < boundaries.size - 1, graphemes.hasNext(), message)
@@ -230,6 +231,9 @@ class GraphemeBoundaryTest {
             val forward = random.nextBoolean()
             val skip = random.nextBoolean()
             if (forward && at == boundaries.size - 1 || !forward && at == 0) {
+                // Once a walk, since an exception takes long on JS.
+                if (endChecked) return@repeat
+                endChecked = true
                 assertFailsWith<NoSuchElementException>(message) {
                     when {
                         forward && skip -> graphemes.skipNext()

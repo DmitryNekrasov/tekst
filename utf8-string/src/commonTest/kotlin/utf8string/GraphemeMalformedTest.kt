@@ -55,7 +55,9 @@ class GraphemeMalformedTest {
                 (if (random.nextBoolean()) random.nextInt(0x80, 0x100) else random.nextInt(0x100)).toByte()
             }
             assertCovered(bytes, bytes.toHex())
-            assertRandomAccessInRange(bytes, random, bytes.toHex())
+            // On every 10th text, as the other tests of random access do, so that on JS the test stays far below the
+            // 2 s timeout of Mocha.
+            if (it % 10 == 0) assertRandomAccessInRange(bytes, random, bytes.toHex())
         }
     }
 
