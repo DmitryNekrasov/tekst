@@ -12,8 +12,8 @@ package utf8string
 // points depends on the text before them, so most queries read only the code points around the index.
 //
 // In a run of regional indicators, the boundaries depend on the parity of the run before them, so a query reads the run
-// back to its start, and a loop of queries over a run would read it once per flag. GraphemeIterator.previous keeps the
-// last run instead.
+// back to its start, and a loop of queries over a run would read it again for each flag. GraphemeIterator.previous
+// keeps the last run instead.
 //
 // On malformed bytes the boundaries are unspecified, but every loop moves by at least one byte and stays in the text.
 

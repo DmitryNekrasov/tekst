@@ -12,8 +12,8 @@ import kotlin.concurrent.Volatile
  * `for` iterates over them. [u8] and [toUtf8String] make one from a [String], and nothing makes one from bytes.
  *
  * An index is a byte index, as in [copyInto], and a count is a number of graphemes, as [length] is. A function that
- * takes an index reads the grapheme around it, and in a run of flags also the run before it, so a loop over the
- * graphemes should use an [iterator] instead of calling such a function for each grapheme.
+ * takes an index reads the grapheme around it and the one before it, and in a run of flags also the run before it, so a
+ * loop over the graphemes should use an [iterator] instead of calling such a function for each grapheme.
  *
  * @sample samples.Utf8StringSamples.countAndIterateGraphemes
  * @sample samples.Utf8StringSamples.lengthIsNotAByteIndex

@@ -139,8 +139,9 @@ class Utf8StringSamples {
     fun roundAnIndexToAGraphemeBoundary() {
         val text = "Hi 👋🏽 🇪🇸".u8 // 👋🏽 takes bytes 3 to 10
         val index = 7 // from a hit test, for example
-        val down = if (text.isGraphemeBoundary(index)) index else text.previousGraphemeBoundary(index)
-        val up = if (text.isGraphemeBoundary(index)) index else text.nextGraphemeBoundary(index)
+        val atBoundary = text.isGraphemeBoundary(index)
+        val down = if (atBoundary) index else text.previousGraphemeBoundary(index)
+        val up = if (atBoundary) index else text.nextGraphemeBoundary(index)
         assertEquals(3, down)
         assertEquals(11, up)
     }

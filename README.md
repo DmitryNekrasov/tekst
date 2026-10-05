@@ -62,7 +62,7 @@ text.previousGraphemeBoundary(7) // 3
 text.takeLast(1)                 // 🇪🇸
 ```
 
-A function with an index reads the grapheme around the index, and in a run of flags also the run before it, since a boundary there depends on the number of flags before it. So a loop over the graphemes should use an iterator, while a loop of such calls over a run of flags reads the run once for each flag.
+A function with an index reads the grapheme around the index and the one before it, and in a run of flags also the run before it, since a boundary there depends on the number of flags before it. So a loop over the graphemes should use an iterator, while a loop of such calls over a run of flags reads the run again for each flag.
 
 The rules also keep a conjunct of an Indic script in one grapheme:
 
