@@ -60,12 +60,7 @@ class GraphemeIcuTest {
             // The texts where only GB9c of Unicode 18 differs are for iterationMatchesIcuOnRandomTexts.
             val icu = icuBoundaries(breaker, source, codePoints.size)
             if (checkAgainstOracle(codePoints, string.iteratedBoundaries(), icu, older)) return@repeat
-            val charIndices = IntArray(codePoints.size + 1)
-            val byteIndices = IntArray(source.length + 1)
-            for ((i, codePoint) in codePoints.withIndex()) {
-                charIndices[i + 1] = charIndices[i] + Character.charCount(codePoint)
-                byteIndices[charIndices[i + 1]] = byteIndices[charIndices[i]] + utf8Length(codePoint)
-            }
+            val (charIndices, byteIndices) = charAndByteIndices(codePoints)
             fun byteIndex(charIndex: Int): Int = if (charIndex == BreakIterator.DONE) -1 else byteIndices[charIndex]
             for (charIndex in charIndices) {
                 val index = byteIndices[charIndex]

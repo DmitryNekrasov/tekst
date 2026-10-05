@@ -22,7 +22,7 @@ class GraphemeModelTest {
             val codePoints = corpus.text(random)
             val string = codePointsToString(codePoints).u8
             val expected = byteBoundaries(codePoints, GraphemeModel.boundaries(codePoints))
-            val message = codePoints.joinToString(" ") { it.toString(16) }
+            val message = codePoints.toHex()
             assertEquals(expected, string.iteratedBoundaries(), message)
             assertEquals(expected.size - 1, string.length, message)
         }

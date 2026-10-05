@@ -271,7 +271,3 @@ internal fun flagRuns(random: Random): IntArray {
     }
     return codePoints.toIntArray()
 }
-
-internal fun IntArray.toHex(): String = joinToString(" ") { it.toString(16).uppercase() }
-
-internal fun String.hexToBytes(): ByteArray = split(' ').map { it.toInt(16).toByte() }.toByteArray()
