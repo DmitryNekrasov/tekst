@@ -31,7 +31,10 @@ public class Grapheme internal constructor(
      *
      * @sample samples.GraphemeSamples.toUtf8StringCopiesTheGrapheme
      */
-    public fun toUtf8String(): Utf8String = Utf8String(bytes.copyOfRange(start, end), codePointCount)
+    public fun toUtf8String(): Utf8String {
+        val copy = bytes.copyOfRange(start, end)
+        return Utf8String(copy, checkedCodePointCount(copy, codePointCount))
+    }
 
     /**
      * True when [other] is a [Grapheme] with the same UTF-8 bytes, without Unicode normalization.

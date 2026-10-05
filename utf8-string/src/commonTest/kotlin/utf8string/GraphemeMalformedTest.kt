@@ -24,6 +24,8 @@ class GraphemeMalformedTest {
             // Bytes that the walk back splits differently from the walk forward: a continuation byte after CR, and
             // 2 regional indicators 3 bytes apart.
             "0D 80", "41 0D 80", "C3 80 80", "F0 9F 87 F0 9F 87 A6",
+            // A lead byte without continuation bytes, which a part can count as ASCII.
+            "C0 41", "41 C0 41", "C3 80 41 C0 41",
         )) {
             assertCovered(hex.hexToBytes(), hex)
             assertRandomAccessInRange(hex.hexToBytes(), Random(38), hex)
@@ -91,8 +93,12 @@ class GraphemeMalformedTest {
         }
         val length = string.length
         for (n in 0..3) {
-            assertEquals(size, string.take(n).byteCount + string.drop(n).byteCount, "take($n) of $message")
-            assertEquals(size, string.takeLast(n).byteCount + string.dropLast(n).byteCount, "takeLast($n) of $message")
+            val parts = listOf(string.take(n), string.drop(n), string.takeLast(n), string.dropLast(n))
+            assertEquals(size, parts[0].byteCount + parts[1].byteCount, "take($n) of $message")
+            assertEquals(size, parts[2].byteCount + parts[3].byteCount, "takeLast($n) of $message")
+            for (part in parts + parts.flatMap { listOf(it.drop(1), it.dropLast(1)) }) {
+                assertEquals(part.graphemes.count(), part.length, "length of a part of $message")
+            }
         }
         // The walk back splits malformed bytes in its own way, and length counts the graphemes of the for loop.
         assertEquals(length, string.length, "length after takeLast of $message")
@@ -100,6 +106,9 @@ class GraphemeMalformedTest {
 
     private fun assertHoldsBytes(bytes: ByteArray, start: Int, grapheme: Grapheme, message: String) {
         val slice = bytes.copyOfRange(start, start + grapheme.byteCount)
-        assertUtf8Equals(Utf8String(slice, slice.count { it.toInt() and 0xC0 != 0x80 }), grapheme.toUtf8String(), message)
+        val copy = grapheme.toUtf8String()
+        val leadBytes = slice.count { it.toInt() and 0xC0 != 0x80 }
+        assertUtf8Equals(Utf8String(slice, checkedCodePointCount(slice, leadBytes)), copy, message)
+        assertEquals(copy.graphemes.count(), copy.length, "length of a grapheme of $message")
     }
 }

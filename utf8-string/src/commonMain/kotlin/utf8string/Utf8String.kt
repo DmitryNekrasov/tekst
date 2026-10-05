@@ -233,7 +233,10 @@ public class Utf8String internal constructor(private val buffer: ByteArray, inte
     // graphemes that the walk counted, since a grapheme after a boundary does not depend on the text before it.
     private fun substring(from: Int, to: Int, codePointCount: Int, graphemeCount: Int): Utf8String {
         if (from == to) return Utf8String(ByteArray(0), 0)
-        val result = Utf8String(buffer.copyOfRange(from, to), codePointCount)
+        val bytes = buffer.copyOfRange(from, to)
+        // A part of an ASCII string is ASCII.
+        val ascii = this.codePointCount == buffer.size
+        val result = Utf8String(bytes, if (ascii) codePointCount else checkedCodePointCount(bytes, codePointCount))
         result.graphemeCount = graphemeCount
         return result
     }
@@ -331,4 +334,24 @@ public class Utf8String internal constructor(private val buffer: ByteArray, inte
             return Utf8String(buffer, codePointCount)
         }
     }
+}
+
+// The code point count of a new string of these bytes, which can be malformed: count, unless count says ASCII wrongly.
+// length counts the bytes as ASCII when the code point count equals the byte count, which is right only when
+// utf8LengthAt splits the bytes into single bytes, so when no byte from 0xC0 comes before the last one. Otherwise the
+// count becomes the number of code points that utf8LengthAt splits the bytes into, which is less.
+internal fun checkedCodePointCount(bytes: ByteArray, count: Int): Int {
+    if (count != bytes.size) return count
+    for (i in 0..<bytes.size - 1) {
+        if (bytes[i].toInt() and 0xFF >= 0xC0) {
+            var codePoints = 0
+            var k = 0
+            while (k < bytes.size) {
+                k += utf8LengthAt(bytes, k)
+                codePoints++
+            }
+            return codePoints
+        }
+    }
+    return count
 }
