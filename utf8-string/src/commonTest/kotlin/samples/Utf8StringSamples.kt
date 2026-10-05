@@ -12,7 +12,10 @@ import utf8string.u8
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotEquals
+import kotlin.test.assertSame
+import kotlin.test.assertTrue
 
 class Utf8StringSamples {
     @Test
@@ -23,6 +26,15 @@ class Utf8StringSamples {
         val brackets = StringBuilder()
         for (grapheme in text) brackets.append("[$grapheme]")
         assertEquals("[H][i][ ][👋🏽][ ][🇪🇸]", brackets.toString())
+    }
+
+    @Test
+    fun lengthIsNotAByteIndex() {
+        val text = "Hi 👋🏽".u8
+        assertEquals(4, text.length)
+        assertEquals(11, text.byteCount) // the end for an index
+        assertEquals(3, text.iterator(text.length).index) // compiles, but byte 4 is inside 👋🏽, not at the end
+        assertFalse(text.iterator(text.byteCount).hasNext())
     }
 
     @Test
@@ -70,10 +82,96 @@ class Utf8StringSamples {
     }
 
     @Test
+    fun iteratorStartsAtAByteIndex() {
+        val text = "Hi 👋🏽 🇪🇸".u8 // 👋🏽 takes bytes 3 to 10
+        val iterator = text.iterator(7)
+        assertEquals(3, iterator.index)
+        assertEquals("👋🏽", iterator.next().toString())
+        assertEquals(11, iterator.index)
+    }
+
+    @Test
+    fun fitGraphemesIntoAByteLimit() {
+        val text = "Hi 👋🏽 🇪🇸".u8 // 👋🏽 takes bytes 3 to 10
+        val limit = 10
+        val end = text.iterator(minOf(limit, text.byteCount)).index
+        assertEquals(3, end) // 👋🏽 does not fit
+        val bytes = ByteArray(end)
+        text.copyInto(bytes, endIndex = end)
+        assertEquals("Hi ", bytes.decodeToString())
+    }
+
+    @Test
     fun graphemesIsASequence() {
         val text = "Hi 👋🏽 🇪🇸".u8
         assertEquals("Hi 👋🏽", text.graphemes.take(4).joinToString(""))
         assertEquals("🇪🇸", text.graphemes.last().toString())
+    }
+
+    @Test
+    fun isGraphemeBoundaryChecksAByteIndex() {
+        val text = "Hi 👋🏽 🇪🇸".u8 // 👋 takes bytes 3 to 6, and 🏽 bytes 7 to 10
+        assertTrue(text.isGraphemeBoundary(3))
+        assertFalse(text.isGraphemeBoundary(7)) // 🏽 starts a code point, but 👋🏽 is one grapheme
+        assertFalse(text.isGraphemeBoundary(5)) // inside the code point 👋
+        assertTrue(text.isGraphemeBoundary(text.byteCount))
+    }
+
+    @Test
+    fun nextGraphemeBoundaryFindsTheEnd() {
+        val text = "Hi 👋🏽 🇪🇸".u8 // 👋🏽 takes bytes 3 to 10
+        assertEquals(11, text.nextGraphemeBoundary(3))
+        assertEquals(11, text.nextGraphemeBoundary(7))
+        assertEquals(20, text.nextGraphemeBoundary(12)) // the end of 🇪🇸
+        assertEquals(-1, text.nextGraphemeBoundary(20))
+    }
+
+    @Test
+    fun previousGraphemeBoundaryFindsTheStart() {
+        val text = "Hi 👋🏽 🇪🇸".u8 // 👋🏽 takes bytes 3 to 10
+        assertEquals(3, text.previousGraphemeBoundary(11))
+        assertEquals(3, text.previousGraphemeBoundary(7))
+        assertEquals(2, text.previousGraphemeBoundary(3))
+        assertEquals(-1, text.previousGraphemeBoundary(0))
+    }
+
+    @Test
+    fun roundAnIndexToAGraphemeBoundary() {
+        val text = "Hi 👋🏽 🇪🇸".u8 // 👋🏽 takes bytes 3 to 10
+        val index = 7 // from a hit test, for example
+        val down = if (text.isGraphemeBoundary(index)) index else text.previousGraphemeBoundary(index)
+        val up = if (text.isGraphemeBoundary(index)) index else text.nextGraphemeBoundary(index)
+        assertEquals(3, down)
+        assertEquals(11, up)
+    }
+
+    @Test
+    fun takeKeepsTheFirstGraphemes() {
+        val text = "Hi 👋🏽 🇪🇸".u8
+        assertEquals("Hi 👋🏽".u8, text.take(4))
+        assertSame(text, text.take(10))
+        assertEquals("Hi 👋", "Hi 👋🏽 🇪🇸".take(5)) // String.take counts UTF-16 chars and splits 👋🏽
+    }
+
+    @Test
+    fun dropRemovesTheFirstGraphemes() {
+        val text = "Hi 👋🏽 🇪🇸".u8
+        assertEquals(" 🇪🇸".u8, text.drop(4))
+        assertEquals("".u8, text.drop(10))
+    }
+
+    @Test
+    fun takeLastKeepsTheLastGraphemes() {
+        val flags = "🇪🇸🇫🇷🇯🇵".u8
+        assertEquals("🇫🇷🇯🇵".u8, flags.takeLast(2))
+        assertSame(flags, flags.takeLast(3))
+    }
+
+    @Test
+    fun dropLastRemovesTheLastGraphemes() {
+        val text = "Hi 👋🏽 🇪🇸".u8
+        assertEquals("Hi 👋🏽".u8, text.dropLast(2))
+        assertEquals("".u8, text.dropLast(10))
     }
 
     @Test

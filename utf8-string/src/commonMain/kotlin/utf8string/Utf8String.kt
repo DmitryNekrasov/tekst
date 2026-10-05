@@ -11,7 +11,12 @@ import kotlin.concurrent.Volatile
  * An immutable string stored as UTF-8 bytes. Its [length] counts graphemes, what a user sees as one character, and
  * `for` iterates over them. [u8] and [toUtf8String] make one from a [String], and nothing makes one from bytes.
  *
+ * An index is a byte index, as in [copyInto], and a count is a number of graphemes, as [length] is. A function that
+ * takes an index reads the grapheme around it, and in a run of flags also the run before it, so a loop over the
+ * graphemes should use an [iterator] instead of calling such a function for each grapheme.
+ *
  * @sample samples.Utf8StringSamples.countAndIterateGraphemes
+ * @sample samples.Utf8StringSamples.lengthIsNotAByteIndex
  */
 public class Utf8String internal constructor(private val buffer: ByteArray, internal val codePointCount: Int) {
     // Volatile, because on Kotlin/Native reading a plain field while another thread writes it is undefined.
@@ -68,7 +73,21 @@ public class Utf8String internal constructor(private val buffer: ByteArray, inte
      *
      * @sample samples.Utf8StringSamples.forLoopUsesTheIterator
      */
-    public operator fun iterator(): GraphemeIterator = GraphemeIterator(buffer)
+    public operator fun iterator(): GraphemeIterator = GraphemeIterator(buffer, 0)
+
+    /**
+     * An iterator that starts at the last grapheme boundary at or before the byte [index], so that its
+     * [GraphemeIterator.next] returns the grapheme that contains the byte at [index].
+     *
+     * @throws IndexOutOfBoundsException when [index] is not in `0..byteCount`.
+     * @sample samples.Utf8StringSamples.iteratorStartsAtAByteIndex
+     * @sample samples.Utf8StringSamples.fitGraphemesIntoAByteLimit
+     */
+    public fun iterator(index: Int): GraphemeIterator {
+        checkIndex(index)
+        val start = if (index == buffer.size) index else previousGraphemeBoundaryAt(buffer, 0, buffer.size, index + 1)
+        return GraphemeIterator(buffer, start)
+    }
 
     /**
      * The graphemes as a sequence, which can be iterated more than once.
@@ -77,6 +96,147 @@ public class Utf8String internal constructor(private val buffer: ByteArray, inte
      */
     public val graphemes: Sequence<Grapheme>
         get() = Sequence { iterator() }
+
+    /**
+     * True when a grapheme starts at the byte [index], or [index] is 0 or [byteCount]. False inside a grapheme, which
+     * includes an index inside a code point.
+     *
+     * @throws IndexOutOfBoundsException when [index] is not in `0..byteCount`.
+     * @sample samples.Utf8StringSamples.isGraphemeBoundaryChecksAByteIndex
+     */
+    public fun isGraphemeBoundary(index: Int): Boolean {
+        checkIndex(index)
+        return isGraphemeBoundaryAt(buffer, 0, buffer.size, index)
+    }
+
+    /**
+     * The first grapheme boundary after the byte [index], which is the end of the grapheme that contains the byte at
+     * [index], or -1 when [index] is [byteCount].
+     *
+     * @throws IndexOutOfBoundsException when [index] is not in `0..byteCount`.
+     * @sample samples.Utf8StringSamples.nextGraphemeBoundaryFindsTheEnd
+     * @sample samples.Utf8StringSamples.roundAnIndexToAGraphemeBoundary
+     */
+    public fun nextGraphemeBoundary(index: Int): Int {
+        checkIndex(index)
+        return nextGraphemeBoundaryAt(buffer, 0, buffer.size, index)
+    }
+
+    /**
+     * The last grapheme boundary before the byte [index], which is the start of the grapheme that contains the byte at
+     * `index - 1`, or -1 when [index] is 0. So for an index inside a grapheme, it is the start of that grapheme, as in
+     * `java.text.BreakIterator`, and not the start of the grapheme before it, as in Swift.
+     *
+     * @throws IndexOutOfBoundsException when [index] is not in `0..byteCount`.
+     * @sample samples.Utf8StringSamples.previousGraphemeBoundaryFindsTheStart
+     * @sample samples.Utf8StringSamples.roundAnIndexToAGraphemeBoundary
+     */
+    public fun previousGraphemeBoundary(index: Int): Int {
+        checkIndex(index)
+        return previousGraphemeBoundaryAt(buffer, 0, buffer.size, index)
+    }
+
+    /**
+     * A string of the first [n] graphemes, or this string when it has [n] graphemes or fewer.
+     *
+     * @throws IllegalArgumentException when [n] is negative.
+     * @sample samples.Utf8StringSamples.takeKeepsTheFirstGraphemes
+     */
+    public fun take(n: Int): Utf8String {
+        require(n >= 0) { "Requested grapheme count $n is less than zero." }
+        val cut = indexAfter(n)
+        return if (cut == buffer.size) this else substring(0, cut, countCodePoints(0, cut), n)
+    }
+
+    /**
+     * A string without the first [n] graphemes, or this string when [n] is 0.
+     *
+     * @throws IllegalArgumentException when [n] is negative.
+     * @sample samples.Utf8StringSamples.dropRemovesTheFirstGraphemes
+     */
+    public fun drop(n: Int): Utf8String {
+        require(n >= 0) { "Requested grapheme count $n is less than zero." }
+        if (n == 0) return this
+        val cut = indexAfter(n)
+        val count = graphemeCount
+        return substring(cut, buffer.size, codePointCount - countCodePoints(0, cut), if (count == 0) 0 else count - n)
+    }
+
+    /**
+     * A string of the last [n] graphemes, or this string when it has [n] graphemes or fewer.
+     *
+     * @throws IllegalArgumentException when [n] is negative.
+     * @sample samples.Utf8StringSamples.takeLastKeepsTheLastGraphemes
+     */
+    public fun takeLast(n: Int): Utf8String {
+        require(n >= 0) { "Requested grapheme count $n is less than zero." }
+        val cut = indexBefore(n)
+        return if (cut == 0) this else substring(cut, buffer.size, countCodePoints(cut, buffer.size), 0)
+    }
+
+    /**
+     * A string without the last [n] graphemes, or this string when [n] is 0.
+     *
+     * @throws IllegalArgumentException when [n] is negative.
+     * @sample samples.Utf8StringSamples.dropLastRemovesTheLastGraphemes
+     */
+    public fun dropLast(n: Int): Utf8String {
+        require(n >= 0) { "Requested grapheme count $n is less than zero." }
+        if (n == 0) return this
+        val cut = indexBefore(n)
+        return substring(0, cut, codePointCount - countCodePoints(cut, buffer.size), 0)
+    }
+
+    private fun checkIndex(index: Int) {
+        if (index < 0 || index > buffer.size) {
+            throw IndexOutOfBoundsException("index: $index, byteCount: ${buffer.size}")
+        }
+    }
+
+    // The byte index after the first n graphemes, or byteCount when there are fewer. A walk to the end gives the
+    // length.
+    private fun indexAfter(n: Int): Int {
+        val count = graphemeCount
+        if (count != 0 && n >= count) return buffer.size
+        val graphemes = GraphemeIterator(buffer, 0)
+        var skipped = 0
+        while (skipped < n && graphemes.hasNext()) {
+            graphemes.skipNext()
+            skipped++
+        }
+        if (!graphemes.hasNext() && skipped > 0) graphemeCount = skipped
+        return graphemes.index
+    }
+
+    // The byte index before the last n graphemes, or 0 when there are fewer. The walk back neither reads nor sets the
+    // length, which counts the graphemes of the for loop: on malformed bytes the walk back can split the text
+    // differently.
+    private fun indexBefore(n: Int): Int {
+        val graphemes = GraphemeIterator(buffer, buffer.size)
+        var skipped = 0
+        while (skipped < n && graphemes.hasPrevious()) {
+            graphemes.skipPrevious()
+            skipped++
+        }
+        return graphemes.index
+    }
+
+    // The code points of buffer[from..<to], counted by their lead bytes.
+    private fun countCodePoints(from: Int, to: Int): Int {
+        if (codePointCount == buffer.size) return to - from
+        var count = 0
+        for (i in from..<to) if (buffer[i].toInt() and 0xC0 != 0x80) count++
+        return count
+    }
+
+    // A grapheme count of 0 means unknown, as for the graphemeCount field. A part cut by the walk forward has the
+    // graphemes that the walk counted, since a grapheme after a boundary does not depend on the text before it.
+    private fun substring(from: Int, to: Int, codePointCount: Int, graphemeCount: Int): Utf8String {
+        if (from == to) return Utf8String(ByteArray(0), 0)
+        val result = Utf8String(buffer.copyOfRange(from, to), codePointCount)
+        result.graphemeCount = graphemeCount
+        return result
+    }
 
     /**
      * True when [other] is a [Utf8String] with the same UTF-8 bytes, without Unicode normalization.

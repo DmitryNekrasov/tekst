@@ -42,6 +42,8 @@ fun generate(unicodeDir: File): Map<String, String> {
     val automaton = buildBreakAutomaton()
     verifyAutomaton(automaton)
     verifyAsciiFastPaths(classes, automaton)
+    val boundaryTables = buildBoundaryTables(automaton)
+    verifyBoundaryTables(classes, automaton, boundaryTables)
 
     val breakTest = readBreakTest(versionDir.resolve("ucd/auxiliary/GraphemeBreakTest.txt"), UNICODE_VERSION)
     val cldrTest = readCldrTests(unicodeDir.resolve("cldr-$CLDR_VERSION"))
@@ -59,14 +61,19 @@ fun generate(unicodeDir: File): Map<String, String> {
     val table = buildClassTable(classes)
 
     return mapOf(
-        "commonMain/kotlin/utf8string/GraphemeData.kt" to graphemeData(classes, automaton, table),
+        "commonMain/kotlin/utf8string/GraphemeData.kt" to graphemeData(classes, automaton, boundaryTables, table),
         "commonTest/kotlin/utf8string/GraphemeBreakTestData.kt" to breakTestData(breakTest, cldrTest),
         "commonTest/kotlin/utf8string/GraphemeClassTestData.kt" to classTestData(classes),
         "commonTest/kotlin/utf8string/EmojiTestData.kt" to emojiTestData(emojiTest),
     )
 }
 
-private fun graphemeData(classes: IntArray, automaton: BreakAutomaton, table: ClassTable): String {
+private fun graphemeData(
+    classes: IntArray,
+    automaton: BreakAutomaton,
+    boundaryTables: BoundaryTables,
+    table: ClassTable,
+): String {
     val file = KotlinFile(
         listOf(
             "unicode/$UNICODE_VERSION/ucd/auxiliary/GraphemeBreakProperty.txt",
@@ -83,6 +90,11 @@ private fun graphemeData(classes: IntArray, automaton: BreakAutomaton, table: Cl
         GraphemeClass.entries.size,
     )
     file.intConstant("The class of every code point outside the table.", "GRAPHEME_CLASS_OTHER", GraphemeClass.Other.ordinal)
+    file.intConstant(
+        "The class of regional indicators, which make flags in pairs.",
+        "GRAPHEME_CLASS_REGIONAL_INDICATOR",
+        GraphemeClass.RegionalIndicator.ordinal,
+    )
     check(classes.max() < 'Z' - 'A')
     file.stringConstant(
         "The class of each code point, as 'A' plus the class, in blocks of 64 code points that overlap.",
@@ -114,6 +126,25 @@ private fun graphemeData(classes: IntArray, automaton: BreakAutomaton, table: Cl
         "The row offset of the state of a cluster that starts with each class.",
         "GRAPHEME_START_STATES",
         String(CharArray(automaton.startStates.size) { (automaton.startStates[it] * classCount).toChar() }),
+    )
+    file.intConstant(
+        "Bit c is set when the state after a code point of class c is the start state of c, whatever text comes before.",
+        "GRAPHEME_SYNC_CLASSES",
+        (0..<classCount).filter { boundaryTables.sync[it] }.sumOf { 1 shl it },
+        hex = true,
+    )
+    check(automaton.stateCount * classCount <= 0x3FFF)
+    val pairs = String(CharArray(classCount * classCount) { pair ->
+        val context = if (boundaryTables.context[pair]) 0x8000 else 0
+        val safeState = boundaryTables.safeStates[pair]
+        (context + if (safeState >= 0) 0x4000 + safeState * classCount else 0).toChar()
+    })
+    file.stringConstant(
+        "For classes a and b, the char at a * GRAPHEME_CLASS_COUNT + b has 0x8000 when whether a cluster boundary comes " +
+                "between a and b depends on the text before a, and 0x4000 when the state after b does not, plus the row " +
+                "offset of that state.",
+        "GRAPHEME_PAIR_ROWS",
+        pairs,
     )
     return file.toString()
 }

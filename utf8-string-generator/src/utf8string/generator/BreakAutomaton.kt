@@ -11,6 +11,10 @@ import kotlin.random.Random
 class BreakAutomaton(val stateCount: Int, val startStates: IntArray, val transitions: IntArray) {
     val classCount: Int get() = startStates.size
 
+    fun nextState(state: Int, next: Int): Int = transitions[state * classCount + next] and (BOUNDARY - 1)
+
+    fun breaksBefore(state: Int, next: Int): Boolean = transitions[state * classCount + next] >= BOUNDARY
+
     fun boundaries(classes: List<Int>): List<Boolean> {
         if (classes.isEmpty()) return listOf(true)
         val result = arrayListOf(true)

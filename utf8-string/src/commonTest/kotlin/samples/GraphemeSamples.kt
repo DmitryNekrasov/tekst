@@ -62,4 +62,49 @@ class GraphemeSamples {
         assertFalse(iterator.hasNext())
         assertFailsWith<NoSuchElementException> { iterator.next() }
     }
+
+    @Test
+    fun iteratorWalksBothWays() {
+        val text = "Hi 👋🏽".u8
+        val iterator = text.iterator(text.byteCount)
+        val reversed = StringBuilder()
+        while (iterator.hasPrevious()) reversed.append(iterator.previous())
+        assertEquals("👋🏽 iH", reversed.toString())
+    }
+
+    @Test
+    fun indexIsTheByteBetweenGraphemes() {
+        val iterator = "Hi 👋🏽!".u8.iterator(3)
+        val start = iterator.index
+        assertEquals("👋🏽", iterator.next().toString())
+        assertEquals(3..<11, start..<iterator.index) // the bytes of 👋🏽
+    }
+
+    @Test
+    fun hasPreviousAndPreviousWalkBack() {
+        val iterator = "👋🏽!".u8.iterator()
+        assertFalse(iterator.hasPrevious())
+        assertEquals("👋🏽", iterator.next().toString())
+        assertTrue(iterator.hasPrevious())
+        assertEquals("👋🏽", iterator.previous().toString()) // the same grapheme again
+        assertFalse(iterator.hasPrevious())
+        assertFailsWith<NoSuchElementException> { iterator.previous() }
+    }
+
+    @Test
+    fun skipNextMovesWithoutAGrapheme() {
+        val iterator = "Hi 👋🏽 🇪🇸".u8.iterator()
+        val ends = mutableListOf<Int>()
+        while (iterator.hasNext()) ends += iterator.skipNext()
+        assertEquals(listOf(1, 2, 3, 11, 12, 20), ends) // the byte index after each grapheme
+    }
+
+    @Test
+    fun skipPreviousMovesWithoutAGrapheme() {
+        val flags = "🇪🇸🇫🇷".u8
+        val iterator = flags.iterator(flags.byteCount)
+        assertEquals(8, iterator.skipPrevious()) // 🇫🇷 starts at byte 8
+        assertEquals(0, iterator.skipPrevious())
+        assertFailsWith<NoSuchElementException> { iterator.skipPrevious() }
+    }
 }

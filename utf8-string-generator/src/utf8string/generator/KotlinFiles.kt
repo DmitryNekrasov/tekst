@@ -26,9 +26,9 @@ class KotlinFile(sources: List<String>) {
         text.appendLine("package utf8string")
     }
 
-    fun intConstant(comment: String, name: String, value: Int) {
+    fun intConstant(comment: String, name: String, value: Int, hex: Boolean = false) {
         comment(comment)
-        text.appendLine("internal const val $name: Int = $value")
+        text.appendLine("internal const val $name: Int = ${if (hex) "0x" + value.toString(16).uppercase() else value}")
     }
 
     fun stringConstant(comment: String, name: String, value: String, visibility: String = "internal", lines: Boolean = false) {

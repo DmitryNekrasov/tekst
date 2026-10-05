@@ -7,6 +7,7 @@ package utf8string
 
 import kotlin.random.Random
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 // Browsers do not tell their Unicode version, so the test runs only on Node.
@@ -38,6 +39,43 @@ class GraphemeIntlSegmenterTest {
         }
         if (older) assertTrue(newRuleDifferences > 0)
     }
+
+    @Test
+    fun randomAccessMatchesIntlSegmenterOnRandomTexts() {
+        val version = nodeUnicodeVersion() ?: return
+        val older = version < UNICODE_VERSION.substringBefore('.').toInt()
+        val corpus = GraphemeCorpus(excluded = if (older) CHANGED_SINCE_UNICODE_17 else emptyList())
+        val segmenter = graphemeSegmenter()
+        val random = Random(40)
+        repeat(RANDOM_TEXT_COUNT / 10) {
+            val codePoints = corpus.text(random)
+            val source = codePointsToString(codePoints)
+            val string = source.u8
+            val charIndices = IntArray(codePoints.size + 1)
+            val byteIndices = IntArray(source.length + 1)
+            for ((i, codePoint) in codePoints.withIndex()) {
+                charIndices[i + 1] = charIndices[i] + if (codePoint < 0x10000) 1 else 2
+                byteIndices[charIndices[i + 1]] = byteIndices[charIndices[i]] + utf8Length(codePoint)
+            }
+            val segments = segment(segmenter, source)
+            // The texts where only GB9c of Unicode 18 differs are for iterationMatchesIntlSegmenterOnRandomTexts.
+            val intl = BooleanArray(codePoints.size + 1) {
+                it == codePoints.size || containingStart(segments, charIndices[it]) == charIndices[it]
+            }
+            if (checkAgainstOracle(codePoints, string.iteratedBoundaries(), intl, older)) return@repeat
+            for (i in 0..<codePoints.size) {
+                val charIndex = charIndices[i]
+                val index = byteIndices[charIndex]
+                val message = "$index of ${codePoints.toHex()}"
+                val start = byteIndices[containingStart(segments, charIndex)]
+                assertEquals(start, string.iterator(index).index, "iterator($message)")
+                val end = byteIndices[containingEnd(segments, charIndex)]
+                assertEquals(end, string.nextGraphemeBoundary(index), "next($message)")
+                val previous = if (charIndex == 0) -1 else byteIndices[containingStart(segments, charIndex - 1)]
+                assertEquals(previous, string.previousGraphemeBoundary(index), "previous($message)")
+            }
+        }
+    }
 }
 
 private fun nodeUnicodeVersion(): Int? {
@@ -50,3 +88,13 @@ private fun graphemeSegmenter(): dynamic = js("new Intl.Segmenter(undefined, { g
 @Suppress("UNUSED_PARAMETER")
 private fun segmentStarts(segmenter: dynamic, text: String): Array<Int> =
     js("Array.from(segmenter.segment(text), function (segment) { return segment.index })")
+
+@Suppress("UNUSED_PARAMETER")
+private fun segment(segmenter: dynamic, text: String): dynamic = js("segmenter.segment(text)")
+
+@Suppress("UNUSED_PARAMETER")
+private fun containingStart(segments: dynamic, index: Int): Int = js("segments.containing(index).index")
+
+@Suppress("UNUSED_PARAMETER")
+private fun containingEnd(segments: dynamic, index: Int): Int =
+    js("(function (segment) { return segment.index + segment.segment.length })(segments.containing(index))")

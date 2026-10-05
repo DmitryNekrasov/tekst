@@ -10,7 +10,8 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-// The graphemes of malformed UTF-8 are unspecified. The tests check only that every byte is in exactly one grapheme.
+// The graphemes of malformed UTF-8 are unspecified. The tests check only that every byte is in exactly one grapheme,
+// and that the functions with an index answer within the text.
 class GraphemeMalformedTest {
     @Test
     fun malformedSequences() {
@@ -20,8 +21,12 @@ class GraphemeMalformedTest {
             "F0 9F 98 80 80 80", "E0 80 80", "F8 88 80 80 80",
             // Overlong forms of LF after CR, which the automaton joins to it.
             "0D C0 8A", "0D E0 80 8A", "0D F0 80 80 8A",
+            // Bytes that the walk back splits differently from the walk forward: a continuation byte after CR, and
+            // 2 regional indicators 3 bytes apart.
+            "0D 80", "41 0D 80", "C3 80 80", "F0 9F 87 F0 9F 87 A6",
         )) {
-            assertCovered(hex.split(' ').map { it.toInt(16).toByte() }.toByteArray(), hex)
+            assertCovered(hex.hexToBytes(), hex)
+            assertRandomAccessInRange(hex.hexToBytes(), Random(38), hex)
         }
     }
 
@@ -34,6 +39,7 @@ class GraphemeMalformedTest {
                 (if (random.nextBoolean()) random.nextInt(0x80, 0x100) else random.nextInt(0x100)).toByte()
             }
             assertCovered(bytes, bytes.toHex())
+            assertRandomAccessInRange(bytes, random, bytes.toHex())
         }
     }
 
@@ -45,12 +51,55 @@ class GraphemeMalformedTest {
         for (grapheme in string) {
             assertTrue(grapheme.byteCount > 0, message)
             grapheme.toString()
-            val slice = bytes.copyOfRange(byteCount, byteCount + grapheme.byteCount)
-            assertUtf8Equals(Utf8String(slice, slice.count { it.toInt() and 0xC0 != 0x80 }), grapheme.toUtf8String(), message)
+            assertHoldsBytes(bytes, byteCount, grapheme, message)
             byteCount += grapheme.byteCount
             graphemeCount++
         }
         assertEquals(bytes.size, byteCount, message)
         assertEquals(graphemeCount, string.length, message)
+    }
+
+    private fun assertRandomAccessInRange(bytes: ByteArray, random: Random, message: String) {
+        val string = Utf8String(bytes, -1)
+        val size = bytes.size
+        for (index in 0..size) {
+            string.isGraphemeBoundary(index)
+            val next = string.nextGraphemeBoundary(index)
+            assertTrue(if (index == size) next == -1 else next in index + 1..size, "next($index) of $message")
+            val previous = string.previousGraphemeBoundary(index)
+            assertTrue(if (index == 0) previous == -1 else previous in 0..<index, "previous($index) of $message")
+            assertTrue(string.iterator(index).index in 0..index, "iterator($index) of $message")
+        }
+        var covered = 0
+        val backward = string.iterator(size)
+        while (backward.hasPrevious()) {
+            val grapheme = backward.previous()
+            assertTrue(grapheme.byteCount > 0, message)
+            grapheme.toString()
+            assertHoldsBytes(bytes, backward.index, grapheme, message)
+            covered += grapheme.byteCount
+            assertEquals(size - covered, backward.index, message)
+        }
+        val graphemes = string.iterator(random.nextInt(size + 1))
+        repeat(20) {
+            val index = graphemes.index
+            if (random.nextBoolean()) {
+                if (graphemes.hasNext()) assertTrue(graphemes.skipNext() > index, message)
+            } else {
+                if (graphemes.hasPrevious()) assertTrue(graphemes.skipPrevious() < index, message)
+            }
+        }
+        val length = string.length
+        for (n in 0..3) {
+            assertEquals(size, string.take(n).byteCount + string.drop(n).byteCount, "take($n) of $message")
+            assertEquals(size, string.takeLast(n).byteCount + string.dropLast(n).byteCount, "takeLast($n) of $message")
+        }
+        // The walk back splits malformed bytes in its own way, and length counts the graphemes of the for loop.
+        assertEquals(length, string.length, "length after takeLast of $message")
+    }
+
+    private fun assertHoldsBytes(bytes: ByteArray, start: Int, grapheme: Grapheme, message: String) {
+        val slice = bytes.copyOfRange(start, start + grapheme.byteCount)
+        assertUtf8Equals(Utf8String(slice, slice.count { it.toInt() and 0xC0 != 0x80 }), grapheme.toUtf8String(), message)
     }
 }
