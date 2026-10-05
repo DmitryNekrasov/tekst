@@ -19,13 +19,6 @@ public class Grapheme internal constructor(
     internal val byteCount: Int
         get() = end - start
 
-    internal val codePointCount: Int
-        get() {
-            var count = 0
-            for (i in start..<end) if (bytes[i].toInt() and 0xC0 != 0x80) count++
-            return count
-        }
-
     /**
      * A [Utf8String] of this grapheme, with its own copy of the bytes.
      *

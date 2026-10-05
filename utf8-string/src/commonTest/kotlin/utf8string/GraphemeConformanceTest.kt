@@ -59,7 +59,6 @@ class GraphemeConformanceTest {
             val end = (codePoint + 1..test.codePoints.size).first { test.boundaries[it] }
             val part = test.codePoints.copyOfRange(codePoint, end)
             assertEquals(codePointsToString(part).u8, grapheme.toUtf8String(), test.line)
-            assertEquals(part.size, grapheme.codePointCount, test.line)
             assertEquals(codePointsToString(part), grapheme.toString(), test.line)
             codePoint = end
         }
