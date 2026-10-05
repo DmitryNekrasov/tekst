@@ -145,7 +145,7 @@ public class Utf8String internal constructor(private val buffer: ByteArray, inte
     public fun take(n: Int): Utf8String {
         require(n >= 0) { "Requested grapheme count $n is less than zero." }
         val cut = indexAfter(n)
-        return if (cut == buffer.size) this else substring(0, cut, countCodePoints(0, cut), n)
+        return if (cut == buffer.size) this else substring(0, cut, n)
     }
 
     /**
@@ -159,7 +159,7 @@ public class Utf8String internal constructor(private val buffer: ByteArray, inte
         if (n == 0) return this
         val cut = indexAfter(n)
         val count = graphemeCount
-        return substring(cut, buffer.size, codePointCount - countCodePoints(0, cut), if (count == 0) 0 else count - n)
+        return substring(cut, buffer.size, if (count == 0) 0 else count - n)
     }
 
     /**
@@ -171,7 +171,7 @@ public class Utf8String internal constructor(private val buffer: ByteArray, inte
     public fun takeLast(n: Int): Utf8String {
         require(n >= 0) { "Requested grapheme count $n is less than zero." }
         val cut = indexBefore(n)
-        return if (cut == 0) this else substring(cut, buffer.size, countCodePoints(cut, buffer.size), 0)
+        return if (cut == 0) this else substring(cut, buffer.size, 0)
     }
 
     /**
@@ -183,8 +183,7 @@ public class Utf8String internal constructor(private val buffer: ByteArray, inte
     public fun dropLast(n: Int): Utf8String {
         require(n >= 0) { "Requested grapheme count $n is less than zero." }
         if (n == 0) return this
-        val cut = indexBefore(n)
-        return substring(0, cut, codePointCount - countCodePoints(cut, buffer.size), 0)
+        return substring(0, indexBefore(n), 0)
     }
 
     private fun checkIndex(index: Int) {
@@ -221,22 +220,13 @@ public class Utf8String internal constructor(private val buffer: ByteArray, inte
         return graphemes.index
     }
 
-    // The code points of buffer[from..<to], counted by their lead bytes.
-    private fun countCodePoints(from: Int, to: Int): Int {
-        if (codePointCount == buffer.size) return to - from
-        var count = 0
-        for (i in from..<to) if (buffer[i].toInt() and 0xC0 != 0x80) count++
-        return count
-    }
-
     // A grapheme count of 0 means unknown, as for the graphemeCount field. A part cut by the walk forward has the
     // graphemes that the walk counted, since a grapheme after a boundary does not depend on the text before it.
-    private fun substring(from: Int, to: Int, codePointCount: Int, graphemeCount: Int): Utf8String {
+    private fun substring(from: Int, to: Int, graphemeCount: Int): Utf8String {
         if (from == to) return Utf8String(ByteArray(0), 0)
         val bytes = buffer.copyOfRange(from, to)
-        // A part of an ASCII string is ASCII.
-        val ascii = this.codePointCount == buffer.size
-        val result = Utf8String(bytes, if (ascii) codePointCount else checkedCodePointCount(bytes, codePointCount))
+        // When length counts this string as ASCII, it can count every part of it as ASCII too.
+        val result = Utf8String(bytes, if (codePointCount == buffer.size) bytes.size else codePointCountOfCopy(bytes))
         result.graphemeCount = graphemeCount
         return result
     }
@@ -336,11 +326,14 @@ public class Utf8String internal constructor(private val buffer: ByteArray, inte
     }
 }
 
-// The code point count of a new string of these bytes, which can be malformed: count, unless count says ASCII wrongly.
-// length counts the bytes as ASCII when the code point count equals the byte count, which is right only when
-// utf8LengthAt splits the bytes into single bytes, so when no byte from 0xC0 comes before the last one. Otherwise the
-// count becomes the number of code points that utf8LengthAt splits the bytes into, which is less.
-internal fun checkedCodePointCount(bytes: ByteArray, count: Int): Int {
+// The code point count of a string of bytes copied from another one, from these bytes alone, so that equal bytes make
+// equal strings: the number of lead bytes, which can be malformed. But length counts the bytes as ASCII when the code
+// point count equals the byte count, which is right only when utf8LengthAt splits them into single bytes, so when no
+// byte from 0xC0 comes before the last one. Otherwise the count is the number of code points that utf8LengthAt splits
+// the bytes into, which is less.
+internal fun codePointCountOfCopy(bytes: ByteArray): Int {
+    var count = 0
+    for (byte in bytes) if (byte.toInt() and 0xC0 != 0x80) count++
     if (count != bytes.size) return count
     for (i in 0..<bytes.size - 1) {
         if (bytes[i].toInt() and 0xFF >= 0xC0) {

@@ -142,6 +142,20 @@ class GraphemeBoundaryTest {
     }
 
     @Test
+    fun partsOfTheEmptyString() {
+        val empty = "".u8
+        for (n in listOf(0, 1, Int.MAX_VALUE)) {
+            for (part in listOf(empty.take(n), empty.drop(n), empty.takeLast(n), empty.dropLast(n))) {
+                assertUtf8Equals(empty, part, "a part of the empty string for $n")
+                assertEquals(0, part.length)
+            }
+            assertSame(empty, empty.take(n))
+            assertSame(empty, empty.takeLast(n))
+        }
+        assertFailsWith<IllegalArgumentException> { empty.dropLast(-1) }
+    }
+
+    @Test
     fun kernelStaysInItsPartOfTheArray() {
         // Bytes that would change the boundaries of the text if a query read them: before it a regional indicator,
         // Prepend and continuation bytes, after it a combining mark, ZWJ, LF and a lead byte.

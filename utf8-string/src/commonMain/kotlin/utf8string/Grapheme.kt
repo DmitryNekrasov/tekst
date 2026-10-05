@@ -33,7 +33,7 @@ public class Grapheme internal constructor(
      */
     public fun toUtf8String(): Utf8String {
         val copy = bytes.copyOfRange(start, end)
-        return Utf8String(copy, checkedCodePointCount(copy, codePointCount))
+        return Utf8String(copy, codePointCountOfCopy(copy))
     }
 
     /**
