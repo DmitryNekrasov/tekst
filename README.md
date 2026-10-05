@@ -22,7 +22,7 @@ for (grapheme in text) {
 }
 ```
 
-`.u8` encodes a `String` into a `Utf8String`, and `toString()` decodes it back. `String.length` counts UTF-16 chars, so the hand with a skin tone and the flag count as 4 each, and `take` or `substring` can split them. The Kotlin standard library has no grapheme API. The platform APIs, like `BreakIterator` on the JVM and `Intl.Segmenter` in JavaScript, are not common code, and their results depend on the platform version. For example, `BreakIterator` before JDK 20 counts the hand and the flag as 2 graphemes each. utf8-string has one implementation for all targets, with the rules of Unicode 18.0.
+`.u8` encodes a `String` into a `Utf8String`, and `toString()` decodes it back. `String.length` counts UTF-16 chars, so the hand with a skin tone and the flag count as 4 each, and `String.take` or `substring` can split them. The Kotlin standard library has no grapheme API. The platform APIs, like `BreakIterator` on the JVM and `Intl.Segmenter` in JavaScript, are not common code, and their results depend on the platform version. For example, `BreakIterator` before JDK 20 counts the hand and the flag as 2 graphemes each. utf8-string has one implementation for all targets, with the rules of Unicode 18.0.
 
 Targets: JVM, JS, Wasm (JS and WASI), and Kotlin/Native for Linux, macOS arm64, Windows, iOS, watchOS, and tvOS.
 
