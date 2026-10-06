@@ -145,8 +145,7 @@ public class Utf8String internal constructor(private val buffer: ByteArray, inte
      */
     public fun take(n: Int): Utf8String {
         require(n >= 0) { "Requested grapheme count $n is less than zero." }
-        val cut = indexAfter(n)
-        return if (cut == buffer.size) this else substring(0, cut, n)
+        return substring(0, indexAfter(n), n)
     }
 
     /**
@@ -157,7 +156,6 @@ public class Utf8String internal constructor(private val buffer: ByteArray, inte
      */
     public fun drop(n: Int): Utf8String {
         require(n >= 0) { "Requested grapheme count $n is less than zero." }
-        if (n == 0) return this
         val cut = indexAfter(n)
         val count = graphemeCount
         return substring(cut, buffer.size, if (count == 0) 0 else count - n)
@@ -171,8 +169,7 @@ public class Utf8String internal constructor(private val buffer: ByteArray, inte
      */
     public fun takeLast(n: Int): Utf8String {
         require(n >= 0) { "Requested grapheme count $n is less than zero." }
-        val cut = indexBefore(n)
-        return if (cut == 0) this else substring(cut, buffer.size, 0)
+        return substring(indexBefore(n), buffer.size, 0)
     }
 
     /**
@@ -183,7 +180,6 @@ public class Utf8String internal constructor(private val buffer: ByteArray, inte
      */
     public fun dropLast(n: Int): Utf8String {
         require(n >= 0) { "Requested grapheme count $n is less than zero." }
-        if (n == 0) return this
         return substring(0, indexBefore(n), 0)
     }
 
@@ -228,6 +224,8 @@ public class Utf8String internal constructor(private val buffer: ByteArray, inte
     // A grapheme count of 0 means unknown, as for the graphemeCount field. A part cut by the walk forward has the
     // graphemes that the walk counted, since a grapheme after a boundary does not depend on the text before it.
     private fun substring(from: Int, to: Int, graphemeCount: Int): Utf8String {
+        // A part with every byte is this string, so a call that changes nothing copies nothing.
+        if (from == 0 && to == buffer.size) return this
         if (from == to) return Utf8String(ByteArray(0), 0)
         val bytes = buffer.copyOfRange(from, to)
         // When length counts this string as ASCII, it can count every part of it as ASCII too.

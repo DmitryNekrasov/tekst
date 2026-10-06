@@ -146,11 +146,8 @@ class GraphemeBoundaryTest {
         val empty = "".u8
         for (n in listOf(0, 1, Int.MAX_VALUE)) {
             for (part in listOf(empty.take(n), empty.drop(n), empty.takeLast(n), empty.dropLast(n))) {
-                assertUtf8Equals(empty, part, "a part of the empty string for $n")
-                assertEquals(0, part.length)
+                assertSame(empty, part, "a part of the empty string for $n")
             }
-            assertSame(empty, empty.take(n))
-            assertSame(empty, empty.takeLast(n))
         }
         assertFailsWith<IllegalArgumentException> { empty.dropLast(-1) }
     }
