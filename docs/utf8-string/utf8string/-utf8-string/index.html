@@ -43,7 +43,7 @@
         </button>
         <div class="navigation-controls--break ui-kit_mobile-only"></div>
         <div class="library-version" id="library-version">
-0.1.1        </div>
+0.2.0        </div>
         <div class="navigation-controls">
         <ul class="filter-section filter-section_loading" id="filter-section" aria-label="Target filter">
                 <button class="platform-tag platform-selector common-like" data-active="" aria-pressed="true"
@@ -107,12 +107,16 @@
   <div class="breadcrumbs"><a href="../../../index.html">utf8-string</a><span class="delimiter">/</span><a href="../index.html">utf8string</a><span class="delimiter">/</span><span class="current">Utf8String</span></div>
   <div class="cover ">
     <h1 class="cover"><span><span>Utf8String</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":utf8-string/commonMain"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">Utf8String</a><span class="source-link-wrapper"><span class="source-link" data-element-type="source-link">(<a href="https://github.com/DmitryNekrasov/utf8-string/tree/v0.1.1/utf8-string/src/commonMain/kotlin/utf8string/Utf8String.kt#L16">source</a>)</span></span></div><p class="paragraph">An immutable string stored as UTF-8 bytes. Its <a href="length.html">length</a> counts graphemes, what a user sees as one character, and <code class="lang-kotlin">for</code> iterates over them. <a href="../u8.html">u8</a> and <a href="../to-utf8-string.html">toUtf8String</a> make one from a <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a>, and nothing makes one from bytes.</p><h4 class="">Samples</h4><div class="sample-container"><pre><code class="monospace block lang-kotlin" theme="idea">val text = &quot;Hi 👋🏽 🇪🇸&quot;.u8
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":utf8-string/commonMain"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">Utf8String</a><span class="source-link-wrapper"><span class="source-link" data-element-type="source-link">(<a href="https://github.com/DmitryNekrasov/utf8-string/tree/v0.2.0/utf8-string/src/commonMain/kotlin/utf8string/Utf8String.kt#L21">source</a>)</span></span></div><p class="paragraph">An immutable string stored as UTF-8 bytes. Its <a href="length.html">length</a> counts graphemes, what a user sees as one character, and <code class="lang-kotlin">for</code> iterates over them. <a href="../u8.html">u8</a> and <a href="../to-utf8-string.html">toUtf8String</a> make one from a <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a>, and nothing makes one from bytes.</p><p class="paragraph">An index is a byte index, as in <a href="copy-into.html">copyInto</a>, and a count is a number of graphemes, as <a href="length.html">length</a> is. A function that takes an index reads the grapheme around it and the one before it, and in a run of flags also the run before it, so a loop over the graphemes should use an <a href="iterator.html">iterator</a> instead of calling such a function for each grapheme.</p><h4 class="">Samples</h4><div class="sample-container"><pre><code class="monospace block lang-kotlin" theme="idea">val text = &quot;Hi 👋🏽 🇪🇸&quot;.u8
 assertEquals(6, text.length)
 assertEquals(12, text.toString().length)
 val brackets = StringBuilder()
 for (grapheme in text) brackets.append(&quot;[$grapheme]&quot;)
-assertEquals(&quot;[H][i][ ][👋🏽][ ][🇪🇸]&quot;, brackets.toString())</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div></div></div>
+assertEquals(&quot;[H][i][ ][👋🏽][ ][🇪🇸]&quot;, brackets.toString())</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div><div class="sample-container"><pre><code class="monospace block lang-kotlin" theme="idea">val text = &quot;Hi 👋🏽&quot;.u8
+assertEquals(4, text.length)
+assertEquals(11, text.byteCount) // the end for an index
+assertEquals(3, text.iterator(text.length).index) // compiles, but byte 4 is inside 👋🏽, not at the end
+assertFalse(text.iterator(text.byteCount).hasNext())</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div></div></div>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
@@ -183,6 +187,36 @@ assertEquals(&quot;[H][i][ ][👋🏽][ ][🇪🇸]&quot;, brackets.toString())<
               </div>
             </div>
           </div>
+<a data-name="-781675988%2FFunctions%2F1184050406" anchor-label="drop" id="-781675988%2FFunctions%2F1184050406" data-filterable-set=":utf8-string/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":utf8-string/commonMain" data-filterable-set=":utf8-string/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="drop.html"><span><span>drop</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-781675988%2FFunctions%2F1184050406"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":utf8-string/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="drop.html"><span class="token function">drop</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">n<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">Utf8String</a></div><div class="brief "><p class="paragraph">A string without the first <a href="drop.html">n</a> graphemes, or this string when <a href="drop.html">n</a> is 0.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="911339318%2FFunctions%2F1184050406" anchor-label="dropLast" id="911339318%2FFunctions%2F1184050406" data-filterable-set=":utf8-string/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":utf8-string/commonMain" data-filterable-set=":utf8-string/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="drop-last.html"><span>drop</span><wbr></wbr><span><span>Last</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="911339318%2FFunctions%2F1184050406"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":utf8-string/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="drop-last.html"><span class="token function">dropLast</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">n<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">Utf8String</a></div><div class="brief "><p class="paragraph">A string without the last <a href="drop-last.html">n</a> graphemes, or this string when <a href="drop-last.html">n</a> is 0.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
 <a data-name="-476117500%2FFunctions%2F1184050406" anchor-label="equals" id="-476117500%2FFunctions%2F1184050406" data-filterable-set=":utf8-string/commonMain"></a>
           <div class="table-row table-row_content" data-filterable-current=":utf8-string/commonMain" data-filterable-set=":utf8-string/commonMain">
             <div class="main-subrow keyValue ">
@@ -213,17 +247,92 @@ assertEquals(&quot;[H][i][ ][👋🏽][ ][🇪🇸]&quot;, brackets.toString())<
               </div>
             </div>
           </div>
-<a data-name="619750767%2FFunctions%2F1184050406" anchor-label="iterator" id="619750767%2FFunctions%2F1184050406" data-filterable-set=":utf8-string/commonMain"></a>
+<a data-name="1525354840%2FFunctions%2F1184050406" anchor-label="isGraphemeBoundary" id="1525354840%2FFunctions%2F1184050406" data-filterable-set=":utf8-string/commonMain"></a>
           <div class="table-row table-row_content" data-filterable-current=":utf8-string/commonMain" data-filterable-set=":utf8-string/commonMain">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="iterator.html"><span><span>iterator</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="619750767%2FFunctions%2F1184050406"></span>
+                  <div><a href="is-grapheme-boundary.html"><span>is</span><wbr></wbr><span>Grapheme</span><wbr></wbr><span><span>Boundary</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1525354840%2FFunctions%2F1184050406"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":utf8-string/commonMain"><div class="symbol monospace"><span class="token keyword">operator </span><span class="token keyword">fun </span><a href="iterator.html"><span class="token function">iterator</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../-grapheme-iterator/index.html">GraphemeIterator</a></div><div class="brief "><p class="paragraph">An iterator over the graphemes, which a <code class="lang-kotlin">for</code> loop over the string uses.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":utf8-string/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="is-grapheme-boundary.html"><span class="token function">isGraphemeBoundary</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">index<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">True when a grapheme starts at the byte <a href="is-grapheme-boundary.html">index</a>, or <a href="is-grapheme-boundary.html">index</a> is 0 or <a href="byte-count.html">byteCount</a>. False otherwise, even for an index inside a code point.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="638701962%2FFunctions%2F1184050406" anchor-label="iterator" id="638701962%2FFunctions%2F1184050406" data-filterable-set=":utf8-string/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":utf8-string/commonMain" data-filterable-set=":utf8-string/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="iterator.html"><span><span>iterator</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="638701962%2FFunctions%2F1184050406"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":utf8-string/commonMain"><div class="symbol monospace"><span class="token keyword">operator </span><span class="token keyword">fun </span><a href="iterator.html"><span class="token function">iterator</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../-grapheme-iterator/index.html">GraphemeIterator</a></div><div class="brief "><p class="paragraph">An iterator over the graphemes, which a <code class="lang-kotlin">for</code> loop over the string uses.</p></div><div class="symbol monospace"><span class="token keyword">fun </span><a href="iterator.html"><span class="token function">iterator</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">index<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../-grapheme-iterator/index.html">GraphemeIterator</a></div><div class="brief "><p class="paragraph">An iterator that starts at the last grapheme boundary at or before the byte <a href="iterator.html">index</a>, so that its <a href="../-grapheme-iterator/next.html">GraphemeIterator.next</a> returns the grapheme that contains the byte at <a href="iterator.html">index</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2105184495%2FFunctions%2F1184050406" anchor-label="nextGraphemeBoundary" id="2105184495%2FFunctions%2F1184050406" data-filterable-set=":utf8-string/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":utf8-string/commonMain" data-filterable-set=":utf8-string/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="next-grapheme-boundary.html"><span>next</span><wbr></wbr><span>Grapheme</span><wbr></wbr><span><span>Boundary</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2105184495%2FFunctions%2F1184050406"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":utf8-string/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="next-grapheme-boundary.html"><span class="token function">nextGraphemeBoundary</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">index<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></div><div class="brief "><p class="paragraph">The first grapheme boundary after the byte <a href="next-grapheme-boundary.html">index</a>, which is the end of the grapheme that contains the byte at <a href="next-grapheme-boundary.html">index</a>, or -1 when <a href="next-grapheme-boundary.html">index</a> is <a href="byte-count.html">byteCount</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="889363051%2FFunctions%2F1184050406" anchor-label="previousGraphemeBoundary" id="889363051%2FFunctions%2F1184050406" data-filterable-set=":utf8-string/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":utf8-string/commonMain" data-filterable-set=":utf8-string/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="previous-grapheme-boundary.html"><span>previous</span><wbr></wbr><span>Grapheme</span><wbr></wbr><span><span>Boundary</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="889363051%2FFunctions%2F1184050406"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":utf8-string/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="previous-grapheme-boundary.html"><span class="token function">previousGraphemeBoundary</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">index<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></div><div class="brief "><p class="paragraph">The last grapheme boundary before the byte <a href="previous-grapheme-boundary.html">index</a>, which is the start of the grapheme that contains the byte at <code class="lang-kotlin">index - 1</code>, or -1 when <a href="previous-grapheme-boundary.html">index</a> is 0. So for an index inside a grapheme, it is the start of that grapheme, as in <code class="lang-kotlin">java.text.BreakIterator</code>, and not the start of the grapheme before it, as in Swift.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1650137708%2FFunctions%2F1184050406" anchor-label="take" id="-1650137708%2FFunctions%2F1184050406" data-filterable-set=":utf8-string/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":utf8-string/commonMain" data-filterable-set=":utf8-string/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="take.html"><span><span>take</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1650137708%2FFunctions%2F1184050406"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":utf8-string/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="take.html"><span class="token function">take</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">n<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">Utf8String</a></div><div class="brief "><p class="paragraph">A string of the first <a href="take.html">n</a> graphemes, or this string when it has <a href="take.html">n</a> graphemes or fewer.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="468078238%2FFunctions%2F1184050406" anchor-label="takeLast" id="468078238%2FFunctions%2F1184050406" data-filterable-set=":utf8-string/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":utf8-string/commonMain" data-filterable-set=":utf8-string/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="take-last.html"><span>take</span><wbr></wbr><span><span>Last</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="468078238%2FFunctions%2F1184050406"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":utf8-string/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="take-last.html"><span class="token function">takeLast</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">n<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">Utf8String</a></div><div class="brief "><p class="paragraph">A string of the last <a href="take-last.html">n</a> graphemes, or this string when it has <a href="take-last.html">n</a> graphemes or fewer.</p></div></div></div>
                 </div>
               </div>
             </div>

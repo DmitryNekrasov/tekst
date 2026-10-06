@@ -43,7 +43,7 @@
         </button>
         <div class="navigation-controls--break ui-kit_mobile-only"></div>
         <div class="library-version" id="library-version">
-0.1.1        </div>
+0.2.0        </div>
         <div class="navigation-controls">
         <ul class="filter-section filter-section_loading" id="filter-section" aria-label="Target filter">
                 <button class="platform-tag platform-selector common-like" data-active="" aria-pressed="true"
@@ -107,16 +107,39 @@
   <div class="breadcrumbs"><a href="../../../index.html">utf8-string</a><span class="delimiter">/</span><a href="../index.html">utf8string</a><span class="delimiter">/</span><span class="current">GraphemeIterator</span></div>
   <div class="cover ">
     <h1 class="cover"><span>Grapheme</span><wbr></wbr><span><span>Iterator</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":utf8-string/commonMain"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">GraphemeIterator</a> : <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-iterator/index.html">Iterator</a><span class="token operator">&lt;</span><a href="../-grapheme/index.html">Grapheme</a><span class="token operator">&gt; </span><span class="source-link-wrapper"><span class="source-link" data-element-type="source-link">(<a href="https://github.com/DmitryNekrasov/utf8-string/tree/v0.1.1/utf8-string/src/commonMain/kotlin/utf8string/GraphemeIterator.kt#L14">source</a>)</span></span></div><p class="paragraph">An iterator over the graphemes of a <a href="../-utf8-string/index.html">Utf8String</a>. For one ASCII char or CR LF, <a href="next.html">next</a> returns a shared object, and for any other grapheme it allocates one small object.</p><h4 class="">Samples</h4><div class="sample-container"><pre><code class="monospace block lang-kotlin" theme="idea">val iterator = &quot;👋🏽!&quot;.u8.iterator()
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":utf8-string/commonMain"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">GraphemeIterator</a> : <a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-iterator/index.html">Iterator</a><span class="token operator">&lt;</span><a href="../-grapheme/index.html">Grapheme</a><span class="token operator">&gt; </span><span class="source-link-wrapper"><span class="source-link" data-element-type="source-link">(<a href="https://github.com/DmitryNekrasov/utf8-string/tree/v0.2.0/utf8-string/src/commonMain/kotlin/utf8string/GraphemeIterator.kt#L16">source</a>)</span></span></div><p class="paragraph">An iterator over the graphemes of a <a href="../-utf8-string/index.html">Utf8String</a>, in both directions. For one ASCII char or CR LF, <a href="next.html">next</a> and <a href="previous.html">previous</a> return a shared object, and for any other grapheme they allocate one small object, which <a href="skip-next.html">skipNext</a> and <a href="skip-previous.html">skipPrevious</a> avoid.</p><h4 class="">Samples</h4><div class="sample-container"><pre><code class="monospace block lang-kotlin" theme="idea">val iterator = &quot;👋🏽!&quot;.u8.iterator()
 assertTrue(iterator.hasNext())
 assertEquals(&quot;👋🏽&quot;, iterator.next().toString())
 assertEquals(&quot;!&quot;, iterator.next().toString())
 assertFalse(iterator.hasNext())
-assertFailsWith&lt;NoSuchElementException&gt; { iterator.next() }</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div></div></div>
+assertFailsWith&lt;NoSuchElementException&gt; { iterator.next() }</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div><div class="sample-container"><pre><code class="monospace block lang-kotlin" theme="idea">val text = &quot;Hi 👋🏽&quot;.u8
+val iterator = text.iterator(text.byteCount)
+val reversed = StringBuilder()
+while (iterator.hasPrevious()) reversed.append(iterator.previous())
+assertEquals(&quot;👋🏽 iH&quot;, reversed.toString())</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div></div></div>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
     <div class="tabs-section-body">
+      <div data-togglable="PROPERTY">
+        <h2 class="tableheader">Properties</h2>
+        <div class="table"><a data-name="71981008%2FProperties%2F1184050406" anchor-label="index" id="71981008%2FProperties%2F1184050406" data-filterable-set=":utf8-string/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":utf8-string/commonMain" data-filterable-set=":utf8-string/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="--index--.html"><span><span>index</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="71981008%2FProperties%2F1184050406"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":utf8-string/commonMain"><div class="symbol monospace"><span class="token keyword">val </span><a href="--index--.html">index</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></div><div class="brief "><p class="paragraph">The byte index of the iterator: 0 at the start, <a href="../-utf8-string/byte-count.html">Utf8String.byteCount</a> at the end, and a grapheme boundary in between. <a href="next.html">next</a> returns the grapheme that starts here, and <a href="previous.html">previous</a> the one that ends here.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <div data-togglable="FUNCTION">
         <h2 class="tableheader">Functions</h2>
         <div class="table"><a data-name="-1018055915%2FFunctions%2F1184050406" anchor-label="hasNext" id="-1018055915%2FFunctions%2F1184050406" data-filterable-set=":utf8-string/commonMain"></a>
@@ -134,6 +157,21 @@ assertFailsWith&lt;NoSuchElementException&gt; { iterator.next() }</code></pre><s
               </div>
             </div>
           </div>
+<a data-name="198402577%2FFunctions%2F1184050406" anchor-label="hasPrevious" id="198402577%2FFunctions%2F1184050406" data-filterable-set=":utf8-string/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":utf8-string/commonMain" data-filterable-set=":utf8-string/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="has-previous.html"><span>has</span><wbr></wbr><span><span>Previous</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="198402577%2FFunctions%2F1184050406"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":utf8-string/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="has-previous.html"><span class="token function">hasPrevious</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">True when <a href="--index--.html">index</a> is not 0, so that <a href="previous.html">previous</a> has a grapheme to return.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
 <a data-name="463989477%2FFunctions%2F1184050406" anchor-label="next" id="463989477%2FFunctions%2F1184050406" data-filterable-set=":utf8-string/commonMain"></a>
           <div class="table-row table-row_content" data-filterable-current=":utf8-string/commonMain" data-filterable-set=":utf8-string/commonMain">
             <div class="main-subrow keyValue ">
@@ -145,6 +183,51 @@ assertFailsWith&lt;NoSuchElementException&gt; { iterator.next() }</code></pre><s
               <div>
                 <div class="title">
                   <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":utf8-string/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">operator override </span><span class="token keyword">fun </span><a href="next.html"><span class="token function">next</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../-grapheme/index.html">Grapheme</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1537815009%2FFunctions%2F1184050406" anchor-label="previous" id="1537815009%2FFunctions%2F1184050406" data-filterable-set=":utf8-string/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":utf8-string/commonMain" data-filterable-set=":utf8-string/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="previous.html"><span><span>previous</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1537815009%2FFunctions%2F1184050406"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":utf8-string/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="previous.html"><span class="token function">previous</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../-grapheme/index.html">Grapheme</a></div><div class="brief "><p class="paragraph">The grapheme that ends at <a href="--index--.html">index</a>, and moves <a href="--index--.html">index</a> to its start. After <a href="next.html">next</a>, it returns the same grapheme.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1437262886%2FFunctions%2F1184050406" anchor-label="skipNext" id="1437262886%2FFunctions%2F1184050406" data-filterable-set=":utf8-string/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":utf8-string/commonMain" data-filterable-set=":utf8-string/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="skip-next.html"><span>skip</span><wbr></wbr><span><span>Next</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1437262886%2FFunctions%2F1184050406"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":utf8-string/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="skip-next.html"><span class="token function">skipNext</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></div><div class="brief "><p class="paragraph">Moves over the next grapheme as <a href="next.html">next</a> does, without a <a href="../-grapheme/index.html">Grapheme</a>, and returns the new <a href="--index--.html">index</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2098963106%2FFunctions%2F1184050406" anchor-label="skipPrevious" id="2098963106%2FFunctions%2F1184050406" data-filterable-set=":utf8-string/commonMain"></a>
+          <div class="table-row table-row_content" data-filterable-current=":utf8-string/commonMain" data-filterable-set=":utf8-string/commonMain">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="skip-previous.html"><span>skip</span><wbr></wbr><span><span>Previous</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2098963106%2FFunctions%2F1184050406"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":utf8-string/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="skip-previous.html"><span class="token function">skipPrevious</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></div><div class="brief "><p class="paragraph">Moves over the previous grapheme as <a href="previous.html">previous</a> does, without a <a href="../-grapheme/index.html">Grapheme</a>, and returns the new <a href="--index--.html">index</a>.</p></div></div></div>
                 </div>
               </div>
             </div>

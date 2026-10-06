@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
-    <title>hasNext</title>
+    <title>drop</title>
     <link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">
         <script>var pathToRoot = "../../../";</script>
     <script>document.documentElement.classList.replace("no-js", "js");</script>
@@ -103,17 +103,14 @@
         </nav>
         <div id="resizer" class="resizer" data-item-type="BAR"></div>
         <div id="main" data-item-type="SECTION" role="main">
-<div class="main-content" data-page-type="member" id="content" pageIds="utf8-string::utf8string/GraphemeIterator/hasNext/#/PointingToDeclaration//1184050406">
-  <div class="breadcrumbs"><a href="../../../index.html">utf8-string</a><span class="delimiter">/</span><a href="../index.html">utf8string</a><span class="delimiter">/</span><a href="index.html">GraphemeIterator</a><span class="delimiter">/</span><span class="current">hasNext</span></div>
+<div class="main-content" data-page-type="member" id="content" pageIds="utf8-string::utf8string/Utf8String/drop/#kotlin.Int/PointingToDeclaration//1184050406">
+  <div class="breadcrumbs"><a href="../../../index.html">utf8-string</a><span class="delimiter">/</span><a href="../index.html">utf8string</a><span class="delimiter">/</span><a href="index.html">Utf8String</a><span class="delimiter">/</span><span class="current">drop</span></div>
   <div class="cover ">
-    <h1 class="cover"><span>has</span><wbr></wbr><span><span>Next</span></span></h1>
+    <h1 class="cover"><span><span>drop</span></span></h1>
   </div>
-  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":utf8-string/commonMain"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">operator override </span><span class="token keyword">fun </span><a href="has-next.html"><span class="token function">hasNext</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="source-link-wrapper"><span class="source-link" data-element-type="source-link">(<a href="https://github.com/DmitryNekrasov/utf8-string/tree/v0.2.0/utf8-string/src/commonMain/kotlin/utf8string/GraphemeIterator.kt#L49">source</a>)</span></span></div><h4 class="">Samples</h4><div class="sample-container"><pre><code class="monospace block lang-kotlin" theme="idea">val iterator = &quot;👋🏽!&quot;.u8.iterator()
-assertTrue(iterator.hasNext())
-assertEquals(&quot;👋🏽&quot;, iterator.next().toString())
-assertEquals(&quot;!&quot;, iterator.next().toString())
-assertFalse(iterator.hasNext())
-assertFailsWith&lt;NoSuchElementException&gt; { iterator.next() }</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div></div></div>
+  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":utf8-string/commonMain"><div class="symbol monospace"><span class="token keyword">fun </span><a href="drop.html"><span class="token function">drop</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">n<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">Utf8String</a><span class="source-link-wrapper"><span class="source-link" data-element-type="source-link">(<a href="https://github.com/DmitryNekrasov/utf8-string/tree/v0.2.0/utf8-string/src/commonMain/kotlin/utf8string/Utf8String.kt#L157">source</a>)</span></span></div><p class="paragraph">A string without the first <a href="drop.html">n</a> graphemes, or this string when <a href="drop.html">n</a> is 0.</p><h4 class="tableheader">Throws</h4><div class="table"><div class="table-row table-row_content" data-filterable-current=":utf8-string/commonMain" data-filterable-set=":utf8-string/commonMain"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-illegal-argument-exception/index.html"><span>Illegal</span><wbr></wbr><span>Argument</span><wbr></wbr><span><span>Exception</span></span></a></div></span></div><div><div class="title"><p class="paragraph">when <a href="drop.html">n</a> is negative.</p></div></div></div></div></div><h4 class="">Samples</h4><div class="sample-container"><pre><code class="monospace block lang-kotlin" theme="idea">val text = &quot;Hi 👋🏽 🇪🇸&quot;.u8
+assertEquals(&quot; 🇪🇸&quot;.u8, text.drop(4))
+assertEquals(&quot;&quot;.u8, text.drop(10))</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div></div></div>
 </div>
     <div class="footer">
         <div class="footer--container">
