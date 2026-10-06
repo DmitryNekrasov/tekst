@@ -34,7 +34,7 @@ utf8-string is a personal hobby project.
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation("io.github.dmitrynekrasov:utf8-string:0.1.1")
+            implementation("io.github.dmitrynekrasov:utf8-string:0.2.0")
         }
     }
 }
@@ -103,7 +103,7 @@ Each literal is created once, in a private object of its file, and every evaluat
 ```kotlin
 plugins {
     kotlin("multiplatform") version "2.4.20"
-    id("io.github.dmitrynekrasov.utf8-string") version "0.1.1"
+    id("io.github.dmitrynekrasov.utf8-string") version "0.2.0"
 }
 ```
 
