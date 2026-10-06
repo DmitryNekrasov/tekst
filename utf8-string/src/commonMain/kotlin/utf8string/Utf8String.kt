@@ -195,6 +195,8 @@ public class Utf8String internal constructor(private val buffer: ByteArray, inte
     // The byte index after the first n graphemes, or byteCount when there are fewer. A walk to the end gives the
     // length.
     private fun indexAfter(n: Int): Int {
+        // Each grapheme takes at least a byte.
+        if (n >= buffer.size) return buffer.size
         val count = graphemeCount
         if (count != 0 && n >= count) return buffer.size
         val graphemes = GraphemeIterator(buffer, 0)
