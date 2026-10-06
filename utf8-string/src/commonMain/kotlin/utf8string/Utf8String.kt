@@ -85,8 +85,9 @@ public class Utf8String internal constructor(private val buffer: ByteArray, inte
      */
     public fun iterator(index: Int): GraphemeIterator {
         checkIndex(index)
-        val start = if (index == buffer.size) index else previousGraphemeBoundaryAt(buffer, 0, buffer.size, index + 1)
-        return GraphemeIterator(buffer, start)
+        if (index == buffer.size) return GraphemeIterator(buffer, index)
+        // The iterator walks back itself, so that it keeps a run of flags that it reads for the previous that follows.
+        return GraphemeIterator(buffer, index + 1).also { it.skipPrevious() }
     }
 
     /**
