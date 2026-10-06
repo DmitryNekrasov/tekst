@@ -16,6 +16,8 @@ package utf8string
 // keeps the last run instead.
 //
 // On malformed bytes the boundaries are unspecified, but every loop moves by at least one byte and stays in the text.
+//
+// Utf8String passes the whole array. The range is for a later API over a part of the caller's array.
 
 internal fun isGraphemeBoundaryAt(bytes: ByteArray, start: Int, end: Int, index: Int): Boolean {
     if (index == start || index == end) return true
