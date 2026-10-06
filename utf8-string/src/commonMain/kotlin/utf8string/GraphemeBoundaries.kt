@@ -9,11 +9,10 @@ package utf8string
 // most classes, the automaton row after a code point does not depend on the text before it, and for most pairs of
 // classes, the row after the pair does not. So to learn the row at an index, a query walks back to such a code point or
 // pair and runs the automaton forward from there. Only for a few pairs, whether a boundary comes between the 2 code
-// points depends on the text before them, so most queries read only the code points around the index.
+// points depends on the text before them.
 //
-// In a run of regional indicators, the boundaries depend on the parity of the run before them, so a query reads the run
-// back to its start, and a loop of queries over a run would read it again for each flag. GraphemeIterator.previous
-// keeps the last run instead.
+// In a run of regional indicators, a boundary depends on the parity of the run before it, so a query reads the run
+// back to its start. GraphemeIterator.previous keeps the last run instead.
 //
 // On malformed bytes the boundaries are unspecified, but every loop moves by at least one byte and stays in the text.
 //
@@ -34,7 +33,7 @@ internal fun nextGraphemeBoundaryAt(bytes: ByteArray, start: Int, end: Int, inde
     if (index == end) return -1
     val first = bytes[index].toInt()
     if (first >= 0) {
-        // The fast paths of GraphemeIterator.advance.
+        // The fast paths of GraphemeIterator.moveToNextBoundary.
         val next = index + 1
         if (next == end) return next
         val second = bytes[next].toInt()
@@ -76,8 +75,7 @@ internal fun previousGraphemeBoundaryAt(bytes: ByteArray, start: Int, end: Int, 
         val p = codePointStartAt(bytes, start, k - 1)
         val a = classAt(bytes, p, end)
         val breaks = if (a == GRAPHEME_CLASS_REGIONAL_INDICATOR && b == GRAPHEME_CLASS_REGIONAL_INDICATOR) {
-            // The walk can check 2 pairs of a run, and it reads the run once. It meets one run at most: before a run
-            // only Prepend joins, and before Prepend only Prepend.
+            // A walk meets one run at most: before a run only Prepend joins, and before Prepend only Prepend.
             if (runStart < 0) runStart = regionalIndicatorRunStart(bytes, start, end, p)
             breaksInRegionalIndicators(runStart, k)
         } else {
@@ -97,12 +95,9 @@ internal fun breaksBetween(bytes: ByteArray, start: Int, end: Int, p: Int, a: In
     return GraphemeTables.transitions[row + b].code >= BOUNDARY
 }
 
-// True when a grapheme boundary comes before the regional indicator at k in the run that starts at runStart: when an
-// even number of them come before it. Each takes 4 bytes of valid UTF-8; on malformed bytes 2 of them can start fewer
-// bytes apart, and the answer is only some answer.
+// In a run of regional indicators, every other one starts a grapheme, and each takes 4 bytes of valid UTF-8.
 internal fun breaksInRegionalIndicators(runStart: Int, k: Int): Boolean = (k - runStart) / 4 % 2 == 0
 
-// The start of the run of regional indicators that has the one at p, or stop when the run goes on before stop.
 internal fun regionalIndicatorRunStart(bytes: ByteArray, stop: Int, end: Int, p: Int): Int {
     var s = p
     while (s > stop) {
@@ -113,15 +108,13 @@ internal fun regionalIndicatorRunStart(bytes: ByteArray, stop: Int, end: Int, p:
     return s
 }
 
-// The start of the code point that has the byte at i, at most 3 bytes back. On malformed bytes it can split the text
-// differently from utf8LengthAt, since a continuation byte goes with any byte before it.
+// On malformed bytes, a continuation byte goes with any byte before it, so the split can differ from utf8LengthAt.
 internal fun codePointStartAt(bytes: ByteArray, start: Int, i: Int): Int {
     var j = i
     while (j > start && i - j < 3 && bytes[j].toInt() and 0xC0 == 0x80) j--
     return j
 }
 
-// The automaton row after the code point at p, of class cls.
 private fun rowAfter(bytes: ByteArray, start: Int, end: Int, p: Int, cls: Int): Int {
     val classes = GraphemeTables.classes
     val classIndex = GraphemeTables.index

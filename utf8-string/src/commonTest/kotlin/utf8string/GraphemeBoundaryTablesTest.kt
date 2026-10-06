@@ -8,7 +8,7 @@ package utf8string
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-// The tables of random access against the model, which has no automaton, on texts of one code point of each class.
+// The tables of random access against the model, which has no automaton.
 class GraphemeBoundaryTablesTest {
     private val count = GRAPHEME_CLASS_COUNT
     private val codePoints = IntArray(count) { GraphemeModel.runStarts[GraphemeModel.runClasses.indexOf(it)] }
@@ -20,7 +20,6 @@ class GraphemeBoundaryTablesTest {
         assertEquals(GRAPHEME_CLASS_REGIONAL_INDICATOR, GraphemeModel.classOf(0x1F1E6))
     }
 
-    // A boundary between 2 code points depends on the code point before them exactly for the context pairs.
     @Test
     fun contextPairs() {
         for (a in 0..<count) {
@@ -32,7 +31,6 @@ class GraphemeBoundaryTablesTest {
         }
     }
 
-    // The boundaries after a code point depend on the code point before it exactly for the classes that are not sync.
     @Test
     fun syncClasses() {
         for (cls in 0..<count) {

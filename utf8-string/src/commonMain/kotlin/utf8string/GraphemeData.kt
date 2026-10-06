@@ -22,7 +22,6 @@ internal const val GRAPHEME_CLASS_COUNT: Int = 19
 // The class of every code point outside the table.
 internal const val GRAPHEME_CLASS_OTHER: Int = 0
 
-// The class of regional indicators, which make flags in pairs.
 internal const val GRAPHEME_CLASS_REGIONAL_INDICATOR: Int = 11
 
 // The class of each code point, as 'A' plus the class, in blocks of 64 code points that overlap.

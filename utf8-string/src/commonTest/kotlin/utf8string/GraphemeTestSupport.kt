@@ -42,8 +42,6 @@ internal fun utf8Length(codePoint: Int): Int = when {
     else -> 4
 }
 
-// The UTF-16 index where each code point starts and where the text ends, and the UTF-8 byte index at each of these
-// UTF-16 indices.
 internal fun charAndByteIndices(codePoints: IntArray): Pair<IntArray, IntArray> {
     val charIndices = IntArray(codePoints.size + 1)
     for ((i, codePoint) in codePoints.withIndex()) charIndices[i + 1] = charIndices[i] + if (codePoint < 0x10000) 1 else 2

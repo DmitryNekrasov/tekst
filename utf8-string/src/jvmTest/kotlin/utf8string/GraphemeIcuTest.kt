@@ -57,7 +57,6 @@ class GraphemeIcuTest {
             val codePoints = corpus.text(random)
             val source = codePointsToString(codePoints)
             val string = source.u8
-            // The texts where only GB9c of Unicode 18 differs are for iterationMatchesIcuOnRandomTexts.
             val icu = icuBoundaries(breaker, source, codePoints.size)
             if (checkAgainstOracle(codePoints, string.iteratedBoundaries(), icu, older)) return@repeat
             val (charIndices, byteIndices) = charAndByteIndices(codePoints)
@@ -80,7 +79,6 @@ class GraphemeIcuTest {
         }
     }
 
-    // The boundaries of ICU, one for each index between code points.
     private fun icuBoundaries(breaker: BreakIterator, source: String, codePointCount: Int): BooleanArray {
         breaker.setText(source)
         val icu = BooleanArray(codePointCount + 1)

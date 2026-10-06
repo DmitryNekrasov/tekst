@@ -7,11 +7,9 @@ package utf8string.generator
 
 import kotlin.random.Random
 
-// The tables that find a cluster boundary at any index without reading the text from its start. For a sync class, the
-// state after a code point of the class does not depend on the text before it, and for a safe pair of classes, the
-// state after the pair does not. So to learn the state at an index, a query walks back to such a code point or pair
-// and runs the automaton forward from there. For a context pair, whether a boundary comes between the two code points
-// depends on the text before them, and for any other pair the two classes decide it.
+// For a sync class, the state after a code point of the class does not depend on the text before it, and for a safe
+// pair of classes, the state after the pair does not. For a context pair, whether a boundary comes between the two
+// code points depends on the text before them. GraphemeBoundaries.kt walks back to a sync code point or a safe pair.
 class BoundaryTables(
     val sync: BooleanArray,
     val context: BooleanArray,
@@ -33,8 +31,6 @@ fun buildBoundaryTables(automaton: BreakAutomaton): BoundaryTables {
     )
 }
 
-// For each class, the states after a code point of the class in any text: the start state of the class, when the text
-// starts with it, and the state that each reachable state goes to with it.
 private fun statesAfter(automaton: BreakAutomaton): List<Set<Int>> {
     val reachable = HashSet<Int>()
     val queue = ArrayDeque(automaton.startStates.toList())
@@ -60,8 +56,7 @@ fun verifyBoundaryTables(classes: IntArray, automaton: BreakAutomaton, tables: B
             "The context pair ${names[pair / classCount]} ${names[pair % classCount]} ends in a class that is not sync"
         }
     }
-    // In a run of regional indicators, a boundary comes before one when an even number of them come before it in the
-    // run. Each takes 4 bytes of UTF-8, so the byte count of the run gives the number.
+    // In a run of regional indicators, every other one starts a grapheme, and each takes 4 bytes of UTF-8.
     val odd = start[ri]
     check(!automaton.breaksBefore(odd, ri) && automaton.breaksBefore(automaton.nextState(odd, ri), ri)) {
         "The parity does not decide the boundaries in a run of regional indicators"
@@ -82,8 +77,6 @@ fun verifyBoundaryTables(classes: IntArray, automaton: BreakAutomaton, tables: B
     verifyRandomAccess(automaton, tables)
 }
 
-// The functions of GraphemeBoundaries.kt and GraphemeIterator.previous in a text of classes, one unit per code point,
-// against the automaton on every text of up to 5 classes and on random texts with long runs.
 private fun verifyRandomAccess(automaton: BreakAutomaton, tables: BoundaryTables) {
     val model = RandomAccessModel(automaton, tables)
     val names = GraphemeClass.entries
@@ -196,7 +189,6 @@ private class RandomAccessModel(val automaton: BreakAutomaton, private val table
 
     fun isRegionalIndicatorPair(text: IntArray, p: Int): Boolean = text[p] == ri && text[p + 1] == ri
 
-    // The start of the run of regional indicators that has the one at p, or stop when the run goes on before stop.
     fun regionalIndicatorRunStart(text: IntArray, p: Int, stop: Int): Int {
         var s = p
         while (s > stop && text[s - 1] == ri) s--
@@ -204,7 +196,7 @@ private class RandomAccessModel(val automaton: BreakAutomaton, private val table
     }
 }
 
-// GraphemeIterator: next runs the automaton, and previous keeps the last run of regional indicators that it walked.
+// GraphemeIterator, whose previous keeps the last run of regional indicators that it walked.
 private class CursorModel(private val model: RandomAccessModel, private val text: IntArray, index: Int) {
     var position: Int = if (index == text.size) index else model.previous(text, index + 1)
         private set
@@ -238,7 +230,6 @@ private class CursorModel(private val model: RandomAccessModel, private val text
         return k
     }
 
-    // A scan back from p that reaches the end of the last run continues that run.
     private fun runStartOf(p: Int): Int {
         if (p in runStart..<runEnd) return runStart
         val stop = if (runStart >= 0 && p >= runEnd) runEnd else 0

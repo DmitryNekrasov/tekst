@@ -43,7 +43,6 @@ class GraphemeIntlSegmenterTest {
             val source = codePointsToString(codePoints)
             val string = source.u8
             val (charIndices, byteIndices) = charAndByteIndices(codePoints)
-            // The texts where only GB9c of Unicode 18 differs are for iterationMatchesIntlSegmenterOnRandomTexts.
             val intl = intlBoundaries(segmenter, source, charIndices)
             if (checkAgainstOracle(codePoints, string.iteratedBoundaries(), intl, older)) return@repeat
             val segments = segment(segmenter, source)
@@ -69,7 +68,6 @@ private fun nodeUnicodeVersion(): Int? {
 
 private fun graphemeSegmenter(): dynamic = js("new Intl.Segmenter(undefined, { granularity: 'grapheme' })")
 
-// The boundaries of Intl.Segmenter, one for each index between code points.
 private fun intlBoundaries(segmenter: dynamic, source: String, charIndices: IntArray): BooleanArray {
     val codePointAt = IntArray(source.length + 1)
     for ((i, charIndex) in charIndices.withIndex()) codePointAt[charIndex] = i

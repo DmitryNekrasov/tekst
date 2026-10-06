@@ -33,14 +33,12 @@ class GraphemeMalformedTest {
         }
     }
 
-    // A copy counts its code points from its own bytes, so equal bytes make equal strings, whichever way they were cut.
     @Test
     fun equalBytesMakeEqualCopies() {
         val grapheme = Utf8String("41 CC 41".hexToBytes(), -1).iterator().next().toUtf8String()
         val prefix = grapheme.dropLast(1)
         assertUtf8Equals("A".u8, prefix.dropLast(1), "a part of 41 CC")
         assertUtf8Equals(prefix.iterator(1).next().toUtf8String(), prefix.drop(1), "the CC of 41 CC")
-        // A lead byte before the last byte joins the byte after it, so its bytes are not ASCII.
         for ((hex, codePoints) in listOf("C0 41" to 1, "41 C0" to 2, "F0 3F 3F 3F" to 1, "C3 80 80" to 1)) {
             assertEquals(codePoints, codePointCountOfCopy(hex.hexToBytes()), hex)
         }
@@ -55,8 +53,7 @@ class GraphemeMalformedTest {
                 (if (random.nextBoolean()) random.nextInt(0x80, 0x100) else random.nextInt(0x100)).toByte()
             }
             assertCovered(bytes, bytes.toHex())
-            // On every 10th text, as the other tests of random access do, so that on JS the test stays far below the
-            // 2 s timeout of Mocha.
+            // Every 10th text, so that on JS the test stays far below the 2 s timeout of Mocha.
             if (it % 10 == 0) assertRandomAccessInRange(bytes, random, bytes.toHex())
         }
     }

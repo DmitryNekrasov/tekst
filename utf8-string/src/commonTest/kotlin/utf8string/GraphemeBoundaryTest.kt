@@ -154,8 +154,7 @@ class GraphemeBoundaryTest {
 
     @Test
     fun kernelStaysInItsPartOfTheArray() {
-        // Bytes that would change the boundaries of the text if a query read them: before it a regional indicator,
-        // Prepend and continuation bytes, after it a combining mark, ZWJ, LF and a lead byte.
+        // Bytes that would change the boundaries of the text if a query read them.
         val before = listOf("F0 9F 87 A6", "D8 80", "80", "80 80 80", "0D").map { it.hexToBytes() }
         val after = listOf("CC 81", "E2 80 8D", "0A", "F0", "F0 9F 87 A6").map { it.hexToBytes() }
         val corpus = GraphemeCorpus()
@@ -214,7 +213,6 @@ class GraphemeBoundaryTest {
         )
     }
 
-    // Moves the iterator at random, with all 4 kinds of steps, and checks each step against the boundaries.
     private fun assertRandomWalk(boundaries: List<Int>, string: Utf8String, random: Random, message: String) {
         val bytes = string.toByteArray()
         val start = random.nextInt(string.byteCount + 1)

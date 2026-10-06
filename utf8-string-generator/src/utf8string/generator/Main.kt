@@ -91,7 +91,7 @@ private fun graphemeData(
     )
     file.intConstant("The class of every code point outside the table.", "GRAPHEME_CLASS_OTHER", GraphemeClass.Other.ordinal)
     file.intConstant(
-        "The class of regional indicators, which make flags in pairs.",
+        "",
         "GRAPHEME_CLASS_REGIONAL_INDICATOR",
         GraphemeClass.RegionalIndicator.ordinal,
     )

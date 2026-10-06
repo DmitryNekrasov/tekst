@@ -6,18 +6,16 @@
 package utf8string
 
 /**
- * An iterator over the graphemes of a [Utf8String], in both directions. [index] is the byte index between the grapheme
- * that [previous] returns and the one that [next] returns. For one ASCII char or CR LF, [next] and [previous] return a
- * shared object, and for any other grapheme they allocate one small object. [skipNext] and [skipPrevious] move without
- * a [Grapheme].
+ * An iterator over the graphemes of a [Utf8String], in both directions. For one ASCII char or CR LF, [next] and
+ * [previous] return a shared object, and for any other grapheme they allocate one small object, which [skipNext] and
+ * [skipPrevious] avoid.
  *
  * @sample samples.GraphemeSamples.hasNextAndNextWalkTheGraphemes
  * @sample samples.GraphemeSamples.iteratorWalksBothWays
  */
 public class GraphemeIterator internal constructor(
     private val bytes: ByteArray,
-    // Without a default value: a default adds a constructor whose signature has a class that is never loaded, the JIT
-    // does not inline such a constructor, and then a for loop allocates the iterator.
+    // No default value: the JIT would not inline the extra constructor, and a for loop would allocate the iterator.
     start: Int,
 ) : Iterator<Grapheme> {
     private val classes = GraphemeTables.classes
@@ -35,7 +33,6 @@ public class GraphemeIterator internal constructor(
     private var carriedRow = 0
 
     // A run of regional indicators bytes[runStart..<runEnd] that starts at runStart, or -1 before previous meets one.
-    // It stays true as the iterator moves, since the bytes do not change.
     private var runStart = -1
     private var runEnd = -1
 
@@ -204,9 +201,8 @@ public class GraphemeIterator internal constructor(
 
     private fun classAt(i: Int): Int = graphemeClassAt(bytes, i, utf8LengthAt(bytes, i), classes, classIndex)
 
-    // The start of the run of regional indicators that has the one at p. A scan back from p that reaches the end of the
-    // last run continues that run, so that a walk reads the last run once, whichever way it goes. A walk back and forth
-    // between 2 runs reads the earlier one again each time it goes back into it.
+    // A scan back from p that reaches the end of the last run continues that run, so that a walk reads the last run
+    // once, whichever way it goes. A walk back and forth between 2 runs reads the earlier one again each time.
     private fun runStartOf(p: Int): Int {
         val lastStart = runStart
         val lastEnd = runEnd

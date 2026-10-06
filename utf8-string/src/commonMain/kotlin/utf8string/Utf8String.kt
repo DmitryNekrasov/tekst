@@ -86,7 +86,7 @@ public class Utf8String internal constructor(private val buffer: ByteArray, inte
     public fun iterator(index: Int): GraphemeIterator {
         checkIndex(index)
         if (index == buffer.size) return GraphemeIterator(buffer, index)
-        // The iterator walks back itself, so that it keeps a run of flags that it reads for the previous that follows.
+        // The iterator walks back itself, so that it keeps the run of flags that it reads.
         return GraphemeIterator(buffer, index + 1).also { it.skipPrevious() }
     }
 
@@ -99,8 +99,8 @@ public class Utf8String internal constructor(private val buffer: ByteArray, inte
         get() = Sequence { iterator() }
 
     /**
-     * True when a grapheme starts at the byte [index], or [index] is 0 or [byteCount]. False inside a grapheme, which
-     * includes an index inside a code point.
+     * True when a grapheme starts at the byte [index], or [index] is 0 or [byteCount]. False otherwise, even for an
+     * index inside a code point.
      *
      * @throws IndexOutOfBoundsException when [index] is not in `0..byteCount`.
      * @sample samples.Utf8StringSamples.isGraphemeBoundaryChecksAByteIndex
@@ -189,8 +189,6 @@ public class Utf8String internal constructor(private val buffer: ByteArray, inte
         }
     }
 
-    // The byte index after the first n graphemes, or byteCount when there are fewer. A walk to the end gives the
-    // length.
     private fun indexAfter(n: Int): Int {
         // Each grapheme takes at least a byte.
         if (n >= buffer.size) return buffer.size
@@ -206,11 +204,9 @@ public class Utf8String internal constructor(private val buffer: ByteArray, inte
         return graphemes.index
     }
 
-    // The byte index before the last n graphemes, or 0 when there are fewer. The walk back neither reads nor sets the
-    // length, which counts the graphemes of the for loop: on malformed bytes the walk back can split the text
-    // differently.
+    // The walk back neither reads nor sets the length, which counts the graphemes of the for loop: on malformed bytes
+    // the walk back can split the text differently.
     private fun indexBefore(n: Int): Int {
-        // Each grapheme takes at least a byte.
         if (n >= buffer.size) return 0
         val graphemes = GraphemeIterator(buffer, buffer.size)
         var skipped = 0
@@ -221,10 +217,9 @@ public class Utf8String internal constructor(private val buffer: ByteArray, inte
         return graphemes.index
     }
 
-    // A grapheme count of 0 means unknown, as for the graphemeCount field. A part cut by the walk forward has the
-    // graphemes that the walk counted, since a grapheme after a boundary does not depend on the text before it.
+    // A grapheme count of 0 means unknown. A part cut by the walk forward has the graphemes that the walk counted,
+    // since a grapheme after a boundary does not depend on the text before it.
     private fun substring(from: Int, to: Int, graphemeCount: Int): Utf8String {
-        // A part with every byte is this string, so a call that changes nothing copies nothing.
         if (from == 0 && to == buffer.size) return this
         if (from == to) return Utf8String(ByteArray(0), 0)
         val bytes = buffer.copyOfRange(from, to)
@@ -329,11 +324,9 @@ public class Utf8String internal constructor(private val buffer: ByteArray, inte
     }
 }
 
-// The code point count of a string of bytes copied from another one, from these bytes alone, so that equal bytes make
-// equal strings: the number of lead bytes, which can be malformed. But length counts the bytes as ASCII when the code
-// point count equals the byte count, which is right only when utf8LengthAt splits them into single bytes, so when no
-// byte from 0xC0 comes before the last one. Otherwise the count is the number of code points that utf8LengthAt splits
-// the bytes into, which is less.
+// The number of lead bytes, from the copied bytes alone, so that equal bytes make equal strings. When that equals the
+// byte count, length takes the bytes as ASCII, which is wrong if a byte from 0xC0 comes before the last one: then it is
+// the number of code points that utf8LengthAt splits them into.
 internal fun codePointCountOfCopy(bytes: ByteArray): Int {
     var count = 0
     for (byte in bytes) if (byte.toInt() and 0xC0 != 0x80) count++

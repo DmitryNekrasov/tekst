@@ -62,7 +62,6 @@ class GraphemeBoundaryBenchmark {
         return count
     }
 
-    // 1024 queries at random byte indices.
     @Benchmark
     fun isBoundaryAtRandomIndices(): Int {
         var count = 0
