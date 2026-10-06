@@ -190,6 +190,8 @@ public class GraphemeIterator internal constructor(
             val breaks = if (a == GRAPHEME_CLASS_REGIONAL_INDICATOR && b == GRAPHEME_CLASS_REGIONAL_INDICATOR) {
                 breaksInRegionalIndicators(runStartOf(p), k)
             } else {
+                // For the few pairs whose boundary depends on the text before them, this reads that text, so a walk
+                // back and forth over such a boundary reads it again each time it goes back.
                 breaksBetween(bytes, 0, bytes.size, p, a, b)
             }
             if (breaks) break

@@ -54,8 +54,8 @@ fun verifyBoundaryTables(classes: IntArray, automaton: BreakAutomaton, tables: B
     val names = GraphemeClass.entries
     val ri = GraphemeClass.RegionalIndicator.ordinal
     for (pair in 0..<classCount * classCount) {
-        // The walk back of one query then ends where the next context pair starts, so a walk over a text reads each
-        // code point a bounded number of times, except in a run of regional indicators.
+        // The walk back of one query then ends where the next context pair starts, so a walk over a text in one
+        // direction reads each code point a bounded number of times, except in a run of regional indicators.
         check(!tables.context[pair] || tables.sync[pair % classCount] || pair == ri * classCount + ri) {
             "The context pair ${names[pair / classCount]} ${names[pair % classCount]} ends in a class that is not sync"
         }
