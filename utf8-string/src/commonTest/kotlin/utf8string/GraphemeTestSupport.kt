@@ -22,6 +22,8 @@ internal fun parseSegmentationTests(text: String): List<SegmentationTest> = text
 
 internal fun String.codePointsFromHex(): IntArray = split(' ').filter { it.isNotEmpty() }.map { it.toInt(16) }.toIntArray()
 
+internal fun IntArray.toHex(): String = joinToString(" ") { it.toString(16) }
+
 internal fun codePointsToString(codePoints: IntArray): String = buildString {
     for (codePoint in codePoints) {
         if (codePoint < 0x10000) {
@@ -38,6 +40,16 @@ internal fun utf8Length(codePoint: Int): Int = when {
     codePoint < 0x800 -> 2
     codePoint < 0x10000 -> 3
     else -> 4
+}
+
+internal fun charAndByteIndices(codePoints: IntArray): Pair<IntArray, IntArray> {
+    val charIndices = IntArray(codePoints.size + 1)
+    for ((i, codePoint) in codePoints.withIndex()) charIndices[i + 1] = charIndices[i] + if (codePoint < 0x10000) 1 else 2
+    val byteIndices = IntArray(charIndices.last() + 1)
+    for ((i, codePoint) in codePoints.withIndex()) {
+        byteIndices[charIndices[i + 1]] = byteIndices[charIndices[i]] + utf8Length(codePoint)
+    }
+    return charIndices to byteIndices
 }
 
 // The UTF-8 bytes of a code point, surrogates included.
@@ -157,7 +169,7 @@ internal object GraphemeModel {
 // An oracle of Unicode 17.0 (older) may differ only by the GB9c rule of 18.0. Returns whether it differed.
 internal fun checkAgainstOracle(codePoints: IntArray, ours: List<Int>, oracle: BooleanArray, older: Boolean): Boolean {
     if (ours == byteBoundaries(codePoints, oracle)) return false
-    val message = codePoints.joinToString(" ") { it.toString(16) }
+    val message = codePoints.toHex()
     assertTrue(older, "The oracle disagrees: $message")
     assertEquals(byteBoundaries(codePoints, GraphemeModel.boundaries(codePoints)), ours, "Ours is not Unicode 18.0: $message")
     val unicode17 = GraphemeModel.boundaries(codePoints, legacyConjuncts = true)

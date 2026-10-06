@@ -81,7 +81,6 @@ class GraphemeIteratorTest {
     fun graphemeProperties() {
         val grapheme = "\uD83D\uDC4D\uD83C\uDFFD!".u8.iterator().next()
         assertEquals(8, grapheme.byteCount)
-        assertEquals(2, grapheme.codePointCount)
         assertEquals("\uD83D\uDC4D\uD83C\uDFFD", grapheme.toString())
         assertUtf8Equals("\uD83D\uDC4D\uD83C\uDFFD".u8, grapheme.toUtf8String(), "thumbs up, medium skin tone")
         val crLf = "\r\n".u8.iterator().next()
@@ -101,7 +100,7 @@ class GraphemeIteratorTest {
         for (grapheme in string) {
             assertTrue(grapheme.byteCount > 0)
             byteCount += grapheme.byteCount
-            codePointCount += grapheme.codePointCount
+            codePointCount += grapheme.toUtf8String().codePointCount
             text.append(grapheme.toString())
             graphemeCount++
         }

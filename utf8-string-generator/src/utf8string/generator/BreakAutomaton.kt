@@ -11,14 +11,17 @@ import kotlin.random.Random
 class BreakAutomaton(val stateCount: Int, val startStates: IntArray, val transitions: IntArray) {
     val classCount: Int get() = startStates.size
 
+    fun nextState(state: Int, next: Int): Int = transitions[state * classCount + next] and (BOUNDARY - 1)
+
+    fun breaksBefore(state: Int, next: Int): Boolean = transitions[state * classCount + next] >= BOUNDARY
+
     fun boundaries(classes: List<Int>): List<Boolean> {
         if (classes.isEmpty()) return listOf(true)
         val result = arrayListOf(true)
         var state = startStates[classes[0]]
         for (i in 1..<classes.size) {
-            val transition = transitions[state * classCount + classes[i]]
-            result += transition >= BOUNDARY
-            state = transition and (BOUNDARY - 1)
+            result += breaksBefore(state, classes[i])
+            state = nextState(state, classes[i])
         }
         result += true
         return result
@@ -93,12 +96,10 @@ fun verifyAutomaton(automaton: BreakAutomaton) {
     }
 }
 
-// The conditions that the ASCII fast paths of GraphemeIterator.advance rely on.
+// The conditions that the ASCII fast paths of GraphemeIterator.moveToNextBoundary rely on.
 fun verifyAsciiFastPaths(classes: IntArray, automaton: BreakAutomaton) {
-    fun joins(first: Int, nextClass: Int): Boolean {
-        val transition = automaton.transitions[automaton.startStates[classes[first]] * automaton.classCount + nextClass]
-        return transition < BreakAutomaton.BOUNDARY
-    }
+    fun joins(first: Int, nextClass: Int): Boolean =
+        !automaton.breaksBefore(automaton.startStates[classes[first]], nextClass)
     for (ascii in 0x20..0x7E) {
         check(classes[ascii] == GraphemeClass.Other.ordinal) { "U+%04X is not Other".format(ascii) }
     }

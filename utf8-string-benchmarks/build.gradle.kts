@@ -68,6 +68,13 @@ benchmark {
             iterationTime = 1
             iterationTimeUnit = "s"
         }
+        register("boundaries") {
+            include("GraphemeBoundaryBenchmark")
+            warmups = 5
+            iterations = 5
+            iterationTime = 1
+            iterationTimeUnit = "s"
+        }
         // C2 compiles Utf8String.fromString in one of two ways from one JVM to the next, so the JVM runs 5 forks.
         register("comparison") {
             include("GraphemeBenchmark.iterate$")

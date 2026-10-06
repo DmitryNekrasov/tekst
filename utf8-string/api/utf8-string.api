@@ -6,10 +6,15 @@ public final class utf8string/Grapheme {
 }
 
 public final class utf8string/GraphemeIterator : java/util/Iterator, kotlin/jvm/internal/markers/KMappedMarker {
+	public final fun getIndex ()I
 	public fun hasNext ()Z
+	public final fun hasPrevious ()Z
 	public synthetic fun next ()Ljava/lang/Object;
 	public fun next ()Lutf8string/Grapheme;
+	public final fun previous ()Lutf8string/Grapheme;
 	public fun remove ()V
+	public final fun skipNext ()I
+	public final fun skipPrevious ()I
 }
 
 public final class utf8string/U8Kt {
@@ -22,12 +27,20 @@ public final class utf8string/U8Kt {
 public final class utf8string/Utf8String {
 	public final fun copyInto ([BIII)[B
 	public static synthetic fun copyInto$default (Lutf8string/Utf8String;[BIIIILjava/lang/Object;)[B
+	public final fun drop (I)Lutf8string/Utf8String;
+	public final fun dropLast (I)Lutf8string/Utf8String;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getByteCount ()I
 	public final fun getGraphemes ()Lkotlin/sequences/Sequence;
 	public final fun getLength ()I
 	public fun hashCode ()I
+	public final fun isGraphemeBoundary (I)Z
 	public final fun iterator ()Lutf8string/GraphemeIterator;
+	public final fun iterator (I)Lutf8string/GraphemeIterator;
+	public final fun nextGraphemeBoundary (I)I
+	public final fun previousGraphemeBoundary (I)I
+	public final fun take (I)Lutf8string/Utf8String;
+	public final fun takeLast (I)Lutf8string/Utf8String;
 	public final fun toByteArray ()[B
 	public fun toString ()Ljava/lang/String;
 }

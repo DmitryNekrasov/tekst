@@ -14,8 +14,15 @@ final class utf8string/Grapheme { // utf8string/Grapheme|null[0]
 }
 
 final class utf8string/GraphemeIterator : kotlin.collections/Iterator<utf8string/Grapheme> { // utf8string/GraphemeIterator|null[0]
+    final val index // utf8string/GraphemeIterator.index|{}index[0]
+        final fun <get-index>(): kotlin/Int // utf8string/GraphemeIterator.index.<get-index>|<get-index>(){}[0]
+
     final fun hasNext(): kotlin/Boolean // utf8string/GraphemeIterator.hasNext|hasNext(){}[0]
+    final fun hasPrevious(): kotlin/Boolean // utf8string/GraphemeIterator.hasPrevious|hasPrevious(){}[0]
     final fun next(): utf8string/Grapheme // utf8string/GraphemeIterator.next|next(){}[0]
+    final fun previous(): utf8string/Grapheme // utf8string/GraphemeIterator.previous|previous(){}[0]
+    final fun skipNext(): kotlin/Int // utf8string/GraphemeIterator.skipNext|skipNext(){}[0]
+    final fun skipPrevious(): kotlin/Int // utf8string/GraphemeIterator.skipPrevious|skipPrevious(){}[0]
 }
 
 final class utf8string/Utf8String { // utf8string/Utf8String|null[0]
@@ -27,9 +34,17 @@ final class utf8string/Utf8String { // utf8string/Utf8String|null[0]
         final fun <get-length>(): kotlin/Int // utf8string/Utf8String.length.<get-length>|<get-length>(){}[0]
 
     final fun copyInto(kotlin/ByteArray, kotlin/Int = ..., kotlin/Int = ..., kotlin/Int = ...): kotlin/ByteArray // utf8string/Utf8String.copyInto|copyInto(kotlin.ByteArray;kotlin.Int;kotlin.Int;kotlin.Int){}[0]
+    final fun drop(kotlin/Int): utf8string/Utf8String // utf8string/Utf8String.drop|drop(kotlin.Int){}[0]
+    final fun dropLast(kotlin/Int): utf8string/Utf8String // utf8string/Utf8String.dropLast|dropLast(kotlin.Int){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // utf8string/Utf8String.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // utf8string/Utf8String.hashCode|hashCode(){}[0]
+    final fun isGraphemeBoundary(kotlin/Int): kotlin/Boolean // utf8string/Utf8String.isGraphemeBoundary|isGraphemeBoundary(kotlin.Int){}[0]
     final fun iterator(): utf8string/GraphemeIterator // utf8string/Utf8String.iterator|iterator(){}[0]
+    final fun iterator(kotlin/Int): utf8string/GraphemeIterator // utf8string/Utf8String.iterator|iterator(kotlin.Int){}[0]
+    final fun nextGraphemeBoundary(kotlin/Int): kotlin/Int // utf8string/Utf8String.nextGraphemeBoundary|nextGraphemeBoundary(kotlin.Int){}[0]
+    final fun previousGraphemeBoundary(kotlin/Int): kotlin/Int // utf8string/Utf8String.previousGraphemeBoundary|previousGraphemeBoundary(kotlin.Int){}[0]
+    final fun take(kotlin/Int): utf8string/Utf8String // utf8string/Utf8String.take|take(kotlin.Int){}[0]
+    final fun takeLast(kotlin/Int): utf8string/Utf8String // utf8string/Utf8String.takeLast|takeLast(kotlin.Int){}[0]
     final fun toByteArray(): kotlin/ByteArray // utf8string/Utf8String.toByteArray|toByteArray(){}[0]
     final fun toString(): kotlin/String // utf8string/Utf8String.toString|toString(){}[0]
 }

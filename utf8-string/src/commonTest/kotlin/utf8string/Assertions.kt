@@ -15,3 +15,5 @@ internal fun assertUtf8Equals(expected: Utf8String, actual: Utf8String, message:
 }
 
 internal fun ByteArray.toHex(): String = joinToString(" ") { it.toUByte().toString(16).uppercase().padStart(2, '0') }
+
+internal fun String.hexToBytes(): ByteArray = split(' ').map { it.toInt(16).toByte() }.toByteArray()
