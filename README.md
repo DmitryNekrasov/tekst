@@ -22,7 +22,7 @@ for (grapheme in text) {
 }
 ```
 
-`.u8` encodes a `String` into a `Utf8String`, and `toString()` decodes it back. `String.length` counts UTF-16 chars, so the hand with a skin tone and the flag count as 4 each, and `String.take` or `substring` can split them. The Kotlin standard library has no grapheme API. The platform APIs, like `BreakIterator` on the JVM and `Intl.Segmenter` in JavaScript, are not common code, and their results depend on the platform version. For example, `BreakIterator` before JDK 20 counts the hand and the flag as 2 graphemes each. utf8-string has one implementation for all targets, with the rules of Unicode 18.0.
+`.u8` encodes a `String` into a `Utf8String`, and `toString()` decodes it back. `String.length` counts UTF-16 chars, so the hand with a skin tone and the flag count as 4 each, and `String.take` or `substring` can split them. The Kotlin standard library has no grapheme API. The platform APIs, like `BreakIterator` on the JVM and `Intl.Segmenter` in JavaScript, are not common code, and their results depend on the platform version. For example, `BreakIterator` before JDK 20 counts the hand and the flag as 2 graphemes each. utf8-string has one implementation for all targets, with the rules of Unicode 18.0. Its grapheme boundaries are also available for a `String` or another `CharSequence`, at char indices, with no copy of the text.
 
 Targets: JVM, JS, Wasm (JS and WASI), and Kotlin/Native for Linux, macOS arm64, Windows, iOS, watchOS, and tvOS.
 
@@ -62,7 +62,16 @@ text.previousGraphemeBoundary(7) // 3
 text.takeLast(1)                 // 🇪🇸
 ```
 
-A function with an index reads the grapheme around the index and the one before it, and in a run of flags also the run before it, since a boundary there depends on the number of flags before it. So a loop over the graphemes should use an iterator, while a loop of such calls over a run of flags reads the run again for each flag.
+`isGraphemeBoundary`, `nextGraphemeBoundary` and `previousGraphemeBoundary` also extend `CharSequence`, with UTF-16 char indices, for a text that stays a `String`, a `StringBuilder` or the buffer of an editor. They read the chars in place, and `startIndex` and `endIndex` limit a query to a part of the text, such as one line. A lone surrogate counts as U+FFFD, as in `.u8`, so the boundaries are those of the `Utf8String`.
+
+```kotlin
+val line = "Hi 👋🏽 🇪🇸"
+line.isGraphemeBoundary(5)       // false: 👋🏽 takes chars 3 to 6
+line.previousGraphemeBoundary(5) // 3
+line.nextGraphemeBoundary(5)     // 7
+```
+
+A function with an index reads the grapheme around the index and the one before it, and in a run of flags also the run before it, since a boundary there depends on the number of flags before it. So a loop of such calls over a run of flags reads the run again for each flag, and its time grows as the square of the run length. The iterator of a `Utf8String` walks in linear time, with byte indices, and so does a loop of `nextGraphemeBoundary` on a `CharSequence` that passes each boundary as `startIndex`.
 
 The rules also keep a conjunct of an Indic script in one grapheme:
 

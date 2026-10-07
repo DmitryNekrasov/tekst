@@ -11,6 +11,9 @@ import kotlinx.benchmark.Scope
 import kotlinx.benchmark.Setup
 import kotlinx.benchmark.State
 import utf8string.Utf8String
+import utf8string.isGraphemeBoundary
+import utf8string.nextGraphemeBoundary
+import utf8string.previousGraphemeBoundary
 import utf8string.u8
 import kotlin.random.Random
 
@@ -19,14 +22,18 @@ class GraphemeBoundaryBenchmark {
     @Param("ascii", "cyrillic", "cjk", "hangul", "emoji", "indic", "zalgo", "crlf")
     var corpus: String = ""
 
+    private var source: String = ""
     private var string: Utf8String = "".u8
     private var indices: IntArray = IntArray(0)
+    private var charIndices: IntArray = IntArray(0)
 
     @Setup
     fun prepare() {
-        string = Corpora.text(corpus).u8
+        source = Corpora.text(corpus)
+        string = source.u8
         val random = Random(corpus.hashCode())
         indices = IntArray(1024) { random.nextInt(string.byteCount + 1) }
+        charIndices = IntArray(1024) { random.nextInt(source.length + 1) }
     }
 
     @Benchmark
@@ -80,6 +87,27 @@ class GraphemeBoundaryBenchmark {
     fun previousBoundaryAtRandomIndices(): Int {
         var sum = 0
         for (index in indices) sum += string.previousGraphemeBoundary(index)
+        return sum
+    }
+
+    @Benchmark
+    fun isBoundaryAtRandomCharIndices(): Int {
+        var count = 0
+        for (index in charIndices) if (source.isGraphemeBoundary(index)) count++
+        return count
+    }
+
+    @Benchmark
+    fun nextBoundaryAtRandomCharIndices(): Int {
+        var sum = 0
+        for (index in charIndices) sum += source.nextGraphemeBoundary(index)
+        return sum
+    }
+
+    @Benchmark
+    fun previousBoundaryAtRandomCharIndices(): Int {
+        var sum = 0
+        for (index in charIndices) sum += source.previousGraphemeBoundary(index)
         return sum
     }
 }

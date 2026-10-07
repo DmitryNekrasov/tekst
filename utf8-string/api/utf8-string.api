@@ -1,3 +1,12 @@
+public final class utf8string/CharSequenceGraphemes {
+	public static final fun isGraphemeBoundary (Ljava/lang/CharSequence;I)Z
+	public static final fun isGraphemeBoundary (Ljava/lang/CharSequence;III)Z
+	public static final fun nextGraphemeBoundary (Ljava/lang/CharSequence;I)I
+	public static final fun nextGraphemeBoundary (Ljava/lang/CharSequence;III)I
+	public static final fun previousGraphemeBoundary (Ljava/lang/CharSequence;I)I
+	public static final fun previousGraphemeBoundary (Ljava/lang/CharSequence;III)I
+}
+
 public final class utf8string/Grapheme {
 	public fun equals (Ljava/lang/Object;)Z
 	public fun hashCode ()I

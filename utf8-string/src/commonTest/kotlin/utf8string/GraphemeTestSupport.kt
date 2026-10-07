@@ -86,6 +86,9 @@ internal fun byteBoundaries(codePoints: IntArray, boundaries: BooleanArray): Lis
     return result
 }
 
+internal fun charBoundaries(codePoints: IntArray, boundaries: BooleanArray): List<Int> =
+    charAndByteIndices(codePoints).first.filterIndexed { i, _ -> boundaries[i] }
+
 // UAX #29 as the standard states it, with none of the library's automaton, table or fast paths.
 // It classifies code points with the generated class runs.
 internal object GraphemeModel {

@@ -96,7 +96,8 @@ fun verifyAutomaton(automaton: BreakAutomaton) {
     }
 }
 
-// The conditions that the ASCII fast paths of GraphemeIterator.moveToNextBoundary rely on.
+// The conditions that the ASCII fast paths of GraphemeIterator, GraphemeBoundaries.kt and GraphemeBoundariesUtf16.kt
+// rely on.
 fun verifyAsciiFastPaths(classes: IntArray, automaton: BreakAutomaton) {
     fun joins(first: Int, nextClass: Int): Boolean =
         !automaton.breaksBefore(automaton.startStates[classes[first]], nextClass)
@@ -104,7 +105,9 @@ fun verifyAsciiFastPaths(classes: IntArray, automaton: BreakAutomaton) {
         check(classes[ascii] == GraphemeClass.Other.ordinal) { "U+%04X is not Other".format(ascii) }
     }
     for (next in 0..<0x300) {
-        check(!joins('a'.code, classes[next])) { "U+%04X joins printable ASCII: lower the 0xCC bound".format(next) }
+        check(!joins('a'.code, classes[next])) {
+            "U+%04X joins printable ASCII: lower the bound U+0300, which is the lead byte 0xCC in UTF-8".format(next)
+        }
     }
     for (control in (0..<0x20) + 0x7F) {
         for (next in GraphemeClass.entries) {
@@ -114,8 +117,8 @@ fun verifyAsciiFastPaths(classes: IntArray, automaton: BreakAutomaton) {
             }
         }
     }
-    for (ascii in 0..<0x80) {
-        val isLf = classes[ascii] == GraphemeClass.LF.ordinal
-        check(isLf == (ascii == 0x0A)) { "U+%04X is not the only LF".format(ascii) }
+    for (codePoint in classes.indices) {
+        val isLf = classes[codePoint] == GraphemeClass.LF.ordinal
+        check(isLf == (codePoint == 0x0A)) { "U+%04X is not the only LF".format(codePoint) }
     }
 }

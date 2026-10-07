@@ -56,7 +56,8 @@ fun verifyBoundaryTables(classes: IntArray, automaton: BreakAutomaton, tables: B
             "The context pair ${names[pair / classCount]} ${names[pair % classCount]} ends in a class that is not sync"
         }
     }
-    // In a run of regional indicators, every other one starts a grapheme, and each takes 4 bytes of UTF-8.
+    // In a run of regional indicators, every other one starts a grapheme, and each takes 4 bytes of UTF-8 and 2
+    // chars of UTF-16, since none is below U+10000.
     val odd = start[ri]
     check(!automaton.breaksBefore(odd, ri) && automaton.breaksBefore(automaton.nextState(odd, ri), ri)) {
         "The parity does not decide the boundaries in a run of regional indicators"

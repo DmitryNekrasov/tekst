@@ -22,7 +22,20 @@ class GraphemeClassTableTest {
                 if (length != bytes.size || cls != GraphemeModel.runClasses[run]) {
                     fail("U+${codePoint.toString(16)}: class $cls, length $length, expected ${GraphemeModel.runClasses[run]}")
                 }
+                val byValue = graphemeClassOf(codePoint, GraphemeTables.classes, GraphemeTables.index)
+                if (byValue != cls) fail("U+${codePoint.toString(16)}: class $byValue by value, $cls from the bytes")
             }
+        }
+    }
+
+    // The UTF-16 kernels give a lone surrogate the class of U+FFFD, as .u8 does, whatever the class of the surrogate.
+    // The data of Unicode 18.0 gives both the class Other.
+    @Test
+    fun surrogatesHaveTheClassOfTheReplacementCharacter() {
+        val replacement = graphemeClassOf(0xFFFD, GraphemeTables.classes, GraphemeTables.index)
+        assertEquals(GRAPHEME_CLASS_OTHER, replacement)
+        for (codePoint in 0xD800..0xDFFF) {
+            assertEquals(replacement, graphemeClassOf(codePoint, GraphemeTables.classes, GraphemeTables.index))
         }
     }
 

@@ -59,6 +59,31 @@ class GraphemeIntlSegmenterTest {
             }
         }
     }
+
+    @Test
+    fun charIndicesMatchIntlSegmenterOnRandomTexts() {
+        val version = nodeUnicodeVersion() ?: return
+        val older = version < UNICODE_VERSION.substringBefore('.').toInt()
+        val corpus = GraphemeCorpus(excluded = if (older) CHANGED_SINCE_UNICODE_17 else emptyList())
+        val segmenter = graphemeSegmenter()
+        val random = Random(46)
+        repeat(RANDOM_TEXT_COUNT / 10) {
+            val codePoints = corpus.text(random)
+            val source = codePointsToString(codePoints)
+            val intl = intlBoundaries(segmenter, source, charAndByteIndices(codePoints).first)
+            if (checkAgainstOracle(codePoints, source.u8.iteratedBoundaries(), intl, older)) return@repeat
+            val segments = segment(segmenter, source)
+            for (index in 0..source.length) {
+                val message = "$index of ${codePoints.toHex()}"
+                val isBoundary = index == source.length || containingStart(segments, index) == index
+                assertEquals(isBoundary, source.isGraphemeBoundary(index), "isBoundary($message)")
+                val end = if (index == source.length) -1 else containingEnd(segments, index)
+                assertEquals(end, source.nextGraphemeBoundary(index), "next($message)")
+                val previous = if (index == 0) -1 else containingStart(segments, index - 1)
+                assertEquals(previous, source.previousGraphemeBoundary(index), "previous($message)")
+            }
+        }
+    }
 }
 
 private fun nodeUnicodeVersion(): Int? {

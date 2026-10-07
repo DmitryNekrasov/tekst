@@ -247,6 +247,17 @@ internal fun graphemeClassAt(bytes: ByteArray, i: Int, length: Int, classes: Byt
     }
 }
 
+// The blocks of graphemeClassAt: below U+20000 the block is codePoint shr 6, and the 64 blocks of U+E0000..U+E0FFF
+// follow.
+internal fun graphemeClassOf(codePoint: Int, classes: ByteArray, index: CharArray): Int {
+    val block = when {
+        codePoint < 0x20000 -> codePoint shr 6
+        codePoint shr 12 == 0xE0 -> 2048 + ((codePoint shr 6) and 0x3F)
+        else -> return GRAPHEME_CLASS_OTHER
+    }
+    return classes[index[block].code + (codePoint and 0x3F)].toInt()
+}
+
 internal fun countGraphemes(bytes: ByteArray, isAscii: Boolean): Int {
     if (isAscii) {
         var count = bytes.size

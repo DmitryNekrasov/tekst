@@ -46,7 +46,7 @@ class GraphemeIcuTest {
         if (older) assertTrue(newRuleDifferences > 0)
     }
 
-    // ICU does not round an index inside a surrogate pair to a code point, so the test asks only between code points.
+    // A byte index inside a code point has no char index, so the test asks only between code points.
     @Test
     fun randomAccessMatchesIcuOnRandomTexts() {
         val older = icuVersion < tablesVersion
@@ -75,6 +75,26 @@ class GraphemeIcuTest {
                     string.previousGraphemeBoundary(index),
                     "previous($message)",
                 )
+            }
+        }
+    }
+
+    @Test
+    fun charIndicesMatchIcuOnRandomTexts() {
+        val older = icuVersion < tablesVersion
+        val corpus = GraphemeCorpus(excluded = if (older) CHANGED_SINCE_UNICODE_17 else emptyList())
+        val breaker = BreakIterator.getCharacterInstance()
+        val random = Random(47)
+        repeat(RANDOM_TEXT_COUNT / 10) {
+            val codePoints = corpus.text(random)
+            val source = codePointsToString(codePoints)
+            val icu = icuBoundaries(breaker, source, codePoints.size)
+            if (checkAgainstOracle(codePoints, source.u8.iteratedBoundaries(), icu, older)) return@repeat
+            for (charIndex in 0..source.length) {
+                val message = "$charIndex of ${codePoints.toHex()}"
+                assertEquals(breaker.isBoundary(charIndex), source.isGraphemeBoundary(charIndex), "isBoundary($message)")
+                assertEquals(breaker.following(charIndex), source.nextGraphemeBoundary(charIndex), "next($message)")
+                assertEquals(breaker.preceding(charIndex), source.previousGraphemeBoundary(charIndex), "previous($message)")
             }
         }
     }

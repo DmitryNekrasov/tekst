@@ -17,6 +17,8 @@ package utf8string
 // On malformed bytes the boundaries are unspecified, but every loop moves by at least one byte and stays in the text.
 //
 // Utf8String passes the whole array. The range is for a later API over a part of the caller's array.
+// GraphemeBoundariesUtf16.kt has the same kernels for UTF-16 text in a part of a CharSequence, so a change to the rules
+// of one file must go into the other.
 
 internal fun isGraphemeBoundaryAt(bytes: ByteArray, start: Int, end: Int, index: Int): Boolean {
     if (index == start || index == end) return true
@@ -157,6 +159,6 @@ private fun utf8LengthAt(bytes: ByteArray, i: Int, end: Int): Int {
 }
 
 // The flags of GRAPHEME_PAIR_ROWS, and the mask of the row after a safe pair.
-private const val PAIR_CONTEXT = 0x8000
-private const val PAIR_SAFE = 0x4000
-private const val PAIR_ROW = 0x3FFF
+internal const val PAIR_CONTEXT = 0x8000
+internal const val PAIR_SAFE = 0x4000
+internal const val PAIR_ROW = 0x3FFF
