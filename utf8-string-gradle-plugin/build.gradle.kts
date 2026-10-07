@@ -53,8 +53,8 @@ buildConfig {
 }
 
 gradlePlugin {
-    website.set("https://github.com/DmitryNekrasov/utf8-string")
-    vcsUrl.set("https://github.com/DmitryNekrasov/utf8-string")
+    website.set("https://github.com/DmitryNekrasov/tekst")
+    vcsUrl.set("https://github.com/DmitryNekrasov/tekst")
     plugins {
         create("utf8String") {
             id = "${project.group}.utf8-string"
@@ -68,15 +68,15 @@ gradlePlugin {
 
 tasks.test {
     dependsOn(
-        ":utf8-string:publishKotlinMultiplatformPublicationToTestingRepository",
-        ":utf8-string:publishJvmPublicationToTestingRepository",
+        ":tekst:publishKotlinMultiplatformPublicationToTestingRepository",
+        ":tekst:publishJvmPublicationToTestingRepository",
         ":utf8-string-compiler-plugin:publishAllPublicationsToTestingRepository",
         "publishAllPublicationsToTestingRepository",
     )
     // dependsOn adds no inputs, so without these the tests stay up to date after a change to the compiler plugin or the
     // library. The repository itself is not an input, since every publication adds new timestamped snapshot files.
     val compilerPlugin = project(":utf8-string-compiler-plugin")
-    val library = project(":utf8-string")
+    val library = project(":tekst")
     inputs.files(compilerPlugin.tasks.named("jar"), library.tasks.named("jvmJar"))
         .withPropertyName("publishedJars")
         .withNormalizer(ClasspathNormalizer::class)

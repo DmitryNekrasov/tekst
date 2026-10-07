@@ -1,0 +1,56 @@
+public final class tekst/CharSequenceGraphemes {
+	public static final fun isGraphemeBoundary (Ljava/lang/CharSequence;I)Z
+	public static final fun isGraphemeBoundary (Ljava/lang/CharSequence;III)Z
+	public static final fun nextGraphemeBoundary (Ljava/lang/CharSequence;I)I
+	public static final fun nextGraphemeBoundary (Ljava/lang/CharSequence;III)I
+	public static final fun previousGraphemeBoundary (Ljava/lang/CharSequence;I)I
+	public static final fun previousGraphemeBoundary (Ljava/lang/CharSequence;III)I
+}
+
+public final class tekst/Grapheme {
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+	public final fun toUtf8String ()Ltekst/Utf8String;
+}
+
+public final class tekst/GraphemeIterator : java/util/Iterator, kotlin/jvm/internal/markers/KMappedMarker {
+	public final fun getIndex ()I
+	public fun hasNext ()Z
+	public final fun hasPrevious ()Z
+	public synthetic fun next ()Ljava/lang/Object;
+	public fun next ()Ltekst/Grapheme;
+	public final fun previous ()Ltekst/Grapheme;
+	public fun remove ()V
+	public final fun skipNext ()I
+	public final fun skipPrevious ()I
+}
+
+public final class tekst/U8Kt {
+	public static final fun getU8 (Ljava/lang/String;)Ltekst/Utf8String;
+	public static final fun toUtf8String (Ljava/lang/String;)Ltekst/Utf8String;
+	public static final fun u8Literal ([BI)Ltekst/Utf8String;
+	public static final fun u8LiteralLatin1 (Ljava/lang/String;I)Ltekst/Utf8String;
+}
+
+public final class tekst/Utf8String {
+	public final fun copyInto ([BIII)[B
+	public static synthetic fun copyInto$default (Ltekst/Utf8String;[BIIIILjava/lang/Object;)[B
+	public final fun drop (I)Ltekst/Utf8String;
+	public final fun dropLast (I)Ltekst/Utf8String;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getByteCount ()I
+	public final fun getGraphemes ()Lkotlin/sequences/Sequence;
+	public final fun getLength ()I
+	public fun hashCode ()I
+	public final fun isGraphemeBoundary (I)Z
+	public final fun iterator ()Ltekst/GraphemeIterator;
+	public final fun iterator (I)Ltekst/GraphemeIterator;
+	public final fun nextGraphemeBoundary (I)I
+	public final fun previousGraphemeBoundary (I)I
+	public final fun take (I)Ltekst/Utf8String;
+	public final fun takeLast (I)Ltekst/Utf8String;
+	public final fun toByteArray ()[B
+	public fun toString ()Ljava/lang/String;
+}
+

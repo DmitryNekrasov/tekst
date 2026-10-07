@@ -2,17 +2,17 @@ FILE fqName:<root> fileName:/irDump.kt
   CLASS OBJECT name:U8Literals$IrDumpKt modality:FINAL visibility:private superTypes:[]
     thisReceiver: VALUE_PARAMETER INSTANCE_RECEIVER kind:DispatchReceiver name:<this> type:<root>.U8Literals$IrDumpKt
     PROPERTY name:literal0 visibility:internal modality:FINAL [val]
-      FIELD name:literal0 type:utf8string.Utf8String visibility:private [final,static]
+      FIELD name:literal0 type:tekst.Utf8String visibility:private [final,static]
         EXPRESSION_BODY
-          CALL 'internal final fun u8LiteralLatin1 (latin1: kotlin.String, codePointCount: kotlin.Int): utf8string.Utf8String declared in utf8string' type=utf8string.Utf8String origin=null
+          CALL 'internal final fun u8LiteralLatin1 (latin1: kotlin.String, codePointCount: kotlin.Int): tekst.Utf8String declared in tekst' type=tekst.Utf8String origin=null
             ARG latin1: CONST String type=kotlin.String value="Ð¿Ñ\u0080Ð¸"
             ARG codePointCount: CONST Int type=kotlin.Int value=3
-      FUN DEFAULT_PROPERTY_ACCESSOR name:<get-literal0> visibility:internal modality:FINAL returnType:utf8string.Utf8String
+      FUN DEFAULT_PROPERTY_ACCESSOR name:<get-literal0> visibility:internal modality:FINAL returnType:tekst.Utf8String
         VALUE_PARAMETER INSTANCE_RECEIVER kind:DispatchReceiver name:<this> index:0 type:<root>.U8Literals$IrDumpKt
         correspondingProperty: PROPERTY name:literal0 visibility:internal modality:FINAL [val]
         BLOCK_BODY
-          RETURN type=kotlin.Nothing from='internal final fun <get-literal0> (): utf8string.Utf8String declared in <root>.U8Literals$IrDumpKt'
-            GET_FIELD 'FIELD name:literal0 type:utf8string.Utf8String visibility:private [final,static] declared in <root>.U8Literals$IrDumpKt' type=utf8string.Utf8String origin=null
+          RETURN type=kotlin.Nothing from='internal final fun <get-literal0> (): tekst.Utf8String declared in <root>.U8Literals$IrDumpKt'
+            GET_FIELD 'FIELD name:literal0 type:tekst.Utf8String visibility:private [final,static] declared in <root>.U8Literals$IrDumpKt' type=tekst.Utf8String origin=null
     CONSTRUCTOR visibility:private returnType:<root>.U8Literals$IrDumpKt [primary]
       BLOCK_BODY
         DELEGATING_CONSTRUCTOR_CALL 'public constructor <init> () declared in kotlin.Any'
@@ -23,15 +23,15 @@ FILE fqName:<root> fileName:/irDump.kt
         WHEN type=kotlin.String origin=IF
           BRANCH
             if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
-              ARG arg0: CALL 'public final fun <get-length> (): kotlin.Int declared in utf8string.Utf8String' type=kotlin.Int origin=GET_PROPERTY
-                ARG <this>: CALL 'public final fun literal (): utf8string.Utf8String declared in <root>' type=utf8string.Utf8String origin=null
+              ARG arg0: CALL 'public final fun <get-length> (): kotlin.Int declared in tekst.Utf8String' type=kotlin.Int origin=GET_PROPERTY
+                ARG <this>: CALL 'public final fun literal (): tekst.Utf8String declared in <root>' type=tekst.Utf8String origin=null
               ARG arg1: CONST Int type=kotlin.Int value=3
             then: CONST String type=kotlin.String value="OK"
           BRANCH
             if: CONST Boolean type=kotlin.Boolean value=true
             then: CONST String type=kotlin.String value="Fail"
-  FUN name:literal visibility:public modality:FINAL returnType:utf8string.Utf8String
+  FUN name:literal visibility:public modality:FINAL returnType:tekst.Utf8String
     BLOCK_BODY
-      RETURN type=kotlin.Nothing from='public final fun literal (): utf8string.Utf8String declared in <root>'
-        CALL 'internal final fun <get-literal0> (): utf8string.Utf8String declared in <root>.U8Literals$IrDumpKt' type=utf8string.Utf8String origin=null
+      RETURN type=kotlin.Nothing from='public final fun literal (): tekst.Utf8String declared in <root>'
+        CALL 'internal final fun <get-literal0> (): tekst.Utf8String declared in <root>.U8Literals$IrDumpKt' type=tekst.Utf8String origin=null
           ARG <this>: GET_OBJECT 'CLASS OBJECT name:U8Literals$IrDumpKt modality:FINAL visibility:private superTypes:[]' type=<root>.U8Literals$IrDumpKt

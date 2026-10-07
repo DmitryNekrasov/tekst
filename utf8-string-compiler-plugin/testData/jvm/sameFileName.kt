@@ -2,7 +2,7 @@
 @file:JvmName("LeftPart")
 package repro
 
-import utf8string.u8
+import tekst.u8
 
 fun left() = "a".u8
 
@@ -10,7 +10,7 @@ fun left() = "a".u8
 @file:JvmName("RightPart")
 package repro
 
-import utf8string.u8
+import tekst.u8
 
 fun right() = "bc".u8
 
@@ -19,7 +19,7 @@ fun right() = "bc".u8
 @file:JvmMultifileClass
 package repro
 
-import utf8string.u8
+import tekst.u8
 
 fun one() = "def".u8
 
@@ -28,7 +28,7 @@ fun one() = "def".u8
 @file:JvmMultifileClass
 package repro
 
-import utf8string.u8
+import tekst.u8
 
 fun two() = "ghij".u8
 

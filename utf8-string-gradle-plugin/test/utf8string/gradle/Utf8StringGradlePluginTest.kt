@@ -1,5 +1,5 @@
 /*
- * Copyright 2026 Dmitry Nekrasov and utf8-string library contributors.
+ * Copyright 2026 Dmitry Nekrasov and tekst library contributors.
  * Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
@@ -24,7 +24,7 @@ class Utf8StringGradlePluginTest {
         writeProject(kotlinVersion = BuildConfig.KOTLIN_VERSION)
         projectDir.resolve("src/main/kotlin/Literals.kt").apply { parentFile.mkdirs() }.writeText(
             """
-            import utf8string.u8
+            import tekst.u8
 
             fun greeting() = "Hello, UTF-8".u8
             """.trimIndent(),
@@ -75,7 +75,7 @@ class Utf8StringGradlePluginTest {
             }
 
             dependencies {
-                implementation("${BuildConfig.COMPILER_PLUGIN_GROUP}:utf8-string:${BuildConfig.COMPILER_PLUGIN_VERSION}")
+                implementation("${BuildConfig.COMPILER_PLUGIN_GROUP}:tekst:${BuildConfig.COMPILER_PLUGIN_VERSION}")
             }
             """.trimIndent(),
         )

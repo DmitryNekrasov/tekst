@@ -1,4 +1,4 @@
-import utf8string.u8
+import tekst.u8
 
 fun box(): String {
     val unbound = String::u8

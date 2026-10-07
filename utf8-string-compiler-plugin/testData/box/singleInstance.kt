@@ -2,7 +2,7 @@
 // FILE: lib.kt
 package lib
 
-import utf8string.u8
+import tekst.u8
 
 fun libLiteral() = "from lib".u8
 
@@ -10,7 +10,7 @@ inline fun inlineLibLiteral() = "from lib".u8
 
 // MODULE: main(lib)
 // FILE: holder.kt
-import utf8string.u8
+import tekst.u8
 
 val fileInitialized = run {
     initLog.append("holder.kt initialized")
@@ -26,7 +26,7 @@ fun readFileProperty() = fileInitialized
 // FILE: main.kt
 import lib.inlineLibLiteral
 import lib.libLiteral
-import utf8string.u8
+import tekst.u8
 
 val initLog = StringBuilder()
 

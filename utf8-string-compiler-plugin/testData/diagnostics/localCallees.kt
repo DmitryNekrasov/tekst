@@ -1,5 +1,5 @@
 // RUN_PIPELINE_TILL: BACKEND
-import utf8string.u8
+import tekst.u8
 
 fun localFunction(): Int {
     fun plus(a: String, b: String) = b + a

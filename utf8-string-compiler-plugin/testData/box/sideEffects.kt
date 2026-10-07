@@ -1,5 +1,5 @@
-import utf8string.Utf8String
-import utf8string.u8
+import tekst.Utf8String
+import tekst.u8
 
 object Holder {
     const val NAME = "holder"

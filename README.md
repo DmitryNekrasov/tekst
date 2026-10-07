@@ -1,32 +1,29 @@
-# utf8-string
+# tekst
 
 [![JetBrains team project](https://jb.gg/badges/team.svg)](https://confluence.jetbrains.com/display/ALL/JetBrains+on+GitHub)
-[![GitHub license](https://img.shields.io/badge/license-Apache%202.0-green.svg?style=flat)](https://github.com/DmitryNekrasov/utf8-string/blob/main/LICENSE)
+[![GitHub license](https://img.shields.io/badge/license-Apache%202.0-green.svg?style=flat)](https://github.com/DmitryNekrasov/tekst/blob/main/LICENSE)
 [![Kotlin](https://img.shields.io/badge/kotlin-2.4.20-blue.svg?logo=kotlin)](https://kotlinlang.org)
-[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/dmitrynekrasov/utf8-string/build.yml)](https://github.com/DmitryNekrasov/utf8-string/actions/workflows/build.yml)
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.dmitrynekrasov/utf8-string.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.dmitrynekrasov/utf8-string)
-[![KDoc link](https://img.shields.io/badge/API_reference-KDoc-blue)](https://dmitrynekrasov.github.io/utf8-string/)
+[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/dmitrynekrasov/tekst/build.yml)](https://github.com/DmitryNekrasov/tekst/actions/workflows/build.yml)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.dmitrynekrasov/tekst.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.dmitrynekrasov/tekst)
+[![KDoc link](https://img.shields.io/badge/API_reference-KDoc-blue)](https://dmitrynekrasov.github.io/tekst/)
 
-A Kotlin Multiplatform string for working with graphemes. Its `length` counts them, and `for` iterates over them. A grapheme is what a user sees as one character, such as a letter with its accents, a flag, or an emoji with a skin tone. The string is immutable and stored as UTF-8 bytes.
+A Kotlin Multiplatform library for working with text by graphemes. A grapheme is what a user sees as one character, such as a letter with its accents, a flag, or an emoji with a skin tone. `String.length` counts UTF-16 chars, so 👋🏽 and 🇪🇸 count as 4 each, and `String.take` or `substring` can split them.
 
 ```kotlin
-import utf8string.u8
+import tekst.nextGraphemeBoundary
+import tekst.previousGraphemeBoundary
 
-val text = "Hi 👋🏽 🇪🇸".u8
-text.length            // 6
-text.toString().length // 12
-text.take(4)           // Hi 👋🏽
-
-for (grapheme in text) {
-    print("[$grapheme]") // [H][i][ ][👋🏽][ ][🇪🇸]
-}
+val text = "Hi 👋🏽 🇪🇸"
+text.length                      // 12
+text.previousGraphemeBoundary(7) // 3: Backspace after 👋🏽 deletes chars 3 to 6
+text.nextGraphemeBoundary(8)     // 12: Delete before 🇪🇸 deletes the whole flag
 ```
 
-`.u8` encodes a `String` into a `Utf8String`, and `toString()` decodes it back. `String.length` counts UTF-16 chars, so the hand with a skin tone and the flag count as 4 each, and `String.take` or `substring` can split them. The Kotlin standard library has no grapheme API. The platform APIs, like `BreakIterator` on the JVM and `Intl.Segmenter` in JavaScript, are not common code, and their results depend on the platform version. For example, `BreakIterator` before JDK 20 counts the hand and the flag as 2 graphemes each. utf8-string has one implementation for all targets, with the rules of Unicode 18.0.
+The Kotlin standard library has no grapheme API. The platform APIs, like `BreakIterator` on the JVM and `Intl.Segmenter` in JavaScript, are not common code, and their results depend on the platform version. For example, `BreakIterator` before JDK 20 counts 👋🏽 and 🇪🇸 as 2 graphemes each. tekst has one implementation for all targets, with the rules of Unicode 18.0. Its `Utf8String` is a string of graphemes stored as UTF-8 bytes, more on that below.
 
 Targets: JVM, JS, Wasm (JS and WASI), and Kotlin/Native for Linux, macOS arm64, Windows, iOS, watchOS, and tvOS.
 
-utf8-string is a personal hobby project.
+tekst is a personal hobby and research project.
 
 ## Setup
 
@@ -34,7 +31,7 @@ utf8-string is a personal hobby project.
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation("io.github.dmitrynekrasov:utf8-string:0.2.0")
+            implementation("io.github.dmitrynekrasov:tekst:0.3.0")
         }
     }
 }
@@ -42,19 +39,45 @@ kotlin {
 
 The library needs Kotlin 2.4.20 or newer. In a JVM or Android project, the same `implementation` line goes into `dependencies`.
 
-## Graphemes
+## Graphemes in a String
 
-The graphemes are the extended grapheme clusters of [UAX #29](https://www.unicode.org/reports/tr29/) (Unicode 18.0). `length` is computed on the first access and then kept.
+`isGraphemeBoundary`, `nextGraphemeBoundary` and `previousGraphemeBoundary` take a char index of a `String`, a `StringBuilder` or another `CharSequence`, such as the buffer of an editor. They read the chars in place and allocate nothing. `startIndex` and `endIndex` limit a query to a part of the text, such as one line, and the query reads no char outside it.
 
-Like `String`, `Utf8String` is not an `Iterable`. Its `graphemes` property is a `Sequence<Grapheme>` that can be iterated more than once.
+A loop over the graphemes passes each boundary as `startIndex`, since the boundaries after a boundary do not depend on the text before it:
 
 ```kotlin
-text.graphemes.take(4).joinToString("") // Hi 👋🏽
+var start = 0
+while (start < text.length) {
+    val end = text.nextGraphemeBoundary(start, startIndex = start, endIndex = text.length)
+    print("[${text.substring(start, end)}]") // [H][i][ ][👋🏽][ ][🇪🇸]
+    start = end
+}
 ```
 
-A `Grapheme` equals another one with the same UTF-8 bytes. A grapheme reads the bytes of its string instead of copying them, so it can keep all of them in memory, and `toUtf8String()` copies only the grapheme. Iteration allocates nothing for an ASCII char or CR LF, which are shared objects, and one small object for any other grapheme.
+Otherwise a call reads the grapheme around its index and the one before it, and in a run of flags also the run before it, since a boundary there depends on the number of flags before it. So a loop of such calls over a run of flags reads the run again for each flag, and its time grows as the square of the run length.
 
-A position in a `Utf8String` is a byte index, as in `copyInto`. `isGraphemeBoundary`, `nextGraphemeBoundary` and `previousGraphemeBoundary` take any byte index, for example one from a hit test or a search, and `iterator(index)` starts at the grapheme that contains the byte. The iterator goes both ways: `previous()` returns the grapheme before it, and `skipNext()` and `skipPrevious()` move without a `Grapheme`. `take`, `drop`, `takeLast` and `dropLast` count graphemes, as `length` does.
+The graphemes are the extended grapheme clusters of [UAX #29](https://www.unicode.org/reports/tr29/). Their rules also keep a conjunct of an Indic script in one grapheme, so "नमस्ते" has 3: न, म and स्ते. The tests run the Unicode conformance file `GraphemeBreakTest.txt` and the CLDR tests of Indic words, and check that each RGI emoji sequence is one grapheme. They also compare the graphemes of random texts with a reference model, with ICU4J on the JVM and with `Intl.Segmenter` on Node.js.
+
+## Utf8String
+
+`Utf8String` is an immutable string of graphemes, stored as UTF-8 bytes. Its `length` counts graphemes, and `for` iterates over them. `.u8` encodes a `String` into a `Utf8String`, and `toString()` decodes it back.
+
+```kotlin
+import tekst.u8
+
+val text = "Hi 👋🏽 🇪🇸".u8
+text.length    // 6
+text.byteCount // 20
+text.take(4)   // Hi 👋🏽
+
+for (grapheme in text) {
+    print("[$grapheme]") // [H][i][ ][👋🏽][ ][🇪🇸]
+}
+```
+
+`length` is computed on the first access and then kept. Like `String`, `Utf8String` is not an `Iterable`, and its `graphemes` property is a `Sequence<Grapheme>` that can be iterated more than once. A `Grapheme` equals another one with the same UTF-8 bytes. It reads the bytes of its string instead of copying them, so it can keep all of them in memory, and `toUtf8String()` copies only the grapheme. Iteration allocates nothing for an ASCII char or CR LF, which are shared objects, and one small object for any other grapheme.
+
+A position in a `Utf8String` is a byte index, as in `copyInto`. Here the 3 boundary functions take a byte index, for example one from a hit test or a search, and `iterator(index)` starts at the grapheme that contains the byte. The iterator goes both ways. `previous()` returns the grapheme before it, and `skipNext()` and `skipPrevious()` move without a `Grapheme`. `take`, `drop`, `takeLast` and `dropLast` count graphemes, as `length` does.
 
 ```kotlin
 text.isGraphemeBoundary(7)       // false: 👋🏽 takes bytes 3 to 10
@@ -62,37 +85,14 @@ text.previousGraphemeBoundary(7) // 3
 text.takeLast(1)                 // 🇪🇸
 ```
 
-A function with an index reads the grapheme around the index and the one before it, and in a run of flags also the run before it, since a boundary there depends on the number of flags before it. So a loop over the graphemes should use an iterator, while a loop of such calls over a run of flags reads the run again for each flag.
-
-The rules also keep a conjunct of an Indic script in one grapheme:
-
-```kotlin
-"नमस्ते".u8.length // 3: न, म, स्ते
-```
-
-The tests run the Unicode conformance file `GraphemeBreakTest.txt` and the CLDR tests of Indic words, check that each RGI emoji sequence is one grapheme, and compare the graphemes of random texts with a reference model, and also with ICU4J on the JVM and with `Intl.Segmenter` on Node.js.
-
-## UTF-8 bytes
-
-`.u8` counts the UTF-8 length first, so it allocates only the result array. `copyInto` writes the bytes into an existing array, with the signature of `ByteArray.copyInto`, and `toString()` decodes them again on each call:
-
-```kotlin
-val utf8 = "Привет, 😀".u8
-utf8.byteCount     // 18
-utf8.toByteArray() // a copy of the 18 bytes
-utf8.toString()    // Привет, 😀
-```
-
-To cut the bytes at a grapheme boundary, for example to fit a text into a limit of bytes, take the index from an iterator:
+`.u8` counts the UTF-8 length first, so it allocates only the result array. `toByteArray()` and `copyInto` give the bytes, and `toString()` decodes them again on each call. To cut the bytes at a grapheme boundary, for example to fit a text into a limit of bytes, take the index from an iterator:
 
 ```kotlin
 val end = text.iterator(minOf(limit, text.byteCount)).index // the last boundary that fits
 text.copyInto(buffer, endIndex = end)
 ```
 
-There is no function that makes a `Utf8String` from bytes. Two `Utf8String` values are equal when their bytes are equal.
-
-An unpaired surrogate has no UTF-8 encoding, so it becomes U+FFFD (`EF BF BD`) on every platform. On the JVM, `String.encodeToByteArray()` writes `?` instead.
+There is no function that makes a `Utf8String` from bytes. `Utf8String` values are equal when their bytes are equal. An unpaired surrogate has no UTF-8 encoding, so it becomes U+FFFD (`EF BF BD`) on every platform. On the JVM, `String.encodeToByteArray()` writes `?` instead.
 
 ## Compile-time literals
 
@@ -103,7 +103,7 @@ Each literal is created once, in a private object of its file, and every evaluat
 ```kotlin
 plugins {
     kotlin("multiplatform") version "2.4.20"
-    id("io.github.dmitrynekrasov.utf8-string") version "0.2.0"
+    id("io.github.dmitrynekrasov.utf8-string") version "0.3.0"
 }
 ```
 
@@ -145,17 +145,17 @@ On Node.js 24.16.0:
 | Combining marks | 458 | 303 | 862 (1.9x) |
 | CR LF lines | 203 | 159 | 2087 (10x) |
 
-The texts are random words in each script, emoji sequences, Latin letters with 1 to 8 combining marks, and ASCII lines with CR LF, from `Corpora.kt` in `utf8-string-benchmarks`. All the implementations give the same grapheme counts on them, although ICU4J and Node.js implement Unicode 17.0. For an ASCII text, `length` does not run the rules, since in ASCII every char except LF after CR is a grapheme. On the JVM, the graphemes in the `for` loop do not escape it, so the JIT can remove their allocation.
+The texts are random words in each script, emoji sequences, Latin letters with 1 to 8 combining marks, and ASCII lines with CR LF, from `Corpora.kt` in `tekst-benchmarks`. All the implementations give the same grapheme counts on them, although ICU4J and Node.js implement Unicode 17.0. For an ASCII text, `length` does not run the rules, since in ASCII every char except LF after CR is a grapheme. On the JVM, the graphemes in the `for` loop do not escape it, so the JIT can remove their allocation.
 
-Each JVM number is the mean of 5 forks, and each Node.js number is the median of 3 runs. `./gradlew :utf8-string-benchmarks:jvmComparisonBenchmark :utf8-string-benchmarks:jsComparisonBenchmark` runs the comparison once.
+Each JVM number is the mean of 5 forks, and each Node.js number is the median of 3 runs. `./gradlew :tekst-benchmarks:jvmComparisonBenchmark :tekst-benchmarks:jsComparisonBenchmark` runs the comparison once.
 
-On the same texts, a query at a random byte index, such as `nextGraphemeBoundary`, takes 1 to 18 ns on the JVM and 1 to 70 ns on Node.js, since it reads only the code points around the index. A walk back with `previous()` takes up to 3.6 times as long as the `for` loop on the JVM and up to 2.4 times on Node.js, because each step looks for the start of the code point before it and checks the pair of their classes. `./gradlew :utf8-string-benchmarks:jvmBoundariesBenchmark :utf8-string-benchmarks:jsBoundariesBenchmark` runs these benchmarks.
+On the same texts, a query at a random byte index, such as `nextGraphemeBoundary`, takes 1 to 18 ns on the JVM and 1 to 70 ns on Node.js, since it reads only the code points around the index. A walk back with `previous()` takes up to 3.6 times as long as the `for` loop on the JVM and up to 2.4 times on Node.js, because each step looks for the start of the code point before it and checks the pair of their classes. `./gradlew :tekst-benchmarks:jvmBoundariesBenchmark :tekst-benchmarks:jsBoundariesBenchmark` runs these benchmarks.
 
 ## Development
 
-`./gradlew generateUnicodeData` generates the grapheme tables and the test data from the Unicode 18.0 and CLDR 48 files in `unicode/`, and `./gradlew build` fails when the committed files differ from what it writes. A new Unicode version also needs the version constants in `utf8-string-generator/src/utf8string/generator/Main.kt` changed and the rules reviewed. The JVM tests also check the generated tables against the Unicode files.
+`./gradlew generateUnicodeData` generates the grapheme tables and the test data from the Unicode 18.0 and CLDR 48 files in `unicode/`, and `./gradlew build` fails when the committed files differ from what it writes. A new Unicode version also needs the version constants in `tekst-generator/src/tekst/generator/Main.kt` changed and the rules reviewed. The JVM tests also check the generated tables against the Unicode files.
 
-`./gradlew :utf8-string-benchmarks:benchmark` runs the benchmarks on the JVM, JS and Wasm JS, and on Kotlin/Native for macOS arm64 or Linux x64 when the host is one of them. `:utf8-string-benchmarks:jvmBenchmarkAllocations` reports the bytes allocated per operation on the JVM.
+`./gradlew :tekst-benchmarks:benchmark` runs the benchmarks on the JVM, JS and Wasm JS, and on Kotlin/Native for macOS arm64 or Linux x64 when the host is one of them. `:tekst-benchmarks:jvmBenchmarkAllocations` reports the bytes allocated per operation on the JVM.
 
 `./gradlew dokkaGenerate` writes the API reference to `docs/`. GitHub Pages serves it from the `docs/` of the gh-pages branch.
 

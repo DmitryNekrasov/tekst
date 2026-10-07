@@ -1,7 +1,7 @@
 // LANGUAGE: +MultiPlatformProjects
 // MODULE: common
 // FILE: common.kt
-import utf8string.u8
+import tekst.u8
 
 const val COMMON = "common"
 
@@ -9,7 +9,7 @@ fun commonLiteral() = (COMMON + " \u043A\u043E\u0434").u8
 
 // MODULE: main()()(common)
 // FILE: main.kt
-import utf8string.u8
+import tekst.u8
 
 fun runtime(value: String) = value.u8
 

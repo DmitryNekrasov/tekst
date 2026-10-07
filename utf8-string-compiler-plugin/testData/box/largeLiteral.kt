@@ -1,4 +1,4 @@
-import utf8string.u8
+import tekst.u8
 
 // K8 takes 11008 bytes in a Latin-1 string constant, so twelve copies exceed the 65535 bytes of a JVM string constant.
 // They are also above the 1 KiB byteArrayOf limit of klib targets.

@@ -1,5 +1,5 @@
 /*
- * Copyright 2026 Dmitry Nekrasov and utf8-string library contributors.
+ * Copyright 2026 Dmitry Nekrasov and tekst library contributors.
  * Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
@@ -72,7 +72,7 @@ class U8Symbols(
     val byteArrayOf: IrSimpleFunctionSymbol,
 ) {
     companion object {
-        private val PACKAGE = FqName("utf8string")
+        private val PACKAGE = FqName("tekst")
 
         fun find(context: IrPluginContext): U8Symbols? {
             val finder = context.finderForBuiltins()
