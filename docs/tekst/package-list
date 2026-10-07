@@ -1,0 +1,43 @@
+$dokka.format:html-v1
+$dokka.linkExtension:html
+$dokka.location:tekst////PointingToDeclaration/tekst/tekst/index.html
+$dokka.location:tekst//isGraphemeBoundary/kotlin.CharSequence#kotlin.Int#kotlin.Int#kotlin.Int/PointingToDeclaration/tekst/tekst/is-grapheme-boundary.html
+$dokka.location:tekst//isGraphemeBoundary/kotlin.CharSequence#kotlin.Int/PointingToDeclaration/tekst/tekst/is-grapheme-boundary.html
+$dokka.location:tekst//nextGraphemeBoundary/kotlin.CharSequence#kotlin.Int#kotlin.Int#kotlin.Int/PointingToDeclaration/tekst/tekst/next-grapheme-boundary.html
+$dokka.location:tekst//nextGraphemeBoundary/kotlin.CharSequence#kotlin.Int/PointingToDeclaration/tekst/tekst/next-grapheme-boundary.html
+$dokka.location:tekst//previousGraphemeBoundary/kotlin.CharSequence#kotlin.Int#kotlin.Int#kotlin.Int/PointingToDeclaration/tekst/tekst/previous-grapheme-boundary.html
+$dokka.location:tekst//previousGraphemeBoundary/kotlin.CharSequence#kotlin.Int/PointingToDeclaration/tekst/tekst/previous-grapheme-boundary.html
+$dokka.location:tekst//toUtf8String/kotlin.String#/PointingToDeclaration/tekst/tekst/to-utf8-string.html
+$dokka.location:tekst//u8/kotlin.String#/PointingToDeclaration/tekst/tekst/u8.html
+$dokka.location:tekst/Grapheme///PointingToDeclaration/tekst/tekst/-grapheme/index.html
+$dokka.location:tekst/Grapheme/equals/#kotlin.Any?/PointingToDeclaration/tekst/tekst/-grapheme/equals.html
+$dokka.location:tekst/Grapheme/hashCode/#/PointingToDeclaration/tekst/tekst/-grapheme/hash-code.html
+$dokka.location:tekst/Grapheme/toString/#/PointingToDeclaration/tekst/tekst/-grapheme/to-string.html
+$dokka.location:tekst/Grapheme/toUtf8String/#/PointingToDeclaration/tekst/tekst/-grapheme/to-utf8-string.html
+$dokka.location:tekst/GraphemeIterator///PointingToDeclaration/tekst/tekst/-grapheme-iterator/index.html
+$dokka.location:tekst/GraphemeIterator/hasNext/#/PointingToDeclaration/tekst/tekst/-grapheme-iterator/has-next.html
+$dokka.location:tekst/GraphemeIterator/hasPrevious/#/PointingToDeclaration/tekst/tekst/-grapheme-iterator/has-previous.html
+$dokka.location:tekst/GraphemeIterator/index/#/PointingToDeclaration/tekst/tekst/-grapheme-iterator/--index--.html
+$dokka.location:tekst/GraphemeIterator/next/#/PointingToDeclaration/tekst/tekst/-grapheme-iterator/next.html
+$dokka.location:tekst/GraphemeIterator/previous/#/PointingToDeclaration/tekst/tekst/-grapheme-iterator/previous.html
+$dokka.location:tekst/GraphemeIterator/skipNext/#/PointingToDeclaration/tekst/tekst/-grapheme-iterator/skip-next.html
+$dokka.location:tekst/GraphemeIterator/skipPrevious/#/PointingToDeclaration/tekst/tekst/-grapheme-iterator/skip-previous.html
+$dokka.location:tekst/Utf8String///PointingToDeclaration/tekst/tekst/-utf8-string/index.html
+$dokka.location:tekst/Utf8String/byteCount/#/PointingToDeclaration/tekst/tekst/-utf8-string/byte-count.html
+$dokka.location:tekst/Utf8String/copyInto/#kotlin.ByteArray#kotlin.Int#kotlin.Int#kotlin.Int/PointingToDeclaration/tekst/tekst/-utf8-string/copy-into.html
+$dokka.location:tekst/Utf8String/drop/#kotlin.Int/PointingToDeclaration/tekst/tekst/-utf8-string/drop.html
+$dokka.location:tekst/Utf8String/dropLast/#kotlin.Int/PointingToDeclaration/tekst/tekst/-utf8-string/drop-last.html
+$dokka.location:tekst/Utf8String/equals/#kotlin.Any?/PointingToDeclaration/tekst/tekst/-utf8-string/equals.html
+$dokka.location:tekst/Utf8String/graphemes/#/PointingToDeclaration/tekst/tekst/-utf8-string/graphemes.html
+$dokka.location:tekst/Utf8String/hashCode/#/PointingToDeclaration/tekst/tekst/-utf8-string/hash-code.html
+$dokka.location:tekst/Utf8String/isGraphemeBoundary/#kotlin.Int/PointingToDeclaration/tekst/tekst/-utf8-string/is-grapheme-boundary.html
+$dokka.location:tekst/Utf8String/iterator/#/PointingToDeclaration/tekst/tekst/-utf8-string/iterator.html
+$dokka.location:tekst/Utf8String/iterator/#kotlin.Int/PointingToDeclaration/tekst/tekst/-utf8-string/iterator.html
+$dokka.location:tekst/Utf8String/length/#/PointingToDeclaration/tekst/tekst/-utf8-string/length.html
+$dokka.location:tekst/Utf8String/nextGraphemeBoundary/#kotlin.Int/PointingToDeclaration/tekst/tekst/-utf8-string/next-grapheme-boundary.html
+$dokka.location:tekst/Utf8String/previousGraphemeBoundary/#kotlin.Int/PointingToDeclaration/tekst/tekst/-utf8-string/previous-grapheme-boundary.html
+$dokka.location:tekst/Utf8String/take/#kotlin.Int/PointingToDeclaration/tekst/tekst/-utf8-string/take.html
+$dokka.location:tekst/Utf8String/takeLast/#kotlin.Int/PointingToDeclaration/tekst/tekst/-utf8-string/take-last.html
+$dokka.location:tekst/Utf8String/toByteArray/#/PointingToDeclaration/tekst/tekst/-utf8-string/to-byte-array.html
+$dokka.location:tekst/Utf8String/toString/#/PointingToDeclaration/tekst/tekst/-utf8-string/to-string.html
+tekst
