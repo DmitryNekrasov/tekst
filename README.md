@@ -26,7 +26,7 @@ for (grapheme in text) {
 
 Targets: JVM, JS, Wasm (JS and WASI), and Kotlin/Native for Linux, macOS arm64, Windows, iOS, watchOS, and tvOS.
 
-tekst is a personal hobby project.
+tekst is a personal hobby and research project.
 
 ## Setup
 
