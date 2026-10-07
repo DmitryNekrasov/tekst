@@ -87,6 +87,15 @@ benchmark {
             iterationTimeUnit = "s"
             advanced("jvmForks", 5)
         }
+        register("utf16") {
+            include("BreakIteratorBoundaryBenchmark")
+            include("GraphemeBenchmark.iterateString")
+            include("BreakIteratorBenchmark")
+            warmups = 5
+            iterations = 5
+            iterationTime = 1
+            iterationTimeUnit = "s"
+        }
     }
 }
 

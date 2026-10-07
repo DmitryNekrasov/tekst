@@ -12,6 +12,7 @@ import kotlinx.benchmark.Setup
 import kotlinx.benchmark.State
 import utf8string.Grapheme
 import utf8string.Utf8String
+import utf8string.nextGraphemeBoundary
 import utf8string.u8
 
 @State(Scope.Benchmark)
@@ -33,6 +34,18 @@ class GraphemeBenchmark {
     fun iterate(): Int {
         var count = 0
         for (grapheme in string) count++
+        return count
+    }
+
+    // startIndex at the last boundary keeps the walk linear.
+    @Benchmark
+    fun iterateString(): Int {
+        var count = 0
+        var index = 0
+        while (index < source.length) {
+            index = source.nextGraphemeBoundary(index, startIndex = index, endIndex = source.length)
+            count++
+        }
         return count
     }
 
