@@ -1,8 +1,8 @@
-# utf8-string
+# tekst
 
 ## What it is
 
-- A Kotlin Multiplatform library, `utf8-string/`: `Utf8String` and `String.u8`, which encodes a string as UTF-8 with
+- A Kotlin Multiplatform library, `tekst/`: `Utf8String` and `String.u8`, which encodes a string as UTF-8 with
   unpaired surrogates as U+FFFD, on 16 targets (JVM, JS, Wasm JS and WASI, Kotlin/Native for Linux, macOS, Windows,
   iOS, watchOS, tvOS).
 - A K2 compiler plugin, `utf8-string-compiler-plugin/`, that works only in IR and replaces `"...".u8` on a compile-time
@@ -10,8 +10,8 @@
 - A Gradle plugin, `utf8-string-gradle-plugin/`, that applies it, and `utf8-string-plugin-tests/`, which compiles tests
   with the plugin on every target.
 - Iteration by extended grapheme clusters (`for (c in string)`, `Grapheme`, `length`) after UAX #29 for Unicode 18.0.
-  `utf8-string-generator/` generates its tables and test data from the Unicode files in `unicode/`, and
-  `utf8-string-benchmarks/` measures it (kotlinx-benchmark, run on request only).
+  `tekst-generator/` generates its tables and test data from the Unicode files in `unicode/`, and
+  `tekst-benchmarks/` measures it (kotlinx-benchmark, run on request only).
 - One maintainer. Nothing is published yet.
 
 ## What a real failure looks like
@@ -60,8 +60,8 @@
   `@Suppress` works only on declarations.
 - Callable references such as `String::u8` are not rewritten and get no warning.
 - The entry points are `@PublishedApi internal`, because strict klib IR visibility validation rejects plain internal.
-- The public API of `utf8-string` is checked against the dumps in `utf8-string/api/` (`checkKotlinAbi` in `check`);
-  `./gradlew :utf8-string:updateKotlinAbi` rewrites them when the API changes on purpose.
+- The public API of `tekst` is checked against the dumps in `tekst/api/` (`checkKotlinAbi` in `check`);
+  `./gradlew :tekst:updateKotlinAbi` rewrites them when the API changes on purpose.
 - The compiler plugin compiles against the non-relocated `kotlin-compiler`, and a test checks its classes against both
   embeddable compilers instead of shading.
 - The Kotlin/JS IR incremental cache is off (a regression of KT-31614). The configuration cache is on, with a 4 GB

@@ -10,7 +10,7 @@ const val LIB_GREETING = "from lib"
 
 // MODULE: common
 // FILE: common.kt
-import utf8string.u8
+import tekst.u8
 
 const val COMMON = "common"
 
@@ -19,7 +19,7 @@ fun commonLiteral() = (COMMON + " code").u8
 // MODULE: main(lib)()(common)
 // FILE: main.kt
 import lib.LIB_GREETING
-import utf8string.u8
+import tekst.u8
 
 const val GREETING = "Hi"
 const val NUMBER = 42

@@ -25,7 +25,7 @@ allprojects {
 
             publications.withType<MavenPublication>().configureEach {
                 pom {
-                    url.set("https://github.com/DmitryNekrasov/utf8-string")
+                    url.set("https://github.com/DmitryNekrasov/tekst")
                     licenses {
                         license {
                             name.set("The Apache License, Version 2.0")
@@ -39,9 +39,9 @@ allprojects {
                         }
                     }
                     scm {
-                        connection.set("scm:git:git://github.com/DmitryNekrasov/utf8-string.git")
-                        developerConnection.set("scm:git:ssh://github.com/DmitryNekrasov/utf8-string.git")
-                        url.set("https://github.com/DmitryNekrasov/utf8-string")
+                        connection.set("scm:git:git://github.com/DmitryNekrasov/tekst.git")
+                        developerConnection.set("scm:git:ssh://github.com/DmitryNekrasov/tekst.git")
+                        url.set("https://github.com/DmitryNekrasov/tekst")
                     }
                 }
             }
@@ -73,6 +73,6 @@ nmcpAggregation {
 }
 
 dependencies {
-    nmcpAggregation(project(":utf8-string"))
+    nmcpAggregation(project(":tekst"))
     nmcpAggregation(project(":utf8-string-compiler-plugin"))
 }

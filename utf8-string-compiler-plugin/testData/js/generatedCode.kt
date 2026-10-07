@@ -2,7 +2,7 @@
 // CHECK_CALLED_IN_SCOPE: function=u8LiteralLatin1 scope=U8Literals$GeneratedCodeKt
 // CHECK_NOT_CALLED_IN_SCOPE: function=u8Literal scope=literal
 // CHECK_NOT_CALLED_IN_SCOPE: function=u8LiteralLatin1 scope=largeLiteral
-import utf8string.u8
+import tekst.u8
 
 const val P64 = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
 const val K1 = P64 + P64 + P64 + P64 + P64 + P64 + P64 + P64 + P64 + P64 + P64 + P64 + P64 + P64 + P64 + P64

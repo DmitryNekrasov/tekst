@@ -68,7 +68,7 @@ dependencies {
     testFixturesApi(libs.kotlin.compiler)
     testFixturesRuntimeOnly(libs.junit)
 
-    utf8StringRuntimeClasspath(project(":utf8-string"))
+    utf8StringRuntimeClasspath(project(":tekst"))
 
     embeddableCompilers(libs.kotlin.compiler.embeddable)
     embeddableCompilers(libs.kotlin.native.compiler.embeddable)

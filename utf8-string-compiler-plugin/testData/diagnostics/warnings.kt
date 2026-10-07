@@ -1,6 +1,6 @@
 // RUN_PIPELINE_TILL: BACKEND
-import utf8string.toUtf8String
-import utf8string.u8
+import tekst.toUtf8String
+import tekst.u8
 
 const val PI = 3.14
 const val UNSIGNED = 7u

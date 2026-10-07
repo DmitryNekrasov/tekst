@@ -7,8 +7,8 @@ const val LIB_GREETING = "from lib"
 // MODULE: main(lib)
 // FILE: main.kt
 import lib.LIB_GREETING
-import utf8string.Utf8String
-import utf8string.u8
+import tekst.Utf8String
+import tekst.u8
 
 const val GREETING = "Hi"
 const val NUMBER = 42

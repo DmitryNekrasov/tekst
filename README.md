@@ -1,16 +1,16 @@
-# utf8-string
+# tekst
 
 [![JetBrains team project](https://jb.gg/badges/team.svg)](https://confluence.jetbrains.com/display/ALL/JetBrains+on+GitHub)
-[![GitHub license](https://img.shields.io/badge/license-Apache%202.0-green.svg?style=flat)](https://github.com/DmitryNekrasov/utf8-string/blob/main/LICENSE)
+[![GitHub license](https://img.shields.io/badge/license-Apache%202.0-green.svg?style=flat)](https://github.com/DmitryNekrasov/tekst/blob/main/LICENSE)
 [![Kotlin](https://img.shields.io/badge/kotlin-2.4.20-blue.svg?logo=kotlin)](https://kotlinlang.org)
-[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/dmitrynekrasov/utf8-string/build.yml)](https://github.com/DmitryNekrasov/utf8-string/actions/workflows/build.yml)
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.dmitrynekrasov/utf8-string.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.dmitrynekrasov/utf8-string)
-[![KDoc link](https://img.shields.io/badge/API_reference-KDoc-blue)](https://dmitrynekrasov.github.io/utf8-string/)
+[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/dmitrynekrasov/tekst/build.yml)](https://github.com/DmitryNekrasov/tekst/actions/workflows/build.yml)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.dmitrynekrasov/tekst.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/io.github.dmitrynekrasov/tekst)
+[![KDoc link](https://img.shields.io/badge/API_reference-KDoc-blue)](https://dmitrynekrasov.github.io/tekst/)
 
-A Kotlin Multiplatform string for working with graphemes. Its `length` counts them, and `for` iterates over them. A grapheme is what a user sees as one character, such as a letter with its accents, a flag, or an emoji with a skin tone. The string is immutable and stored as UTF-8 bytes.
+A Kotlin Multiplatform library for working with text. Its `Utf8String` is a string of graphemes: its `length` counts them, and `for` iterates over them. A grapheme is what a user sees as one character, such as a letter with its accents, a flag, or an emoji with a skin tone. The string is immutable and stored as UTF-8 bytes.
 
 ```kotlin
-import utf8string.u8
+import tekst.u8
 
 val text = "Hi 👋🏽 🇪🇸".u8
 text.length            // 6
@@ -22,11 +22,11 @@ for (grapheme in text) {
 }
 ```
 
-`.u8` encodes a `String` into a `Utf8String`, and `toString()` decodes it back. `String.length` counts UTF-16 chars, so the hand with a skin tone and the flag count as 4 each, and `String.take` or `substring` can split them. The Kotlin standard library has no grapheme API. The platform APIs, like `BreakIterator` on the JVM and `Intl.Segmenter` in JavaScript, are not common code, and their results depend on the platform version. For example, `BreakIterator` before JDK 20 counts the hand and the flag as 2 graphemes each. utf8-string has one implementation for all targets, with the rules of Unicode 18.0. Its grapheme boundaries are also available for a `String` or another `CharSequence`, at char indices, with no copy of the text.
+`.u8` encodes a `String` into a `Utf8String`, and `toString()` decodes it back. `String.length` counts UTF-16 chars, so the hand with a skin tone and the flag count as 4 each, and `String.take` or `substring` can split them. The Kotlin standard library has no grapheme API. The platform APIs, like `BreakIterator` on the JVM and `Intl.Segmenter` in JavaScript, are not common code, and their results depend on the platform version. For example, `BreakIterator` before JDK 20 counts the hand and the flag as 2 graphemes each. tekst has one implementation for all targets, with the rules of Unicode 18.0. Its grapheme boundaries are also available for a `String` or another `CharSequence`, at char indices, with no copy of the text.
 
 Targets: JVM, JS, Wasm (JS and WASI), and Kotlin/Native for Linux, macOS arm64, Windows, iOS, watchOS, and tvOS.
 
-utf8-string is a personal hobby project.
+tekst is a personal hobby project.
 
 ## Setup
 
@@ -34,7 +34,7 @@ utf8-string is a personal hobby project.
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation("io.github.dmitrynekrasov:utf8-string:0.2.0")
+            implementation("io.github.dmitrynekrasov:tekst:0.2.0")
         }
     }
 }
@@ -154,17 +154,17 @@ On Node.js 24.16.0:
 | Combining marks | 458 | 303 | 862 (1.9x) |
 | CR LF lines | 203 | 159 | 2087 (10x) |
 
-The texts are random words in each script, emoji sequences, Latin letters with 1 to 8 combining marks, and ASCII lines with CR LF, from `Corpora.kt` in `utf8-string-benchmarks`. All the implementations give the same grapheme counts on them, although ICU4J and Node.js implement Unicode 17.0. For an ASCII text, `length` does not run the rules, since in ASCII every char except LF after CR is a grapheme. On the JVM, the graphemes in the `for` loop do not escape it, so the JIT can remove their allocation.
+The texts are random words in each script, emoji sequences, Latin letters with 1 to 8 combining marks, and ASCII lines with CR LF, from `Corpora.kt` in `tekst-benchmarks`. All the implementations give the same grapheme counts on them, although ICU4J and Node.js implement Unicode 17.0. For an ASCII text, `length` does not run the rules, since in ASCII every char except LF after CR is a grapheme. On the JVM, the graphemes in the `for` loop do not escape it, so the JIT can remove their allocation.
 
-Each JVM number is the mean of 5 forks, and each Node.js number is the median of 3 runs. `./gradlew :utf8-string-benchmarks:jvmComparisonBenchmark :utf8-string-benchmarks:jsComparisonBenchmark` runs the comparison once.
+Each JVM number is the mean of 5 forks, and each Node.js number is the median of 3 runs. `./gradlew :tekst-benchmarks:jvmComparisonBenchmark :tekst-benchmarks:jsComparisonBenchmark` runs the comparison once.
 
-On the same texts, a query at a random byte index, such as `nextGraphemeBoundary`, takes 1 to 18 ns on the JVM and 1 to 70 ns on Node.js, since it reads only the code points around the index. A walk back with `previous()` takes up to 3.6 times as long as the `for` loop on the JVM and up to 2.4 times on Node.js, because each step looks for the start of the code point before it and checks the pair of their classes. `./gradlew :utf8-string-benchmarks:jvmBoundariesBenchmark :utf8-string-benchmarks:jsBoundariesBenchmark` runs these benchmarks.
+On the same texts, a query at a random byte index, such as `nextGraphemeBoundary`, takes 1 to 18 ns on the JVM and 1 to 70 ns on Node.js, since it reads only the code points around the index. A walk back with `previous()` takes up to 3.6 times as long as the `for` loop on the JVM and up to 2.4 times on Node.js, because each step looks for the start of the code point before it and checks the pair of their classes. `./gradlew :tekst-benchmarks:jvmBoundariesBenchmark :tekst-benchmarks:jsBoundariesBenchmark` runs these benchmarks.
 
 ## Development
 
-`./gradlew generateUnicodeData` generates the grapheme tables and the test data from the Unicode 18.0 and CLDR 48 files in `unicode/`, and `./gradlew build` fails when the committed files differ from what it writes. A new Unicode version also needs the version constants in `utf8-string-generator/src/utf8string/generator/Main.kt` changed and the rules reviewed. The JVM tests also check the generated tables against the Unicode files.
+`./gradlew generateUnicodeData` generates the grapheme tables and the test data from the Unicode 18.0 and CLDR 48 files in `unicode/`, and `./gradlew build` fails when the committed files differ from what it writes. A new Unicode version also needs the version constants in `tekst-generator/src/tekst/generator/Main.kt` changed and the rules reviewed. The JVM tests also check the generated tables against the Unicode files.
 
-`./gradlew :utf8-string-benchmarks:benchmark` runs the benchmarks on the JVM, JS and Wasm JS, and on Kotlin/Native for macOS arm64 or Linux x64 when the host is one of them. `:utf8-string-benchmarks:jvmBenchmarkAllocations` reports the bytes allocated per operation on the JVM.
+`./gradlew :tekst-benchmarks:benchmark` runs the benchmarks on the JVM, JS and Wasm JS, and on Kotlin/Native for macOS arm64 or Linux x64 when the host is one of them. `:tekst-benchmarks:jvmBenchmarkAllocations` reports the bytes allocated per operation on the JVM.
 
 `./gradlew dokkaGenerate` writes the API reference to `docs/`. GitHub Pages serves it from the `docs/` of the gh-pages branch.
 

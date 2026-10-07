@@ -52,7 +52,7 @@ kotlin {
 
     sourceSets {
         commonTest.dependencies {
-            implementation(project(":utf8-string"))
+            implementation(project(":tekst"))
             implementation(libs.kotlin.test)
         }
     }

@@ -1,0 +1,63 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, iosX64, js, linuxArm64, linuxX64, macosArm64, mingwX64, tvosArm64, tvosSimulatorArm64, wasmJs, wasmWasi, watchosArm32, watchosArm64, watchosSimulatorArm64]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <io.github.dmitrynekrasov:tekst>
+final class tekst/Grapheme { // tekst/Grapheme|null[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // tekst/Grapheme.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // tekst/Grapheme.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // tekst/Grapheme.toString|toString(){}[0]
+    final fun toUtf8String(): tekst/Utf8String // tekst/Grapheme.toUtf8String|toUtf8String(){}[0]
+}
+
+final class tekst/GraphemeIterator : kotlin.collections/Iterator<tekst/Grapheme> { // tekst/GraphemeIterator|null[0]
+    final val index // tekst/GraphemeIterator.index|{}index[0]
+        final fun <get-index>(): kotlin/Int // tekst/GraphemeIterator.index.<get-index>|<get-index>(){}[0]
+
+    final fun hasNext(): kotlin/Boolean // tekst/GraphemeIterator.hasNext|hasNext(){}[0]
+    final fun hasPrevious(): kotlin/Boolean // tekst/GraphemeIterator.hasPrevious|hasPrevious(){}[0]
+    final fun next(): tekst/Grapheme // tekst/GraphemeIterator.next|next(){}[0]
+    final fun previous(): tekst/Grapheme // tekst/GraphemeIterator.previous|previous(){}[0]
+    final fun skipNext(): kotlin/Int // tekst/GraphemeIterator.skipNext|skipNext(){}[0]
+    final fun skipPrevious(): kotlin/Int // tekst/GraphemeIterator.skipPrevious|skipPrevious(){}[0]
+}
+
+final class tekst/Utf8String { // tekst/Utf8String|null[0]
+    final val byteCount // tekst/Utf8String.byteCount|{}byteCount[0]
+        final fun <get-byteCount>(): kotlin/Int // tekst/Utf8String.byteCount.<get-byteCount>|<get-byteCount>(){}[0]
+    final val graphemes // tekst/Utf8String.graphemes|{}graphemes[0]
+        final fun <get-graphemes>(): kotlin.sequences/Sequence<tekst/Grapheme> // tekst/Utf8String.graphemes.<get-graphemes>|<get-graphemes>(){}[0]
+    final val length // tekst/Utf8String.length|{}length[0]
+        final fun <get-length>(): kotlin/Int // tekst/Utf8String.length.<get-length>|<get-length>(){}[0]
+
+    final fun copyInto(kotlin/ByteArray, kotlin/Int = ..., kotlin/Int = ..., kotlin/Int = ...): kotlin/ByteArray // tekst/Utf8String.copyInto|copyInto(kotlin.ByteArray;kotlin.Int;kotlin.Int;kotlin.Int){}[0]
+    final fun drop(kotlin/Int): tekst/Utf8String // tekst/Utf8String.drop|drop(kotlin.Int){}[0]
+    final fun dropLast(kotlin/Int): tekst/Utf8String // tekst/Utf8String.dropLast|dropLast(kotlin.Int){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // tekst/Utf8String.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // tekst/Utf8String.hashCode|hashCode(){}[0]
+    final fun isGraphemeBoundary(kotlin/Int): kotlin/Boolean // tekst/Utf8String.isGraphemeBoundary|isGraphemeBoundary(kotlin.Int){}[0]
+    final fun iterator(): tekst/GraphemeIterator // tekst/Utf8String.iterator|iterator(){}[0]
+    final fun iterator(kotlin/Int): tekst/GraphemeIterator // tekst/Utf8String.iterator|iterator(kotlin.Int){}[0]
+    final fun nextGraphemeBoundary(kotlin/Int): kotlin/Int // tekst/Utf8String.nextGraphemeBoundary|nextGraphemeBoundary(kotlin.Int){}[0]
+    final fun previousGraphemeBoundary(kotlin/Int): kotlin/Int // tekst/Utf8String.previousGraphemeBoundary|previousGraphemeBoundary(kotlin.Int){}[0]
+    final fun take(kotlin/Int): tekst/Utf8String // tekst/Utf8String.take|take(kotlin.Int){}[0]
+    final fun takeLast(kotlin/Int): tekst/Utf8String // tekst/Utf8String.takeLast|takeLast(kotlin.Int){}[0]
+    final fun toByteArray(): kotlin/ByteArray // tekst/Utf8String.toByteArray|toByteArray(){}[0]
+    final fun toString(): kotlin/String // tekst/Utf8String.toString|toString(){}[0]
+}
+
+final val tekst/u8 // tekst/u8|@kotlin.String{}u8[0]
+    final fun (kotlin/String).<get-u8>(): tekst/Utf8String // tekst/u8.<get-u8>|<get-u8>@kotlin.String(){}[0]
+
+final fun (kotlin/CharSequence).tekst/isGraphemeBoundary(kotlin/Int): kotlin/Boolean // tekst/isGraphemeBoundary|isGraphemeBoundary@kotlin.CharSequence(kotlin.Int){}[0]
+final fun (kotlin/CharSequence).tekst/isGraphemeBoundary(kotlin/Int, kotlin/Int, kotlin/Int): kotlin/Boolean // tekst/isGraphemeBoundary|isGraphemeBoundary@kotlin.CharSequence(kotlin.Int;kotlin.Int;kotlin.Int){}[0]
+final fun (kotlin/CharSequence).tekst/nextGraphemeBoundary(kotlin/Int): kotlin/Int // tekst/nextGraphemeBoundary|nextGraphemeBoundary@kotlin.CharSequence(kotlin.Int){}[0]
+final fun (kotlin/CharSequence).tekst/nextGraphemeBoundary(kotlin/Int, kotlin/Int, kotlin/Int): kotlin/Int // tekst/nextGraphemeBoundary|nextGraphemeBoundary@kotlin.CharSequence(kotlin.Int;kotlin.Int;kotlin.Int){}[0]
+final fun (kotlin/CharSequence).tekst/previousGraphemeBoundary(kotlin/Int): kotlin/Int // tekst/previousGraphemeBoundary|previousGraphemeBoundary@kotlin.CharSequence(kotlin.Int){}[0]
+final fun (kotlin/CharSequence).tekst/previousGraphemeBoundary(kotlin/Int, kotlin/Int, kotlin/Int): kotlin/Int // tekst/previousGraphemeBoundary|previousGraphemeBoundary@kotlin.CharSequence(kotlin.Int;kotlin.Int;kotlin.Int){}[0]
+final fun (kotlin/String).tekst/toUtf8String(): tekst/Utf8String // tekst/toUtf8String|toUtf8String@kotlin.String(){}[0]
+final fun tekst/u8Literal(kotlin/ByteArray, kotlin/Int): tekst/Utf8String // tekst/u8Literal|u8Literal(kotlin.ByteArray;kotlin.Int){}[0]
+final fun tekst/u8LiteralLatin1(kotlin/String, kotlin/Int): tekst/Utf8String // tekst/u8LiteralLatin1|u8LiteralLatin1(kotlin.String;kotlin.Int){}[0]
