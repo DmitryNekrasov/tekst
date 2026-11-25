@@ -120,28 +120,40 @@ public class GraphemeIterator internal constructor(
     private inline fun moveToNextBoundary(): Int {
         val start = position
         val carriedLength = carriedLength
-        if (carriedLength != 0) return search(start + carriedLength, carriedRow)
-        val first = bytes[start].toInt()
-        if (first >= 0) {
-            val end = start + 1
-            if (first >= 0x20 && first != 0x7F) {
-                // Printable ASCII is Other, and no code point below U+0300 (lead byte below 0xCC) joins it.
-                if (end == bytes.size || bytes[end].toInt() and 0xFF < 0xCC) {
-                    position = end
-                    return end
+        val from: Int
+        val row: Int
+        if (carriedLength != 0) {
+            from = start + carriedLength
+            row = carriedRow
+        } else {
+            val first = bytes[start].toInt()
+            if (first >= 0) {
+                val end = start + 1
+                if (first >= 0x20 && first != 0x7F) {
+                    // Printable ASCII is Other, and no code point below U+0300 (lead byte below 0xCC) joins it.
+                    if (end == bytes.size || bytes[end].toInt() and 0xFF < 0xCC) {
+                        position = end
+                        return end
+                    }
+                    from = end
+                    row = startStates[GRAPHEME_CLASS_OTHER].code
+                } else if (first == CR && end < bytes.size && bytes[end] < 0) {
+                    // Malformed bytes after CR can stand for LF, so the automaton decides, as in countGraphemes.
+                    from = end
+                    row = startStates[graphemeClassAt(bytes, start, 1, classes, classIndex)].code
+                } else {
+                    // A control is a grapheme by itself (GB4, GB5), except CR LF (GB3).
+                    position = if (first == CR && end < bytes.size && bytes[end].toInt() == LF) end + 1 else end
+                    return position
                 }
-                return search(end, startStates[GRAPHEME_CLASS_OTHER].code)
+            } else {
+                val length = utf8LengthAt(bytes, start)
+                from = start + length
+                row = startStates[graphemeClassAt(bytes, start, length, classes, classIndex)].code
             }
-            // Malformed bytes after CR can stand for LF, so the automaton decides, as in countGraphemes.
-            if (first == CR && end < bytes.size && bytes[end] < 0) {
-                return search(end, startStates[graphemeClassAt(bytes, start, 1, classes, classIndex)].code)
-            }
-            // A control is a grapheme by itself (GB4, GB5), except CR LF (GB3).
-            position = if (first == CR && end < bytes.size && bytes[end].toInt() == LF) end + 1 else end
-            return position
         }
-        val length = utf8LengthAt(bytes, start)
-        return search(start + length, startStates[graphemeClassAt(bytes, start, length, classes, classIndex)].code)
+        // One call of search: the JIT would not inline a rare one, and a for loop would allocate the iterator.
+        return search(from, row)
     }
 
     private fun search(from: Int, row: Int): Int {
